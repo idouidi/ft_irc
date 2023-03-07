@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/07 19:33:46 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/07 20:37:16 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,21 +91,21 @@ void start_server(std::string port)
         perror("listen");
         exit(EXIT_FAILURE);
     }
+    socklen_t address_len = sizeof(address);
 	while (1)
 	{
 		std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION\
-		 - _ - _ - _ - _ -" << RESET << std::endl;
-		
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)(sizeof(address)))) < 0) 
+ - _ - _ - _ - _ -" << RESET << std::endl;
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, &address_len)) < 0) 
         {
             perror("accept failed");
             exit(EXIT_FAILURE);
+        }
 			read(new_socket, buf, BUFFER_SIZE);
 			std::cout << GREEN << "Message from the  client: " << YELLOW << buf << RESET << std::endl;
-			close(new_socket);
-        }
+            memset(buf, '\0', sizeof(buf));
+	    close(new_socket);
 	}
-
 }
 
 
