@@ -70,7 +70,7 @@ L'utilisation des sockets se fait en quelques étapes :
         #####       perror(“cannot create socket”); 
         #####       return 0; 
         #####   }
-            
+
     2) Identifier la socket 
         Lorsque nous parlons d'identifier une socket, nous parlons d'attribuer une adresse de transport à la socket (un numéro de port dans un réseau IP).
 
@@ -107,7 +107,9 @@ L'utilisation des sockets se fait en quelques étapes :
         
         ##### #include <sys/socket.h>
         ##### struct sockaddr_in address;
-        ##### const int PORT = 8080;
+        ##### // 💡 Astuce pour connaitre les ports disponible sur sa machine:
+        ##### // "netstat -an | grep LISTEN | awk '{print $4}' | awk -F ":" '{print $NF}' | sort -n | uniq"
+        ##### const int PORT = 8080; 
         ##### memset((char *)&address, 0, sizeof(address));
         ##### address.sin_family = AF_INET; 
         ##### address.sin_addr.s_addr = htonl(INADDR_ANY);  // htonl convert a long int to a network representation 

@@ -59,6 +59,10 @@ print:
 
 ####################################################
 
+free_port:
+	@netstat -an | grep LISTEN | awk '{print $$4}' | awk -F ":" '{print $$NF}' | sort -n | uniq
+
+
 #  🚧 ==> progress 
 #  💥 ==> crash
 #  🏆 == > success
