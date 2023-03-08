@@ -6,11 +6,11 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/08 12:31:01 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/08 16:44:41 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/ft_irc.hpp"
+#include "../includes/Utils.hpp"
 
 /*
 * check if the port it's  1 < port < 65535
@@ -65,56 +65,25 @@ bool check_pswd(std::string pswd)
 
 void start_server(std::string port)
 {
-	int		                                server_fd;
-	int 	                                new_client;
-    int                                     epoll_fd;
-	char	                                buf[BUFFER_SIZE] = {0};
-	struct sockaddr_in                      address;
-    std::stack<int, std::vector<int> > 		_chanel;
-	std::stack<Client, std::vector<int> >	_client;
+	// int 	                                new_client;
+	// char	                                buf[BUFFER_SIZE] = {0};
+    Irc                                     irc(port);
 
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-    {
-        perror("socket");
-        exit(EXIT_FAILURE);
-    }
-
-	address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(std::atoi(port.c_str()));
-	memset(address.sin_zero, '\0', sizeof(address.sin_zero));
-
-	if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0 )
-    {
-        perror("bind");
-        exit(EXIT_FAILURE);
-    }
-    if (listen(server_fd, MAX_CLIENT) < 0)
-    {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }
-    if ((epoll_fd = epoll_create(MAX_CLIENT)) == -1 )
-    {
-        perror("epoll_create");
-        exit(EXIT_FAILURE);
-    }
-
-    socklen_t address_len = sizeof(address);
+    irc.init_server();
 	while (1)
-	{
-		std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION\
- - _ - _ - _ - _ -" << RESET << std::endl;
-        if ((new_client = accept(server_fd, (struct sockaddr *)&address, &address_len)) < 0) 
-        {
-            perror("accept");
-            exit(EXIT_FAILURE);
-        }
-		read(new_client, buf, BUFFER_SIZE);
-		std::cout << GREEN << "Message from the client: " << YELLOW << buf << RESET << std::endl;
-        memset(buf, '\0', sizeof(buf));
-	    close(new_client);
-	}
+// 	{
+// 		std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION
+//  - _ - _ - _ - _ -" << RESET << std::endl;
+//         if ((new_client = accept(server_fd, (struct sockaddr *)&address, &address_len)) < 0) 
+//         {
+//             perror("accept");
+//             exit(EXIT_FAILURE);
+//         }
+// 		read(new_client, buf, BUFFER_SIZE);
+// 		std::cout << GREEN << "Message from the client: " << YELLOW << buf << RESET << std::endl;
+//         memset(buf, '\0', sizeof(buf));
+// 	    close(new_client);
+// 	}
 }
 
 
@@ -128,6 +97,15 @@ int	main(int ac , char *av[])
 	else if (!check_port(av[1]) || !check_pswd(av[2]))
 		return (1);
 
-	start_server(std::string(av[1]));
+	try
+    {
+        start_server(std::string(av[1]));
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        exit(EXIT_FAILURE);
+    }
+    
 	return (0);
 }

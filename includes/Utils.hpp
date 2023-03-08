@@ -1,17 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_irc.hpp                                         :+:      :+:    :+:   */
+/*   Utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/08 12:31:09 by idouidi          ###   ########.fr       */
+/*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
+/*   Updated: 2023/03/08 16:41:44 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __FT_IRC_HPP__
-#define __FT_IRC_HPP__
+
+#ifndef __UTILS_HPP__
+# define __UTILS_HPP__
 
 # include <iostream>		// for stl
 # include <unistd.h>		// for read / close 
@@ -23,9 +24,9 @@
 # include <vector>
 # include <stack>
 # include <map>
+# include <exception>
 // #include <sys/socket.h>
 
-# include "client.hpp"
 
 # define RESET	            "\033[0m"
 # define BLACK	            "\033[1;30m"
@@ -38,21 +39,14 @@
 # define OK                 "\033[1;32m[OK]\033[0m"
 # define KO                 "\033[1;31m[KO]\033[0m"
 
-# define MAX_CLIENT   		10   
+# define MAX_CLIENT   		1   
 # define BUFFER_SIZE        1024
 
-
-
-
-class Irc
-{
-		
-	private:
-
-}
-
+# include "Client.hpp"
+# include "Irc.hpp"
 
 #endif
+
 
 /* **********************/
 /* FUNCTION ALLOWS		*/

@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.hpp                                         :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/08 12:12:19 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/08 12:57:14 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __CLIENT_HPP
-# define __CLIENT_HPP
+#ifndef __CLIENT_HPP__
+# define __CLIENT_HPP__
 
-#include "ft_irc.hpp"
+#include "Utils.hpp"
 
 class Client
 {
