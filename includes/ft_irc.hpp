@@ -6,21 +6,26 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/07 18:53:45 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/08 12:31:09 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __FT_IRC_HPP__
 #define __FT_IRC_HPP__
 
-#include <iostream>			// for stl
-#include <unistd.h>			// for read / close 
-#include <cstdlib>			// for exit
-#include <cstdio>			// for perror
-#include <sys/socket.h>
-#include <string>
-#include <cstring>
-#include <netinet/in.h> 
+# include <iostream>		// for stl
+# include <unistd.h>		// for read / close 
+# include <cstdlib>			// for exit
+# include <cstdio>			// for perror
+# include <cstring>         // for memset
+# include <sys/epoll.h>		// for epoll
+# include <netinet/in.h>    //for htons
+# include <vector>
+# include <stack>
+# include <map>
+// #include <sys/socket.h>
+
+# include "client.hpp"
 
 # define RESET	            "\033[0m"
 # define BLACK	            "\033[1;30m"
@@ -33,6 +38,49 @@
 # define OK                 "\033[1;32m[OK]\033[0m"
 # define KO                 "\033[1;31m[KO]\033[0m"
 
-#define PENDING_CONECTION   10   
-#define BUFFER_SIZE         1024
+# define MAX_CLIENT   		10   
+# define BUFFER_SIZE        1024
+
+
+
+
+class Irc
+{
+		
+	private:
+
+}
+
+
 #endif
+
+/* **********************/
+/* FUNCTION ALLOWS		*/
+/*	socket				*/
+/* 	setsockopt			*/
+/* 	getsockname			*/
+/* 	getprotobyname		*/
+/*	gethostbyname		*/
+/* 	getaddrinfo			*/
+/* 	freeaddrinfo		*/
+/* 	bind				*/
+/*	connect				*/
+/* 	listen				*/
+/* 	accept				*/
+/* 	htons				*/
+/* 	htonl				*/
+/* 	ntohs				*/
+/*	ntohl				*/
+/* 	inet_addr			*/
+/* 	inet_ntoa			*/
+/* 	send				*/
+/* 	recv				*/
+/* 	signal				*/
+/*	lseek				*/
+/* 	fstat				*/
+/* 	fcntl				*/
+/* 	poll 				*/
+/*	epoll				*/
+/*	kqueue				*/
+/*	select				*/
+/* **********************/ 
