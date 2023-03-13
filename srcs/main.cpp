@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 17:07:00 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/13 19:58:48 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,11 @@ void start_server(std::string port)
                     continue;
                 }
                 else
+                {
                     irc.addClient(new_client);
+                    // if (send(new_client, message))
+                }
+
             }
             //EVENT ON A CLIENT
             else 
@@ -107,7 +111,9 @@ void start_server(std::string port)
                 {
 		            std::cout << MAGENTA << "Message from the client[ " << CYAN << irc.getEvent(i).data.fd << MAGENTA << " ]: "\
                     << YELLOW << buf << RESET << std::endl;
-                    irc.execCmd(irc.getEvent(i).data.fd, std::string(buf));
+                    std::string s_buf = buf;
+                    s_buf.erase(s_buf.size() - 1);
+                    irc.execCmd(irc.getEvent(i).data.fd, s_buf);
                     
                 }
                 memset(buf, '\0', sizeof(buf));

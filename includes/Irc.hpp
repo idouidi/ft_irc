@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 18:19:51 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/13 20:03:33 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,8 +140,8 @@ class Irc
 
 		bool execCmd(int client_fd, std::string cmd)
 		{
-			bool (*tab[7])(int, std::vector<std::string> ) = {&Irc::msg, &Irc::join, &Irc::leave, &Irc::list, &Irc::nick, &Irc::quit, &Irc::who};
-			std::string ref[] = {"/msg", "/join", "/leave", "/list",  "/nick",  "/quit", "/who" };
+			bool (Irc::*tab[7])(int, std::vector<std::string> ) = {&Irc::msg, &Irc::join, &Irc::leave, &Irc::list, &Irc::nick, &Irc::quit, &Irc::who};
+			std::string ref[] = {"/msg", "/join", "/leave", "/list", "/nick", "/quit", "/who" };
 			std::vector<std::string> split;
 			std::stringstream ss(cmd);
 			std::string sub_string;
@@ -154,19 +154,16 @@ class Irc
 				std::cout << RED << "error: " << RESET << "Bad command format" << std::endl;
 				return (0);
 			}
-			for (std::size_t i = 0; i < split.size(); i++)
-			
-				if (!ref[i].compare(split[0]))
+			for (std::size_t i = 0; i < 7 ; i++)
+			{
+				if (ref[i] == split[0])
 				{
 					(this->*(tab[i]))(client_fd, split);
 					break ;
 				}
+			}
 			return (1);
 		}
-
-
-
-
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 		
