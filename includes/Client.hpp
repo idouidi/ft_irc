@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/08 12:57:14 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/13 14:19:14 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,13 @@
 class Client
 {
 	public:
-		Client(std::string name, std::string nickname, int socket, std::map<int, std::string> chanel):
-		_name(name), _nickname(nickname), _my_socket(socket), _my_chanel(chanel)
-		{}
+		Client(int socket)
+		{
+			_my_socket = socket;
+		}
+		// Client(std::string name, std::string nickname, int socket, std::map<int, std::string> chanel):
+		// _name(name), _nickname(nickname), _my_socket(socket), _my_chanel(chanel)
+		// {}
 
 		Client(const Client& c):_name(c._name), _nickname(c._nickname), _my_socket(c._my_socket)
 		{
@@ -45,7 +49,9 @@ class Client
             	}
 			}
 			return (*this);
-		}	
+		}
+
+		int	getMySocket() const { return (_my_socket); }
 
 	private:
 		std::string 				_name;

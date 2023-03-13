@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/08 16:44:41 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/13 15:06:54 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,25 +65,51 @@ bool check_pswd(std::string pswd)
 
 void start_server(std::string port)
 {
-	// int 	                                new_client;
-	// char	                                buf[BUFFER_SIZE] = {0};
+	int 	                                new_client;
+    int                                     ret;
+    int                                     fd_make_event;
+	char	                                buf[BUFFER_SIZE] = {0};
+    struct                                  sockaddr_in client_addr;
     Irc                                     irc(port);
 
     irc.init_server();
+	std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION\
+ - _ - _ - _ - _ -" << RESET << std::endl;
 	while (1)
-// 	{
-// 		std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION
-//  - _ - _ - _ - _ -" << RESET << std::endl;
-//         if ((new_client = accept(server_fd, (struct sockaddr *)&address, &address_len)) < 0) 
-//         {
-//             perror("accept");
-//             exit(EXIT_FAILURE);
-//         }
-// 		read(new_client, buf, BUFFER_SIZE);
-// 		std::cout << GREEN << "Message from the client: " << YELLOW << buf << RESET << std::endl;
-//         memset(buf, '\0', sizeof(buf));
-// 	    close(new_client);
-// 	}
+	{
+        fd_make_event = epoll_wait(irc.getEpollFd(), irc.getEventTab(),  MAX_EVENTS, -1);
+        for (int i = 0; i < fd_make_event; i++)
+        {
+            // EVENT ON THE SERVER
+            if (irc.getEvent(i).data.fd == irc.getServerFd())
+            {
+                socklen_t client_len = sizeof(client_addr);
+                if ((new_client = accept(irc.getServerFd(), (struct sockaddr*)&client_addr, &client_len)) == -1)
+                {
+                    perror("accept");
+                    continue;
+                }
+                else
+                    irc.addClient(new_client);
+            }
+            //EVENT ON A CLIENT
+            else 
+            {
+		        ret = read(new_client, buf, BUFFER_SIZE);
+                if (ret == -1)
+                {
+                    perror("read");
+                    exit(EXIT_FAILURE);
+                }
+                else if (ret == 0)
+                    irc.eraseClient(i, irc.getEvent(i).data.fd);
+                else
+		            std::cout << MAGENTA << "Message from the client: " << YELLOW << buf << RESET << std::endl;
+                memset(buf, '\0', sizeof(buf));
+            }
+        }
+	}
+    irc.closeServer();
 }
 
 
@@ -104,7 +130,6 @@ int	main(int ac , char *av[])
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        exit(EXIT_FAILURE);
     }
     
 	return (0);

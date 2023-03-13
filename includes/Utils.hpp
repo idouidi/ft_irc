@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/08 16:41:44 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/13 12:19:06 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@
 # define OK                 "\033[1;32m[OK]\033[0m"
 # define KO                 "\033[1;31m[KO]\033[0m"
 
-# define MAX_CLIENT   		1   
+# define MAX_CLIENT   		10
+# define MAX_EVENTS         10
 # define BUFFER_SIZE        1024
 
 # include "Client.hpp"
