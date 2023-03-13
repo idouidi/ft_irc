@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 15:09:13 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/13 18:19:51 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,14 @@
 class Irc
 {
 	public:
-		// CONSTRUCTOR
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+		/*	
+		*	📌 CONSTRUCTOR / DESTRCUTOR
+		*/
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
 		Irc(std::string port)
 		{
 			if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -28,33 +35,50 @@ class Irc
 			}
 			epoll_fd = -1;
 			memset(&event, 0, sizeof(event));
-			server_address.sin_family = AF_INET;
-			server_address.sin_addr.s_addr = INADDR_ANY;
-			server_address.sin_port = htons(std::atoi(port.c_str()));
-			memset(server_address.sin_zero, '\0', sizeof(server_address.sin_zero));
-
+			server_addr.sin_family = AF_INET;
+			server_addr.sin_addr.s_addr = INADDR_ANY;
+			server_addr.sin_port = htons(std::atoi(port.c_str()));
+			memset(server_addr.sin_zero, '\0', sizeof(server_addr.sin_zero));
 		}
 
-		// GETTER
+		~Irc() { closeServer(); }
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+		/*	
+		*	📌 GETTER
+		*/
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
 		int getServerFd() const { return (server_fd); }
+		
 		int getEpollFd() const { return (epoll_fd); }
+		
 		struct epoll_event getEvent(int i) const { return (events[i]); } 
+		
 		struct epoll_event* getEventTab() { return (events); } 
 
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		// MEMBER FUNCTIONS
+		/*	
+		*	📌 MEMBER FUNCTION
+		*/
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+	
 		void init_server()
 		{
-			if (bind(server_fd, (struct sockaddr *)&server_address, sizeof(server_address)) < 0 )
+			if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0 )
 			{
 				perror("bind");
 				exit(EXIT_FAILURE);
 			}
 			if (listen(server_fd, MAX_CLIENT) < 0)
-    		{
-    	    	perror("listen");
-    	    	throw std::runtime_error("Error when listening to the socket");
-    		}
+			{
+				perror("listen");
+				throw std::runtime_error("Error when listening to the socket");
+			}
 			if ((epoll_fd = epoll_create(MAX_CLIENT)) == -1 )
 			{
 				perror("epoll_create");
@@ -70,6 +94,8 @@ class Irc
 			}
 		}
 
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+		
 		void addClient(int client_fd)
 		{
 			event.data.fd = client_fd;
@@ -80,8 +106,10 @@ class Irc
 				exit(EXIT_FAILURE);
 			}
 			_client.push_back(Client(client_fd));
-			std::cout << GREEN << "Client connected !" << RESET << std::endl;
+			std::cout << GREEN << "Client[ " << CYAN << client_fd << GREEN << " ] connected  !" << RESET << std::endl;
 		}
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 		void eraseClient(int event, int client_fd)
 		{
@@ -92,13 +120,55 @@ class Irc
 			}
 			if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[event].data.fd, NULL ) == -1)
 			{
-                        perror("epoll_ctl EPOLL_CTL_DEL");
-                        exit(EXIT_FAILURE);			
+						perror("epoll_ctl EPOLL_CTL_DEL");
+						exit(EXIT_FAILURE);			
 			}
+			std::cout << RED << "Client[ " << CYAN << client_fd << RED << " ] deconnected !" << RESET << std::endl;
 			close(client_fd);
-			std::cout << RED << "Client deconnected !" << RESET << std::endl;
-
 		}
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+
+		bool msg(int, std::vector<std::string>);
+		bool join(int, std::vector<std::string>);
+		bool leave(int, std::vector<std::string>);
+		bool list(int, std::vector<std::string>);
+		bool nick(int, std::vector<std::string>);
+		bool quit(int, std::vector<std::string>);
+		bool who(int, std::vector<std::string>);
+
+		bool execCmd(int client_fd, std::string cmd)
+		{
+			bool (*tab[7])(int, std::vector<std::string> ) = {&Irc::msg, &Irc::join, &Irc::leave, &Irc::list, &Irc::nick, &Irc::quit, &Irc::who};
+			std::string ref[] = {"/msg", "/join", "/leave", "/list",  "/nick",  "/quit", "/who" };
+			std::vector<std::string> split;
+			std::stringstream ss(cmd);
+			std::string sub_string;
+			
+			while (std::getline(ss, sub_string, ' '))
+				split.push_back(sub_string);
+
+			if (split[0][0] != '/' && std::isalnum(split[0][1]))
+			{
+				std::cout << RED << "error: " << RESET << "Bad command format" << std::endl;
+				return (0);
+			}
+			for (std::size_t i = 0; i < split.size(); i++)
+			
+				if (!ref[i].compare(split[0]))
+				{
+					(this->*(tab[i]))(client_fd, split);
+					break ;
+				}
+			return (1);
+		}
+
+
+
+
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 		
 		void closeServer()
 		{
@@ -110,14 +180,17 @@ class Irc
 			close(server_fd);
 		}
 
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	private:
 		int										server_fd;
 		int										epoll_fd;
 		struct epoll_event						event;
 		struct epoll_event						events[MAX_EVENTS];
-		struct sockaddr_in 						server_address;
+		struct sockaddr_in 						server_addr;
 		std::vector<int> 						_chanel;
 		std::vector<Client>						_client;
+		
+		Irc() {}
 
 
 };

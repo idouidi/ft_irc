@@ -2,7 +2,7 @@ SRCDIR 		= ./srcs
 SRCS     	= $(shell find $(SRCDIR) -name "*.cpp")
 OBJS		= $(SRCS:.cpp=.o)
 CXX			=  c++
-CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -g3 #-fsanitize=address 
+CXXFLAGS	= -Wall -Wextra -Werror -std=c++98 -g3 -fsanitize=address 
 INCLUDES 	= $(shell find . -type f -name "*.hpp" | cut -c 3-)
 NAME		= ircserv
 

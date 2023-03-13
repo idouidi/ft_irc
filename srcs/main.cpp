@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 15:06:54 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/13 17:07:00 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void start_server(std::string port)
             //EVENT ON A CLIENT
             else 
             {
-		        ret = read(new_client, buf, BUFFER_SIZE);
+		        ret = read(irc.getEvent(i).data.fd, buf, BUFFER_SIZE);
                 if (ret == -1)
                 {
                     perror("read");
@@ -104,12 +104,16 @@ void start_server(std::string port)
                 else if (ret == 0)
                     irc.eraseClient(i, irc.getEvent(i).data.fd);
                 else
-		            std::cout << MAGENTA << "Message from the client: " << YELLOW << buf << RESET << std::endl;
+                {
+		            std::cout << MAGENTA << "Message from the client[ " << CYAN << irc.getEvent(i).data.fd << MAGENTA << " ]: "\
+                    << YELLOW << buf << RESET << std::endl;
+                    irc.execCmd(irc.getEvent(i).data.fd, std::string(buf));
+                    
+                }
                 memset(buf, '\0', sizeof(buf));
             }
         }
 	}
-    irc.closeServer();
 }
 
 
