@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 17:41:48 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/19 17:25:12 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <cstring>         // for memset
 # include <sys/epoll.h>		// for epoll
 # include <netinet/in.h>    // for htons
+# include <signal.h>        // for signal
 # include <sstream>         // for string stream
 # include <vector>
 # include <map>

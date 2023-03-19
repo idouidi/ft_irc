@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 19:58:48 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/19 18:44:08 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,17 @@ bool check_pswd(std::string pswd)
 	}
 }
 
+void	sig_handler(int signal)
+{
+	if (signal == 2)
+    {
+
+        std::cout << "NEED TO FIXE SIGNAL" << std::endl;
+        exit(1);
+        return ;
+    }
+}
+
 void start_server(std::string port)
 {
 	int 	                                new_client;
@@ -90,11 +101,7 @@ void start_server(std::string port)
                     continue;
                 }
                 else
-                {
                     irc.addClient(new_client);
-                    // if (send(new_client, message))
-                }
-
             }
             //EVENT ON A CLIENT
             else 
@@ -112,9 +119,11 @@ void start_server(std::string port)
 		            std::cout << MAGENTA << "Message from the client[ " << CYAN << irc.getEvent(i).data.fd << MAGENTA << " ]: "\
                     << YELLOW << buf << RESET << std::endl;
                     std::string s_buf = buf;
-                    s_buf.erase(s_buf.size() - 1);
-                    irc.execCmd(irc.getEvent(i).data.fd, s_buf);
-                    
+                    if (s_buf != "\n")
+                    {
+                        s_buf.erase(s_buf.size() - 1);
+                        irc.execCmd(irc.getEvent(i).data.fd, s_buf);
+                    }
                 }
                 memset(buf, '\0', sizeof(buf));
             }
@@ -132,7 +141,7 @@ int	main(int ac , char *av[])
 	}
 	else if (!check_port(av[1]) || !check_pswd(av[2]))
 		return (1);
-
+    signal(SIGINT, sig_handler);;
 	try
     {
         start_server(std::string(av[1]));

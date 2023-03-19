@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 14:19:14 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/19 15:52:52 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,10 @@
 class Client
 {
 	public:
-		Client(int socket)
-		{
-			_my_socket = socket;
-		}
-		// Client(std::string name, std::string nickname, int socket, std::map<int, std::string> chanel):
-		// _name(name), _nickname(nickname), _my_socket(socket), _my_chanel(chanel)
-		// {}
+		Client(int socket, std::string nickname): _my_socket(socket), _nickname(nickname)
+		{}
 
-		Client(const Client& c):_name(c._name), _nickname(c._nickname), _my_socket(c._my_socket)
+		Client(const Client& c):_my_socket(c._my_socket), _nickname(c._nickname)
 		{
 			if (!c._my_chanel.empty())
 			{
@@ -38,8 +33,7 @@ class Client
 		Client& operator=(const Client& c)
 		{
 			if (this != &c)
-			{
-				_name = c._name;
+			{;
 				_nickname = c._nickname;
 				_my_socket = c._my_socket;
 				if (!c._my_chanel.empty())
@@ -52,11 +46,12 @@ class Client
 		}
 
 		int	getMySocket() const { return (_my_socket); }
+		std::string getMyNickname() const{ return (_nickname); }
+
 
 	private:
-		std::string 				_name;
-		std::string 				_nickname;
 		int							_my_socket;
+		std::string 				_nickname;
 		// We have to think about if it's the best way to use a map like this.
 		// Indeed a Client can have many chanel with different role,
 		std::map<int, std::string>	_my_chanel;

@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 20:03:33 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/19 18:46:14 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,18 +95,70 @@ class Irc
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+		void sendMessagetoClient(int client_fd, std::string msg)
+		{
+			int			bytes_sent;
+			int 		len = msg.size();
+
+			if ((bytes_sent = send(client_fd, msg.c_str(), len, 0 )) != len)
+			{
+				perror("send failed");
+				throw std::runtime_error("Error when sending a message to the client");
+			}
+		}
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+		std::string recvMessageFromClient(int client_fd)
+		{
+			int			bytes_recv;
+			char		buf[BUFFER_SIZE] = {0};
+
+			if ((bytes_recv = recv(client_fd, buf, BUFFER_SIZE, 0 )) < 0)
+			{
+				perror("recv failed");
+				throw std::runtime_error("Error when receving a message to the client");
+			}
+            std::string s_buf = buf;
+            s_buf.erase(s_buf.size() - 1);
+			return (s_buf);
+		}
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 		
 		void addClient(int client_fd)
 		{
 			event.data.fd = client_fd;
 			event.events = EPOLLIN;
+
 			if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1 )
 			{
 				perror("epoll_ctl EPOLL_CTL_ADD client soscket");
 				exit(EXIT_FAILURE);
 			}
-			_client.push_back(Client(client_fd));
-			std::cout << GREEN << "Client[ " << CYAN << client_fd << GREEN << " ] connected  !" << RESET << std::endl;
+
+			std::string msg = "Welcome !\n";
+			sendMessagetoClient(client_fd, msg);
+
+			while (1)
+			{
+				msg = std::string(GREEN) + "ENTER YOUR NICKNAME: " + std::string(RESET);
+				sendMessagetoClient(client_fd, msg);
+				
+				msg = recvMessageFromClient(client_fd);
+				if (isNicknameAvaible(msg))
+				{
+					_client.push_back(Client(client_fd, msg));
+					std::cout << GREEN << "Client[ " << CYAN << client_fd << GREEN << " ] connected !" << RESET << std::endl;
+					break ;
+				}
+
+				msg = std::string(YELLOW) + "[" + std::string(RED) + msg\
+				+ std::string(YELLOW) + "] " + std::string(RESET)\
+				+ "Is already used by an another user :\\\n\n";
+				sendMessagetoClient(client_fd, msg);
+			}
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
@@ -128,7 +180,6 @@ class Irc
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-
 
 		bool msg(int, std::vector<std::string>);
 		bool join(int, std::vector<std::string>);
@@ -178,6 +229,7 @@ class Irc
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+	
 	private:
 		int										server_fd;
 		int										epoll_fd;
@@ -186,8 +238,17 @@ class Irc
 		struct sockaddr_in 						server_addr;
 		std::vector<int> 						_chanel;
 		std::vector<Client>						_client;
-		
+
 		Irc() {}
+
+		bool isNicknameAvaible(std::string nickname)
+		{
+			for(size_t i = 0; i < _client.size(); i++)
+				if (nickname == _client[i].getMyNickname())
+					return (0);
+			return (1);
+		}
+		
 
 
 };
