@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/19 18:44:08 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/19 23:28:25 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,14 +74,14 @@ void	sig_handler(int signal)
     }
 }
 
-void start_server(std::string port)
+void start_server(char *port, char *pswd)
 {
 	int 	                                new_client;
     int                                     ret;
     int                                     fd_make_event;
 	char	                                buf[BUFFER_SIZE] = {0};
     struct                                  sockaddr_in client_addr;
-    Irc                                     irc(port);
+    Irc                                     irc(port, pswd);
 
     irc.init_server();
 	std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION\
@@ -117,7 +117,7 @@ void start_server(std::string port)
                 else
                 {
 		            std::cout << MAGENTA << "Message from the client[ " << CYAN << irc.getEvent(i).data.fd << MAGENTA << " ]: "\
-                    << YELLOW << buf << RESET << std::endl;
+                    << YELLOW << buf << RESET ;
                     std::string s_buf = buf;
                     if (s_buf != "\n")
                     {
@@ -144,7 +144,7 @@ int	main(int ac , char *av[])
     signal(SIGINT, sig_handler);;
 	try
     {
-        start_server(std::string(av[1]));
+        start_server(av[1], av[2]);
     }
     catch(const std::exception& e)
     {

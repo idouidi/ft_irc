@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/19 15:52:52 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/19 18:47:13 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ class Client
 
 		int	getMySocket() const { return (_my_socket); }
 		std::string getMyNickname() const{ return (_nickname); }
-
 
 	private:
 		int							_my_socket;

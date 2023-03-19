@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/19 18:46:14 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/19 23:32:29 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,19 @@ class Irc
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		Irc(std::string port)
+		Irc(char *port, char *pswd)
 		{
 			if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
 			{
 				perror("socket");
 				throw std::runtime_error("Error when creating the socket");
 			}
+			server_pswd = pswd;
 			epoll_fd = -1;
 			memset(&event, 0, sizeof(event));
 			server_addr.sin_family = AF_INET;
 			server_addr.sin_addr.s_addr = INADDR_ANY;
-			server_addr.sin_port = htons(std::atoi(port.c_str()));
+			server_addr.sin_port = htons(std::atoi(port));
 			memset(server_addr.sin_zero, '\0', sizeof(server_addr.sin_zero));
 		}
 
@@ -114,21 +115,48 @@ class Irc
 		{
 			int			bytes_recv;
 			char		buf[BUFFER_SIZE] = {0};
+			std::string s_buf;
 
 			if ((bytes_recv = recv(client_fd, buf, BUFFER_SIZE, 0 )) < 0)
 			{
 				perror("recv failed");
 				throw std::runtime_error("Error when receving a message to the client");
 			}
-            std::string s_buf = buf;
-            s_buf.erase(s_buf.size() - 1);
+			if (buf[0])
+			{
+            	s_buf = buf;
+            	s_buf.erase(s_buf.size() - 1);
+			}
+			else
+				return ("");
 			return (s_buf);
+		}
+
+		bool goodPassword(int client_fd)
+		{
+			std::string msg = std::string(GREEN) + "ENTER THE SERVER PASSWORD: " + std::string(RESET);
+			sendMessagetoClient(client_fd, msg);
+			msg = recvMessageFromClient(client_fd);
+			if (msg != server_pswd)
+				return (0);
+			return (1);
+
+
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 		
 		void addClient(int client_fd)
 		{
+			if (!goodPassword(client_fd))
+			{
+				std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\n";
+				sendMessagetoClient(client_fd, msg);
+				close(client_fd);
+				return ;
+			}
+
+
 			event.data.fd = client_fd;
 			event.events = EPOLLIN;
 
@@ -202,7 +230,8 @@ class Irc
 
 			if (split[0][0] != '/' && std::isalnum(split[0][1]))
 			{
-				std::cout << RED << "error: " << RESET << "Bad command format" << std::endl;
+				std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "Bad command format\n";
+				sendMessagetoClient(client_fd, msg);
 				return (0);
 			}
 			for (std::size_t i = 0; i < 7 ; i++)
@@ -210,10 +239,12 @@ class Irc
 				if (ref[i] == split[0])
 				{
 					(this->*(tab[i]))(client_fd, split);
-					break ;
+					return (1);
 				}
 			}
-			return (1);
+			std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "command not found\n";
+			sendMessagetoClient(client_fd, msg);
+			return (0);
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
@@ -232,6 +263,7 @@ class Irc
 	
 	private:
 		int										server_fd;
+		std::string 							server_pswd;
 		int										epoll_fd;
 		struct epoll_event						event;
 		struct epoll_event						events[MAX_EVENTS];
