@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/19 23:32:29 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/27 00:34:54 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,30 +132,71 @@ class Irc
 			return (s_buf);
 		}
 
-		bool goodPassword(int client_fd)
+		bool goodPassword(Client& client, std::string pswd)
 		{
-			std::string msg = std::string(GREEN) + "ENTER THE SERVER PASSWORD: " + std::string(RESET);
-			sendMessagetoClient(client_fd, msg);
-			msg = recvMessageFromClient(client_fd);
-			if (msg != server_pswd)
-				return (0);
-			return (1);
+			std::string msg;
+			if (pswd != "\n")
+			{
+				pswd.erase(pswd.size() - 1);
+				if (pswd == server_pswd)
+				{
+					msg = std::string(CYAN) +  "Welcome !\n" + std::string(RESET);
+					sendMessagetoClient(client.getMySocket(), msg);
+					msg = std::string(GREEN) + "ENTER YOUR NICKNAME: " + std::string(RESET);
+					sendMessagetoClient(client.getMySocket(), msg);
+					client.setStatusClient(false);
+					return (1);
 
-
+				}
+			}
+			msg  = std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\n";
+			sendMessagetoClient(client.getMySocket(), msg);
+			eraseClient(client);
+			return (0);
 		}
 
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+		Client* findClient(int fd_client)
+		{
+			for (size_t i = 0; i < _client.size(); i++)
+			{
+				if (_client[i].getMySocket() == fd_client)
+					return (&_client[i]);
+			}
+			return NULL;
+		}
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+		void addClientNickname(Client& client, std::string nickname)
+		{
+			std::string msg;
+			if (nickname == "\n")
+				msg =  std::string(RED) + "Error: " +  std::string(RESET) + "nickname can't be empty !\n";
+			else
+			{
+				nickname.erase(nickname.size() - 1);
+				if (isNicknameAvaible(nickname))
+				{
+					client.setNickName(nickname);
+					std::cout << GREEN << "Client[ " << CYAN << client.getMySocket() << GREEN << " ] is connected !" << RESET << std::endl;
+					return ;
+				}
+				else
+					msg = std::string(YELLOW) + "[" + std::string(RED) + nickname + std::string(YELLOW) + "] " + std::string(RESET) \
+					+ "is already used by an another user :\\\n\n";
+
+			}
+			sendMessagetoClient(client.getMySocket(), msg);
+			msg = std::string(GREEN) + "ENTER YOUR NICKNAME: " + std::string(RESET);
+			sendMessagetoClient(client.getMySocket(), msg);
+		}
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 		
 		void addClient(int client_fd)
 		{
-			if (!goodPassword(client_fd))
-			{
-				std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\n";
-				sendMessagetoClient(client_fd, msg);
-				close(client_fd);
-				return ;
-			}
-
+			std::string msg = std::string(GREEN) + "ENTER THE SERVER PASSWORD: " + std::string(RESET);
+			sendMessagetoClient(client_fd, msg);
 
 			event.data.fd = client_fd;
 			event.events = EPOLLIN;
@@ -165,61 +206,42 @@ class Irc
 				perror("epoll_ctl EPOLL_CTL_ADD client soscket");
 				exit(EXIT_FAILURE);
 			}
-
-			std::string msg = "Welcome !\n";
-			sendMessagetoClient(client_fd, msg);
-
-			while (1)
-			{
-				msg = std::string(GREEN) + "ENTER YOUR NICKNAME: " + std::string(RESET);
-				sendMessagetoClient(client_fd, msg);
-				
-				msg = recvMessageFromClient(client_fd);
-				if (isNicknameAvaible(msg))
-				{
-					_client.push_back(Client(client_fd, msg));
-					std::cout << GREEN << "Client[ " << CYAN << client_fd << GREEN << " ] connected !" << RESET << std::endl;
-					break ;
-				}
-
-				msg = std::string(YELLOW) + "[" + std::string(RED) + msg\
-				+ std::string(YELLOW) + "] " + std::string(RESET)\
-				+ "Is already used by an another user :\\\n\n";
-				sendMessagetoClient(client_fd, msg);
-			}
+			_client.push_back(Client(client_fd));
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		void eraseClient(int event, int client_fd)
+		void eraseClient(Client& client)
 		{
 			for (std::size_t i = 0; i < _client.size(); i++)
-			{
-				if (client_fd == _client[i].getMySocket())
+				if (client.getMySocket() == _client[i].getMySocket())
 					_client.erase(_client.begin() + i);
-			}
-			if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, events[event].data.fd, NULL ) == -1)
+
+			if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client.getMySocket(), NULL ) == -1)
 			{
 						perror("epoll_ctl EPOLL_CTL_DEL");
 						exit(EXIT_FAILURE);			
 			}
-			std::cout << RED << "Client[ " << CYAN << client_fd << RED << " ] deconnected !" << RESET << std::endl;
-			close(client_fd);
+			std::cout << RED << "Client[ " << CYAN << client.getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
+			close(client.getMySocket());
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		bool msg(int, std::vector<std::string>);
-		bool join(int, std::vector<std::string>);
-		bool leave(int, std::vector<std::string>);
-		bool list(int, std::vector<std::string>);
-		bool nick(int, std::vector<std::string>);
-		bool quit(int, std::vector<std::string>);
-		bool who(int, std::vector<std::string>);
+		bool msg(Client&, std::vector<std::string>);
+		bool join(Client&, std::vector<std::string>);
+		bool leave(Client&, std::vector<std::string>);
+		bool list(Client&, std::vector<std::string>);
+		bool nick(Client&, std::vector<std::string>);
+		bool quit(Client&, std::vector<std::string>);
+		bool who(Client&, std::vector<std::string>);
 
-		bool execCmd(int client_fd, std::string cmd)
+		bool execCmd(Client& client , std::string cmd)
 		{
-			bool (Irc::*tab[7])(int, std::vector<std::string> ) = {&Irc::msg, &Irc::join, &Irc::leave, &Irc::list, &Irc::nick, &Irc::quit, &Irc::who};
+			if (cmd == "\n")
+				return (0);
+			cmd.erase(cmd.size() - 1);
+			bool (Irc::*tab[7])(Client&, std::vector<std::string> ) = {&Irc::msg, &Irc::join, &Irc::leave, &Irc::list, &Irc::nick, &Irc::quit, &Irc::who};
 			std::string ref[] = {"/msg", "/join", "/leave", "/list", "/nick", "/quit", "/who" };
 			std::vector<std::string> split;
 			std::stringstream ss(cmd);
@@ -231,19 +253,19 @@ class Irc
 			if (split[0][0] != '/' && std::isalnum(split[0][1]))
 			{
 				std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "Bad command format\n";
-				sendMessagetoClient(client_fd, msg);
+				sendMessagetoClient(client.getMySocket(), msg);
 				return (0);
 			}
 			for (std::size_t i = 0; i < 7 ; i++)
 			{
 				if (ref[i] == split[0])
 				{
-					(this->*(tab[i]))(client_fd, split);
+					(this->*(tab[i]))(client, split);
 					return (1);
 				}
 			}
 			std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "command not found\n";
-			sendMessagetoClient(client_fd, msg);
+			sendMessagetoClient(client.getMySocket(), msg);
 			return (0);
 		}
 
@@ -275,14 +297,13 @@ class Irc
 
 		bool isNicknameAvaible(std::string nickname)
 		{
+			if (nickname == "\n")
+				return (0);
 			for(size_t i = 0; i < _client.size(); i++)
 				if (nickname == _client[i].getMyNickname())
 					return (0);
 			return (1);
 		}
-		
-
-
 };
 
 

@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/19 18:47:13 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/26 23:50:11 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@
 class Client
 {
 	public:
-		Client(int socket, std::string nickname): _my_socket(socket), _nickname(nickname)
+		Client() {}
+
+		Client(int socket): _my_socket(socket), new_client(1)
 		{}
 
-		Client(const Client& c):_my_socket(c._my_socket), _nickname(c._nickname)
+		Client(const Client& c):_my_socket(c._my_socket), _nickname(c._nickname), new_client(c.new_client)
 		{
 			if (!c._my_chanel.empty())
 			{
@@ -34,8 +36,9 @@ class Client
 		{
 			if (this != &c)
 			{;
-				_nickname = c._nickname;
 				_my_socket = c._my_socket;
+				_nickname = c._nickname;
+				new_client = c.new_client;
 				if (!c._my_chanel.empty())
             	{
                 	_my_chanel.clear();
@@ -48,13 +51,21 @@ class Client
 		int	getMySocket() const { return (_my_socket); }
 		std::string getMyNickname() const{ return (_nickname); }
 
+		bool isNewClient() const  { return (new_client); }
+		void setStatusClient(bool status) { new_client = status; }
+
+		bool isNicknameUp() const { return (_nickname != ""); }
+		void setNickName(std::string nick) { _nickname = nick; }
+
+
 	private:
 		int							_my_socket;
 		std::string 				_nickname;
+		bool						new_client;
 		// We have to think about if it's the best way to use a map like this.
 		// Indeed a Client can have many chanel with different role,
 		std::map<int, std::string>	_my_chanel;
-		Client(){}
+		
 };
 
 #endif

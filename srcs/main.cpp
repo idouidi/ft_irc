@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/19 23:28:25 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/27 00:52:29 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,13 @@ void	sig_handler(int signal)
     }
 }
 
+void printInServer(std::string msg, Client& client)
+{
+        std::string print = (msg != "\n") ? msg.erase(msg.size() - 1) : "";
+		std::cout << MAGENTA << "Message from the client[ " << CYAN << client.getMySocket() << MAGENTA << " ]: "\
+        << YELLOW "[" << CYAN << print << YELLOW << "]" << RESET << std::endl;
+}
+
 void start_server(char *port, char *pswd)
 {
 	int 	                                new_client;
@@ -85,7 +92,7 @@ void start_server(char *port, char *pswd)
 
     irc.init_server();
 	std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION\
- - _ - _ - _ - _ -" << RESET << std::endl;
+ - _ - _ - _ - _ -\n" << RESET << std::endl;
 	while (1)
 	{
         fd_make_event = epoll_wait(irc.getEpollFd(), irc.getEventTab(),  MAX_EVENTS, -1);
@@ -106,6 +113,7 @@ void start_server(char *port, char *pswd)
             //EVENT ON A CLIENT
             else 
             {
+                Client *current_client = irc.findClient(irc.getEvent(i).data.fd);
 		        ret = read(irc.getEvent(i).data.fd, buf, BUFFER_SIZE);
                 if (ret == -1)
                 {
@@ -113,16 +121,21 @@ void start_server(char *port, char *pswd)
                     exit(EXIT_FAILURE);
                 }
                 else if (ret == 0)
-                    irc.eraseClient(i, irc.getEvent(i).data.fd);
+                    irc.eraseClient(*current_client);
                 else
                 {
-		            std::cout << MAGENTA << "Message from the client[ " << CYAN << irc.getEvent(i).data.fd << MAGENTA << " ]: "\
-                    << YELLOW << buf << RESET ;
-                    std::string s_buf = buf;
-                    if (s_buf != "\n")
+                    printInServer(std::string(buf), *current_client);
+                    if (current_client)
                     {
-                        s_buf.erase(s_buf.size() - 1);
-                        irc.execCmd(irc.getEvent(i).data.fd, s_buf);
+                        if (current_client->isNewClient())
+                        {
+                            if (irc.goodPassword(*current_client, std::string(buf)) == 0)
+                                continue ;
+                        }
+                        else if (current_client->isNicknameUp() == 0)
+                            irc.addClientNickname(*current_client, std::string(buf));
+                        else
+                            irc.execCmd(*current_client, std::string(buf));
                     }
                 }
                 memset(buf, '\0', sizeof(buf));

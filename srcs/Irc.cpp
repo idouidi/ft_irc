@@ -6,57 +6,59 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/13 20:00:40 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/26 23:08:29 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Utils.hpp"
 
 
-bool Irc::msg(int client_fd, std::vector<std::string> split_cmd)
+bool Irc::msg(Client& client, std::vector<std::string> cmd)
 {
-    (void)client_fd;
-    (void)split_cmd;
+    // code de la fonction
+    (void)client;
+    (void)cmd;
     return (1);
 }
-bool Irc::join(int client_fd, std::vector<std::string> split_cmd)
+
+bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
-    (void)client_fd;
-    (void)split_cmd;
+    (void)client;
+    (void)cmd;
     return (1);
 }
-bool Irc::leave(int client_fd, std::vector<std::string> split_cmd)
+bool Irc::leave(Client& client, std::vector<std::string> cmd)
 {
-    (void)client_fd;
-    (void)split_cmd;
+    (void)client;
+    (void)cmd;
     return (1);
 }
-bool Irc::list(int client_fd, std::vector<std::string> split_cmd)
+bool Irc::list(Client& client, std::vector<std::string> cmd)
 {
-    (void)client_fd;
-    (void)split_cmd;
+    (void)client;
+    (void)cmd;
     return (1);
 }
-bool Irc::nick(int client_fd, std::vector<std::string> split_cmd)
+bool Irc::nick(Client& client, std::vector<std::string> cmd)
 {
-    (void)client_fd;
-    (void)split_cmd;
+    (void)client;
+    (void)cmd;
     return (1);
 }
-bool Irc::quit(int client_fd, std::vector<std::string> split_cmd)
+bool Irc::quit(Client& client, std::vector<std::string> cmd)
 {
     
-    if (split_cmd.size() > 1)
+    if (cmd.size() > 1)
     {
         std::cout << RED << "error: " << RESET << "Usage: /quit" << std::endl;
         return (0);
     }
-    Irc::eraseClient(0, client_fd);
+    Irc::eraseClient(client);
     return (1);
 }
-bool Irc::who(int client_fd, std::vector<std::string> split_cmd)
+bool Irc::who(Client& client, std::vector<std::string> cmd)
 {
-    (void)client_fd;
-    (void)split_cmd;
+    (void)client;
+    (void)cmd;
     return (1);
 }
