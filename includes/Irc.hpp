@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/27 00:34:54 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/27 16:50:33 by othabchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,6 @@ class Irc
 					sendMessagetoClient(client.getMySocket(), msg);
 					client.setStatusClient(false);
 					return (1);
-
 				}
 			}
 			msg  = std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\n";
@@ -185,7 +184,6 @@ class Irc
 				else
 					msg = std::string(YELLOW) + "[" + std::string(RED) + nickname + std::string(YELLOW) + "] " + std::string(RESET) \
 					+ "is already used by an another user :\\\n\n";
-
 			}
 			sendMessagetoClient(client.getMySocket(), msg);
 			msg = std::string(GREEN) + "ENTER YOUR NICKNAME: " + std::string(RESET);
@@ -214,16 +212,20 @@ class Irc
 		void eraseClient(Client& client)
 		{
 			for (std::size_t i = 0; i < _client.size(); i++)
-				if (client.getMySocket() == _client[i].getMySocket())
-					_client.erase(_client.begin() + i);
-
-			if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client.getMySocket(), NULL ) == -1)
 			{
-						perror("epoll_ctl EPOLL_CTL_DEL");
-						exit(EXIT_FAILURE);			
+
+				if (client.getMySocket() == _client[i].getMySocket())
+				{
+					if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client.getMySocket(), NULL ) == -1)
+					{
+								perror("epoll_ctl EPOLL_CTL_DEL");
+								exit(EXIT_FAILURE);			
+					}
+					std::cout << RED << "Client[ " << CYAN << client.getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
+					close(client.getMySocket());
+					_client.erase(_client.begin() + i);
+				}
 			}
-			std::cout << RED << "Client[ " << CYAN << client.getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
-			close(client.getMySocket());
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/

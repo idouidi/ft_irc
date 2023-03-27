@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/26 23:50:11 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/27 16:50:22 by othabchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 class Client
 {
 	public:
-		Client() {}
 
 		Client(int socket): _my_socket(socket), new_client(1)
 		{}
@@ -64,7 +63,8 @@ class Client
 		bool						new_client;
 		// We have to think about if it's the best way to use a map like this.
 		// Indeed a Client can have many chanel with different role,
-		std::map<int, std::string>	_my_chanel;
+		std::map<int, int>			_my_chanel;
+		
 		
 };
 

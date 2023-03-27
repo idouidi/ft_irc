@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/27 00:52:29 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/27 16:08:59 by othabchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,16 +63,16 @@ bool check_pswd(std::string pswd)
 	}
 }
 
-void	sig_handler(int signal)
-{
-	if (signal == 2)
-    {
+// void	sig_handler(int signal)
+// {
+// 	if (signal == 2)
+//     {
 
-        std::cout << "NEED TO FIXE SIGNAL" << std::endl;
-        exit(1);
-        return ;
-    }
-}
+//         std::cout << "NEED TO FIXE SIGNAL" << std::endl;
+//         exit(1);
+//         return ;
+//     }
+// }
 
 void printInServer(std::string msg, Client& client)
 {
@@ -121,7 +121,7 @@ void start_server(char *port, char *pswd)
                     exit(EXIT_FAILURE);
                 }
                 else if (ret == 0)
-                    irc.eraseClient(*current_client);
+                        irc.eraseClient(*current_client);
                 else
                 {
                     printInServer(std::string(buf), *current_client);
@@ -154,7 +154,7 @@ int	main(int ac , char *av[])
 	}
 	else if (!check_port(av[1]) || !check_pswd(av[2]))
 		return (1);
-    signal(SIGINT, sig_handler);;
+    // signal(SIGINT, sig_handler);
 	try
     {
         start_server(av[1], av[2]);
