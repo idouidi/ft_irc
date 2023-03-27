@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/27 16:08:59 by othabchi         ###   ########.fr       */
+/*   Updated: 2023/03/27 19:08:42 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,7 @@ void start_server(char *port, char *pswd)
                     printInServer(std::string(buf), *current_client);
                     if (current_client)
                     {
+                        irc.sendMessagetoClient(current_client->getMySocket(), "$> ");
                         if (current_client->isNewClient())
                         {
                             if (irc.goodPassword(*current_client, std::string(buf)) == 0)
