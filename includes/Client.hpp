@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/27 16:50:22 by othabchi         ###   ########.fr       */
+/*   Updated: 2023/03/28 00:19:48 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ class Client
 		void setStatusClient(bool status) { new_client = status; }
 
 		bool isNicknameUp() const { return (_nickname != ""); }
-		void setNickName(std::string nick) { _nickname = nick; }
+		void setNickName(std::string nick) { _nickname.assign(nick); }
 
 
 	private:

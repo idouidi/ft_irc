@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/27 19:08:42 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/28 00:37:08 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void start_server(char *port, char *pswd)
 
     irc.init_server();
 	std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION\
- - _ - _ - _ - _ -\n" << RESET << std::endl;
+ - _ - _ - _ - _ -" << RESET << std::endl;
 	while (1)
 	{
         fd_make_event = epoll_wait(irc.getEpollFd(), irc.getEventTab(),  MAX_EVENTS, -1);

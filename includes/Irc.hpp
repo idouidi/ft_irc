@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/27 16:50:33 by othabchi         ###   ########.fr       */
+/*   Updated: 2023/03/27 23:54:23 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,13 +213,12 @@ class Irc
 		{
 			for (std::size_t i = 0; i < _client.size(); i++)
 			{
-
 				if (client.getMySocket() == _client[i].getMySocket())
 				{
 					if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client.getMySocket(), NULL ) == -1)
 					{
-								perror("epoll_ctl EPOLL_CTL_DEL");
-								exit(EXIT_FAILURE);			
+						perror("epoll_ctl EPOLL_CTL_DEL");
+						exit(EXIT_FAILURE);			
 					}
 					std::cout << RED << "Client[ " << CYAN << client.getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
 					close(client.getMySocket());
@@ -254,7 +253,7 @@ class Irc
 
 			if (split[0][0] != '/' && std::isalnum(split[0][1]))
 			{
-				std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "Bad command format\n";
+				std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "Invalid command format\n";
 				sendMessagetoClient(client.getMySocket(), msg);
 				return (0);
 			}
@@ -272,7 +271,7 @@ class Irc
 		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-		
+
 		void closeServer()
 		{
 			while(!_client.empty())
@@ -287,13 +286,13 @@ class Irc
 	
 	private:
 		int										server_fd;
-		std::string 							server_pswd;
 		int										epoll_fd;
 		struct epoll_event						event;
 		struct epoll_event						events[MAX_EVENTS];
 		struct sockaddr_in 						server_addr;
 		std::vector<int> 						_chanel;
 		std::vector<Client>						_client;
+		std::string 							server_pswd;
 
 		Irc() {}
 
