@@ -6,14 +6,14 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/27 23:54:23 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/30 19:23:54 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __IRC_HPP__
 #define __IRC_HPP__
 
-# include "Utils.hpp"
+# include "Control.hpp"
 
 class Irc
 {
@@ -26,23 +26,23 @@ class Irc
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		Irc(char *port, char *pswd)
+	Irc(char *port, char *pswd)
+	{
+		if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
 		{
-			if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-			{
-				perror("socket");
-				throw std::runtime_error("Error when creating the socket");
-			}
-			server_pswd = pswd;
-			epoll_fd = -1;
-			memset(&event, 0, sizeof(event));
-			server_addr.sin_family = AF_INET;
-			server_addr.sin_addr.s_addr = INADDR_ANY;
-			server_addr.sin_port = htons(std::atoi(port));
-			memset(server_addr.sin_zero, '\0', sizeof(server_addr.sin_zero));
+			perror("socket");
+			throw std::runtime_error("Error when creating the socket");
 		}
+		server_pswd = pswd;
+		epoll_fd = -1;
+		memset(&event, 0, sizeof(event));
+		server_addr.sin_family = AF_INET;
+		server_addr.sin_addr.s_addr = INADDR_ANY;
+		server_addr.sin_port = htons(std::atoi(port));
+		memset(server_addr.sin_zero, '\0', sizeof(server_addr.sin_zero));
+	}
 
-		~Irc() { closeServer(); }
+	~Irc() { closeServer(); }
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
@@ -52,13 +52,13 @@ class Irc
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		int getServerFd() const { return (server_fd); }
+	int getServerFd() const { return (server_fd); }
 		
-		int getEpollFd() const { return (epoll_fd); }
+	int getEpollFd() const { return (epoll_fd); }
 		
-		struct epoll_event getEvent(int i) const { return (events[i]); } 
+	struct epoll_event getEvent(int i) const { return (events[i]); } 
 		
-		struct epoll_event* getEventTab() { return (events); } 
+	struct epoll_event* getEventTab() { return (events); } 
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
@@ -68,91 +68,153 @@ class Irc
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	
-		void init_server()
+	void init_server()
+	{
+		if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0 )
 		{
-			if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0 )
-			{
-				perror("bind");
-				exit(EXIT_FAILURE);
-			}
-			if (listen(server_fd, MAX_CLIENT) < 0)
-			{
-				perror("listen");
-				throw std::runtime_error("Error when listening to the socket");
-			}
-			if ((epoll_fd = epoll_create(MAX_CLIENT)) == -1 )
-			{
-				perror("epoll_create");
-				exit(EXIT_FAILURE);
-			}
-
-			event.data.fd = server_fd;
-			event.events = EPOLLIN; //data can be read from a fd (server_fd) monitored by epoll 
-			if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &event) == -1 )
-			{
-				perror("epoll_ctl EPOLL_CTL_ADD server soscket");
-				exit(EXIT_FAILURE);
-			}
+			perror("bind");
+			exit(EXIT_FAILURE);
 		}
+		if (listen(server_fd, MAX_CLIENT) < 0)
+		{
+			perror("listen");
+			throw std::runtime_error("Error when listening to the socket");
+		}
+		if ((epoll_fd = epoll_create(MAX_CLIENT)) == -1 )
+		{
+			perror("epoll_create");
+			exit(EXIT_FAILURE);
+		}
+
+		event.data.fd = server_fd;
+		event.events = EPOLLIN; //data can be read from a fd (server_fd) monitored by epoll 
+		if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &event) == -1 )
+		{
+			perror("epoll_ctl EPOLL_CTL_ADD server soscket");
+			exit(EXIT_FAILURE);
+		}
+	}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		void sendMessagetoClient(int client_fd, std::string msg)
+	void addClient(int client_fd)
+	{
+		event.data.fd = client_fd;
+		event.events = EPOLLIN;
+		if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1 )
 		{
-			int			bytes_sent;
-			int 		len = msg.size();
-
-			if ((bytes_sent = send(client_fd, msg.c_str(), len, 0 )) != len)
-			{
-				perror("send failed");
-				throw std::runtime_error("Error when sending a message to the client");
-			}
+			perror("epoll_ctl EPOLL_CTL_ADD client soscket");
+			exit(EXIT_FAILURE);
 		}
+		_client.push_back(Client(client_fd));
+	}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		std::string recvMessageFromClient(int client_fd)
+	void eraseClient(Client& client)
+	{
+		for (std::size_t i = 0; i < _client.size(); i++)
 		{
-			int			bytes_recv;
-			char		buf[BUFFER_SIZE] = {0};
-			std::string s_buf;
-
-			if ((bytes_recv = recv(client_fd, buf, BUFFER_SIZE, 0 )) < 0)
+			if (client.getMySocket() == _client[i].getMySocket())
 			{
-				perror("recv failed");
-				throw std::runtime_error("Error when receving a message to the client");
-			}
-			if (buf[0])
-			{
-            	s_buf = buf;
-            	s_buf.erase(s_buf.size() - 1);
-			}
-			else
-				return ("");
-			return (s_buf);
-		}
-
-		bool goodPassword(Client& client, std::string pswd)
-		{
-			std::string msg;
-			if (pswd != "\n")
-			{
-				pswd.erase(pswd.size() - 1);
-				if (pswd == server_pswd)
+				if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client.getMySocket(), NULL ) == -1)
 				{
-					msg = std::string(CYAN) +  "Welcome !\n" + std::string(RESET);
-					sendMessagetoClient(client.getMySocket(), msg);
-					msg = std::string(GREEN) + "ENTER YOUR NICKNAME: " + std::string(RESET);
-					sendMessagetoClient(client.getMySocket(), msg);
-					client.setStatusClient(false);
-					return (1);
+					perror("epoll_ctl EPOLL_CTL_DEL");
+					exit(EXIT_FAILURE);			
 				}
+				std::cout << RED << "Client[ " << CYAN << client.getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
+				close(client.getMySocket());
+				_client.erase(_client.begin() + i);
 			}
-			msg  = std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\n";
-			sendMessagetoClient(client.getMySocket(), msg);
-			eraseClient(client);
-			return (0);
 		}
+	}
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+
+	bool parsInfo(Client& client, std::vector<std::string> cmd)
+	{
+		(void)client;
+		std::size_t position;
+
+		position = cmd[1].find("PASS");
+		if (position + 5 != std::string::npos)
+		{
+			std::string expression(cmd[1], 5, std::string::npos);
+			std::cout << "exp = [" << expression << "]" << std::endl; 
+			if (expression != server_pswd)
+			{
+				std::cout << "cmd[1] is " << cmd[1] << " | ["<< expression << "] is the wrong password" << std::endl;
+				return (false);
+			}
+		}
+		else
+			return (false);
+		std::string nick(cmd[2], 5, std::string::npos);
+		client.setNickName(nick);
+		client.setStatusClient(0);
+		sendMessagetoClient(RPL_WELCOME(client.getMyNickname()));
+		sendMessagetoClient(RPL_YOURHOST(client.getMyNickname(), "my.server.name"));
+		sendMessagetoClient(RPL_CREATED(client.getMyNickname(), /*DATE*/));
+		sendMessagetoClient(RPL_MYINFO(client.getMyNickname(), "my.server.name", "avaible"));
+		return (true);
+	}
+
+
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+	void sendMessagetoClient(int client_fd, std::string msg)
+	{
+		int			bytes_sent;
+		int 		len = msg.size();
+
+		if ((bytes_sent = send(client_fd, msg.c_str(), len, 0 )) != len)
+		{
+			perror("send failed");
+			throw std::runtime_error("Error when sending a message to the client");
+		}
+	}
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+	std::string recvMessageFromClient(int client_fd)
+	{
+		int			bytes_recv;
+		char		buf[BUFFER_SIZE] = {0};
+		std::string s_buf;
+		if ((bytes_recv = recv(client_fd, buf, BUFFER_SIZE, 0 )) < 0)
+		{
+			perror("recv failed");
+			throw std::runtime_error("Error when receving a message to the client");
+		}
+		if (buf[0])
+		{
+        	s_buf = buf;
+        	s_buf.erase(s_buf.size() - 1);
+		}
+		else
+			return ("");
+		return (s_buf);
+		}
+
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+	bool goodPassword(Client& client, std::string pswd)
+	{
+		std::string msg;
+		if (pswd != "\n")
+		{
+			pswd.erase(pswd.size() - 1);
+			if (pswd == server_pswd)
+			{
+				return (1);
+			}
+		}
+		msg  = std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\n";
+		sendMessagetoClient(client.getMySocket(), msg);
+		eraseClient(client);
+		return (0);
+	}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 		Client* findClient(int fd_client)
@@ -167,65 +229,13 @@ class Irc
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		void addClientNickname(Client& client, std::string nickname)
-		{
-			std::string msg;
-			if (nickname == "\n")
-				msg =  std::string(RED) + "Error: " +  std::string(RESET) + "nickname can't be empty !\n";
-			else
-			{
-				nickname.erase(nickname.size() - 1);
-				if (isNicknameAvaible(nickname))
-				{
-					client.setNickName(nickname);
-					std::cout << GREEN << "Client[ " << CYAN << client.getMySocket() << GREEN << " ] is connected !" << RESET << std::endl;
-					return ;
-				}
-				else
-					msg = std::string(YELLOW) + "[" + std::string(RED) + nickname + std::string(YELLOW) + "] " + std::string(RESET) \
-					+ "is already used by an another user :\\\n\n";
-			}
-			sendMessagetoClient(client.getMySocket(), msg);
-			msg = std::string(GREEN) + "ENTER YOUR NICKNAME: " + std::string(RESET);
-			sendMessagetoClient(client.getMySocket(), msg);
-		}
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 		
-		void addClient(int client_fd)
-		{
-			std::string msg = std::string(GREEN) + "ENTER THE SERVER PASSWORD: " + std::string(RESET);
-			sendMessagetoClient(client_fd, msg);
 
-			event.data.fd = client_fd;
-			event.events = EPOLLIN;
-
-			if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1 )
-			{
-				perror("epoll_ctl EPOLL_CTL_ADD client soscket");
-				exit(EXIT_FAILURE);
-			}
-			_client.push_back(Client(client_fd));
-		}
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		void eraseClient(Client& client)
-		{
-			for (std::size_t i = 0; i < _client.size(); i++)
-			{
-				if (client.getMySocket() == _client[i].getMySocket())
-				{
-					if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client.getMySocket(), NULL ) == -1)
-					{
-						perror("epoll_ctl EPOLL_CTL_DEL");
-						exit(EXIT_FAILURE);			
-					}
-					std::cout << RED << "Client[ " << CYAN << client.getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
-					close(client.getMySocket());
-					_client.erase(_client.begin() + i);
-				}
-			}
-		}
+
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
@@ -247,7 +257,7 @@ class Irc
 			std::vector<std::string> split;
 			std::stringstream ss(cmd);
 			std::string sub_string;
-			
+
 			while (std::getline(ss, sub_string, ' '))
 				split.push_back(sub_string);
 

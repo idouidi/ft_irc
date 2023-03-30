@@ -6,14 +6,14 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/28 00:19:48 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/30 16:04:03 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __CLIENT_HPP__
 # define __CLIENT_HPP__
 
-#include "Utils.hpp"
+#include "Control.hpp"
 
 class Client
 {

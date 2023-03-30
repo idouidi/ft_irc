@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Utils.hpp                                          :+:      :+:    :+:   */
+/*   Control.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/19 17:25:12 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/30 19:08:30 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,10 @@
 # include <exception>
 // #include <sys/socket.h>
 
+/*
+*   /RMRECONNS  Irssi: Removed reconnection to server localhost port XXXX
+    to avoid irssi to retest this port when an error appear
+*/
 
 # define RESET	            "\033[0m"
 # define BLACK	            "\033[1;30m"
@@ -44,6 +48,7 @@
 # define MAX_EVENTS         10
 # define BUFFER_SIZE        1024
 
+# include "Numeric_rpl.hpp"
 # include "Client.hpp"
 # include "Irc.hpp"
 

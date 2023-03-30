@@ -6,11 +6,11 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/28 01:07:43 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/03/30 16:04:20 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Utils.hpp"
+#include "../includes/Control.hpp"
 
 
 bool Irc::msg(Client& client, std::vector<std::string> cmd)
