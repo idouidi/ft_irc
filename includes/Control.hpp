@@ -26,6 +26,7 @@
 # include <vector>
 # include <map>
 # include <exception>
+# include <fcntl.h>
 // #include <sys/socket.h>
 
 /*

@@ -110,7 +110,6 @@ void start_server(char *port, char *pswd)
 	struct                                  sockaddr_in client_addr;
 	Irc                                     irc(port, pswd);
 
-	irc.init_server();
 	std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION\
  - _ - _ - _ - _ -" << RESET << std::endl;
 	while (1)
