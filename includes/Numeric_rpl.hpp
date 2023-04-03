@@ -36,7 +36,25 @@
 // PASS
 # define ERR_PASSWDMISMATCH(nickname) (":localhost 464 " + nickname + " :Password incorrect.\r\n")
 
-// NICK 
-# define RPL_NICK(oclient, uclient, client) (":" + oclient + "!" + uclient + "@localhost NICK " +  client + "\r\n")
+// MISS PARAMS
+# define ERR_NEEDMOREPARAMS(nickname, cmd) (":localhost 461 " + nickname + " " + cmd + ":Not enough parameters\r\n")
+
+
+/*
+*  NICK
+*/
+# define ERR_NOSUCHNICK(nickname, oher_nickname) (":localhost 401 " + nickname + " " + other_nickname + ":No such nick\r\n")
+# define ERR_WASNOSUCHNICK(nickname, other_nickname) (":localhost 406 " + nickname + " " + other_nickname + " :There was no such nickname\r\n")
+# define ERR_NICKNAMEINUSE(nickname) (":localhost 433 * " + nickname + ":Nickname is already in use\r\n")
+
+
+/*
+*  WHO
+*/
+# define RPL_WHOISUSER(nickname, username) (":localhost 311 " + nickname + " " + nickname + "~" + username + " localhost * :" + username + "\r\n")
+# define RPL_WHOISSERVER(nickname) (":localhost 312 " + nickname + " " + nickname + " localhost :<insert catchy phrase here>\r\n")
+# define RPL_WHOISIDLE(nickname, create_time) (":localhost 317 " + nickname + " " + nickname + " " + create_time + " :second idle, signon time\r\n")
+# define RPL_ENDOFWHOIS(ninckname) (":localhost 318 " + nickname + " " + nickname + " :End of /WHOIS list.\r\n")
+# define RPL_ENDOFWHOWAS(nickname, other_nickname) (":localhost 369 " + nickname + " " + other_nickname + " :End of WHOWAS\r\n")
 
 #endif

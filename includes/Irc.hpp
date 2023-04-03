@@ -78,9 +78,8 @@ class Irc
 	std::string recvMessageFromClient(int client_fd);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-
 	Client* findClient(int fd_client);
+	Client* findClient(std::string nick);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 		bool msg(Client&, std::vector<std::string>);
@@ -90,7 +89,8 @@ class Irc
 		bool nick(Client&, std::vector<std::string>);
 		bool quit(Client&, std::vector<std::string>);
 		bool who(Client&, std::vector<std::string>);
-		bool ping(Client& , std::vector<std::string>);
+		bool whois(Client&, std::vector<std::string>);
+		bool ping(Client&, std::vector<std::string>);
 
 		bool execCmd(Client& client , std::vector<std::string>);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
