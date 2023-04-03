@@ -65,14 +65,11 @@ class Irc
 	bool parsInfo(Client& client, std::vector<std::string> cmd);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-	bool goodPassword(Client& client, std::string pswd);
-/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-
 	void setClientMode(Client& client, char mode);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 
-	void sendMessagetoClient(int client_fd, std::string msg);
+	void sendMessagetoClient(Client& client, std::string msg);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 	std::string recvMessageFromClient(int client_fd);
@@ -82,35 +79,37 @@ class Irc
 	Client* findClient(std::string nick);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		bool msg(Client&, std::vector<std::string>);
-		bool join(Client&, std::vector<std::string>);
-		bool leave(Client&, std::vector<std::string>);
-		bool list(Client&, std::vector<std::string>);
-		bool nick(Client&, std::vector<std::string>);
-		bool quit(Client&, std::vector<std::string>);
-		bool who(Client&, std::vector<std::string>);
-		bool whois(Client&, std::vector<std::string>);
-		bool ping(Client&, std::vector<std::string>);
+	bool msg(Client&, std::vector<std::string>);
+	bool join(Client&, std::vector<std::string>);
+	bool leave(Client&, std::vector<std::string>);
+	bool list(Client&, std::vector<std::string>);
+	bool nick(Client&, std::vector<std::string>);
+	bool quit(Client&, std::vector<std::string>);
+	bool who(Client&, std::vector<std::string>);
+	bool whois(Client&, std::vector<std::string>);
+	bool ping(Client&, std::vector<std::string>);
 
-		bool execCmd(Client& client , std::vector<std::string>);
+	bool execCmd(Client& client , std::vector<std::string>);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-		void closeServer();
+	void closeServer();
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	
 	private:
-		int										server_fd;
-		int										epoll_fd;
-		struct epoll_event						event;
-		struct epoll_event						events[MAX_EVENTS];
-		struct sockaddr_in 						server_addr;
-		std::vector<int> 						_chanel;
-		std::vector<Client>						_client;
-		std::string 							server_pswd;
+	int										server_fd;
+	int										epoll_fd;
+	struct epoll_event						event;
+	struct epoll_event						events[MAX_EVENTS];
+	struct sockaddr_in 						server_addr;
+	std::vector<int> 						_chanel;
+	std::vector<Client>						_client;
+	std::string 							server_pswd;
 
-		Irc() {}
+	Irc() {}
 
-		bool isNicknameAvaible(std::string nickname);
+	bool goodPassword(Client& client, std::string pswd);
+	bool isNicknameAvaible(std::string nickname);
+	std::string clientLastActiveTime(Client& client);
 		
 };
 
