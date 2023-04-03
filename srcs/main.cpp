@@ -63,22 +63,22 @@ bool check_pswd(std::string pswd)
 	}
 }
 
-// void	sig_handler(int signal)
-// {
-// 	if (signal == 2)
-//     {
+std::string getDateTime() 
+{
+    time_t currentTime;
+    struct tm *localTime;
+    char dateTime[80];
 
-//         std::cout << "NEED TO FIXE SIGNAL" << std::endl;
-//         exit(1);
-//         return ;
-//     }
-// }
+    currentTime = time(NULL);
+    localTime = localtime(&currentTime);
+    strftime(dateTime, 80, "%Y-%m-%d %H:%M:%S", localTime);
+    return (std::string(dateTime) + " GMT");
+}
 
 void printInServer(std::string msg, Client& client)
 {
-		// std::string print = msg.erase(msg.size() - 1);
-		std::cout << MAGENTA << "Message from the client[ " << CYAN << client.getMySocket() << MAGENTA << " ]: "\
-		<< YELLOW "[" << CYAN << msg << YELLOW << "]" << RESET << std::endl;
+	std::cout << MAGENTA << "Message from the client[ " << CYAN << client.getMySocket() << MAGENTA << " ]: "\
+	<< YELLOW "[" << CYAN << msg.substr(0, msg.size()- 2) << YELLOW << "]" << RESET << std::endl;
 }
 
 std::vector<std::string> split(std::string str, const std::string charset) {
@@ -142,22 +142,22 @@ void start_server(char *port, char *pswd)
 				}
 				else if (ret == 0)
 						irc.eraseClient(*current_client);
-					
 				else
 				{
 					printInServer(std::string(buf), *current_client);
-
-					std::vector<std::string> cmd = split(std::string(buf), "\n\r");
-
-					for (size_t i = 0; i != cmd.size(); i++)
-						std::cout << "cmd[i] = " << "[" << cmd[i] << "]" << std::endl; 
+					std::vector<std::string> cmd = split(std::string(buf), " \n\r");
 					if (current_client->isNewClient())
 					{
-						if ((irc.goodInfo(*current_client, cmd)) == 0)
+						if ((irc.parsInfo(*current_client, cmd)) == 0)
+						{
+							irc.eraseClient(*current_client);
 							continue ;
-					}
-					else
-						irc.execCmd(*current_client, std::string(buf));
+						}
+				}
+				else if (current_client->isUserModeUp() != 0)
+					irc.setClientMode(*current_client, 'i');
+				else
+					irc.execCmd(*current_client, cmd);
 				}
 				memset(buf, '\0', sizeof(buf));
 			}

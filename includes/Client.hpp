@@ -19,15 +19,15 @@ class Client
 {
 	public:
 
-		Client(int socket): _my_socket(socket), new_client(1)
+		Client(int socket): my_socket(socket), new_client(1), user_mode(0)
 		{}
 
-		Client(const Client& c):_my_socket(c._my_socket), _nickname(c._nickname), new_client(c.new_client)
+		Client(const Client& c):my_socket(c.my_socket), nickname(c.nickname), new_client(c.new_client), user_mode(c.user_mode)
 		{
-			if (!c._my_chanel.empty())
+			if (!c.my_chanel.empty())
 			{
-				_my_chanel.clear();
-				_my_chanel.insert(c._my_chanel.begin(), c._my_chanel.end());
+				my_chanel.clear();
+				my_chanel.insert(c.my_chanel.begin(), c.my_chanel.end());
 			}
 		}
 
@@ -35,35 +35,41 @@ class Client
 		{
 			if (this != &c)
 			{;
-				_my_socket = c._my_socket;
-				_nickname = c._nickname;
+				my_socket = c.my_socket;
+				nickname = c.nickname;
 				new_client = c.new_client;
-				if (!c._my_chanel.empty())
+				user_mode = c.user_mode;
+				if (!c.my_chanel.empty())
             	{
-                	_my_chanel.clear();
-                	_my_chanel.insert(c._my_chanel.begin(), c._my_chanel.end());
+                	my_chanel.clear();
+                	my_chanel.insert(c.my_chanel.begin(), c.my_chanel.end());
             	}
 			}
 			return (*this);
 		}
 
-		int	getMySocket() const { return (_my_socket); }
-		std::string getMyNickname() const{ return (_nickname); }
+		int	getMySocket() const { return (my_socket); }
+		std::string getMyNickname() const { return (nickname); }
+		std::string getMyUserName() const { return (username); }
+		char getMyUserMode() const { return (user_mode); }
+		
+		void setStatusClient(bool status) { new_client = status; }
+		void setNickName(std::string nick) { nickname.assign(nick); }
+		void setUserName(std::string user) { username.assign(user); }
+		void setUserMode(char mode) { user_mode = mode; }
 
 		bool isNewClient() const  { return (new_client); }
-		void setStatusClient(bool status) { new_client = status; }
-
-		bool isNicknameUp() const { return (_nickname != ""); }
-		void setNickName(std::string nick) { _nickname.assign(nick); }
-
+		bool isUserModeUp() const { return (user_mode == 0);  }
 
 	private:
-		int							_my_socket;
-		std::string 				_nickname;
+		int							my_socket;
+		std::string 				nickname;
+		std::string					username;
 		bool						new_client;
+		char						user_mode;
 		// We have to think about if it's the best way to use a map like this.
 		// Indeed a Client can have many chanel with different role,
-		std::map<int, int>			_my_chanel;
+		std::map<int, int>			my_chanel;
 		
 		
 };

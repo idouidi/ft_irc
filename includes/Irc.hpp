@@ -44,8 +44,7 @@ class Irc
 		
 	struct epoll_event getEvent(int i) const;
 		
-	struct epoll_event* getEventTab(); 
-
+	struct epoll_event* getEventTab();
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 		/*	
@@ -55,46 +54,33 @@ class Irc
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	
 	void init_server();
-
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-
+	
 	void addClient(int client_fd);
-
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-
+	
 	void eraseClient(Client& client);
-
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-
 
 	bool parsInfo(Client& client, std::vector<std::string> cmd);
-
-
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+	bool goodPassword(Client& client, std::string pswd);
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+	void setClientMode(Client& client, char mode);
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
 
 	void sendMessagetoClient(int client_fd, std::string msg);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 	std::string recvMessageFromClient(int client_fd);
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-	bool goodPassword(Client& client, std::string pswd);
-
-
-/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	Client* findClient(int fd_client);
-
-/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-
-/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-		
-
-
-/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
-
-
-
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 		bool msg(Client&, std::vector<std::string>);
@@ -104,13 +90,12 @@ class Irc
 		bool nick(Client&, std::vector<std::string>);
 		bool quit(Client&, std::vector<std::string>);
 		bool who(Client&, std::vector<std::string>);
+		bool ping(Client& , std::vector<std::string>);
 
-		bool execCmd(Client& client , std::string cmd);
-
+		bool execCmd(Client& client , std::vector<std::string>);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 		void closeServer();
-
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	
 	private:

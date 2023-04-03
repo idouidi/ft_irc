@@ -49,9 +49,13 @@
 # define MAX_EVENTS         10
 # define BUFFER_SIZE        1024
 
+std::string getDateTime();
+
 # include "Numeric_rpl.hpp"
 # include "Client.hpp"
 # include "Irc.hpp"
+
+
 
 #endif
 

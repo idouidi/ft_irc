@@ -120,35 +120,6 @@ void     Irc::eraseClient(Client& client)
     }
 }
 
-bool Irc::parsInfo(Client& client, std::vector<std::string> cmd)
-{
-    (void)client;
-    std::size_t position;
-
-    position = cmd[1].find("PASS");
-    if (position + 5 != std::string::npos)
-    {
-        std::string expression(cmd[1], 5, std::string::npos);
-        std::cout << "exp = [" << expression << "]" << std::endl; 
-        if (expression != server_pswd)
-        {
-            std::cout << "cmd[1] is " << cmd[1] << " | ["<< expression << "] is the wrong password" << std::endl;
-            return (false);
-        }
-    }
-    else
-        return (false);
-    std::string nick(cmd[2], 5, std::string::npos);
-    client.setNickName(nick);
-    client.setStatusClient(0);
-    sendMessagetoClient(RPL_WELCOME(client.getMyNickname()));
-    sendMessagetoClient(RPL_YOURHOST(client.getMyNickname(), "my.server.name"));
-    sendMessagetoClient(RPL_CREATED(client.getMyNickname(), "today"));
-    sendMessagetoClient(RPL_MYINFO(client.getMyNickname(), "my.server.name", "1.0", "avaible"));
-    return (true);
-}
-
-
 void        Irc::sendMessagetoClient(int client_fd, std::string msg)
 {
     int			bytes_sent;
@@ -181,22 +152,62 @@ std::string     Irc::recvMessageFromClient(int client_fd)
     return (s_buf);
 }
 
-
 bool        Irc::goodPassword(Client& client, std::string pswd)
 {
     std::string msg;
-    if (pswd != "\n")
-    {
-        pswd.erase(pswd.size() - 1);
-        if (pswd == server_pswd)
-        {
+
+    if (pswd == server_pswd)
             return (1);
-        }
-    }
     msg  = std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\n";
     sendMessagetoClient(client.getMySocket(), msg);
-    eraseClient(client);
     return (0);
+}
+
+bool Irc::isNicknameAvaible(std::string nickname)
+{
+    for(size_t i = 0; i < _client.size(); i++)
+        if (nickname == _client[i].getMyNickname())
+            return (0);
+    return (1);
+}
+
+bool Irc::parsInfo(Client& client, std::vector<std::string> info)
+{
+    std::string msg;
+
+    if (info[2] == "PASS")
+    {
+        std::string pswd(info[3]);
+        if (goodPassword(client, pswd) == false)
+            return (false);
+    }
+    else
+    {
+        msg = std::string(RED) + "Error: " + "No password has been entered!\n";
+        sendMessagetoClient(client.getMySocket(), msg);
+        return (false);
+    }
+    std::string nick(info[5]);
+    if (isNicknameAvaible(nick) == 0)
+        nick.push_back('_');
+    client.setNickName(nick);
+
+    std::string user(info[7]);
+    client.setUserName(user);
+
+    client.setStatusClient(0);
+
+    sendMessagetoClient(client.getMySocket(), RPL_WELCOME(client.getMyNickname()) + \
+     RPL_YOURHOST(client.getMyNickname(), "Les Oubliés 1.0.0")+ \
+     RPL_CREATED(client.getMyNickname(), getDateTime())+ \
+     RPL_MYINFO(client.getMyNickname(), "Les Oubliés 1.0.0"));
+    return (true);
+}
+
+void Irc::setClientMode(Client& client, char mode)
+{
+    client.setUserMode(mode);
+    sendMessagetoClient(client.getMySocket(), RPL_MODE(client.getMyNickname(), client.getMyUserName(), client.getMyUserMode()));
 }
 
 Client*     Irc::findClient(int fd_client)
@@ -209,31 +220,17 @@ Client*     Irc::findClient(int fd_client)
     return NULL;
 }
 
-bool        Irc::execCmd(Client& client , std::string cmd)
+bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
 {
-    if (cmd == "\n")
-        return (0);
-    cmd.erase(cmd.size() - 1);
-    bool (Irc::*tab[7])(Client&, std::vector<std::string> ) = {&Irc::msg, &Irc::join, &Irc::leave, &Irc::list, &Irc::nick, &Irc::quit, &Irc::who};
-    std::string ref[] = {"/msg", "/join", "/leave", "/list", "/nick", "/quit", "/who" };
-    std::vector<std::string> split;
-    std::stringstream ss(cmd);
-    std::string sub_string;
+    bool (Irc::*tab[8])(Client&, std::vector<std::string> ) = {&Irc::msg, &Irc::join, &Irc::leave, &Irc::list, &Irc::nick, &Irc::quit, &Irc::who, &Irc::ping};
+    std::string ref[] = {"/msg", "/join", "/leave", "/list", "/nick", "/quit", "/who", "PING"};
 
-    while (std::getline(ss, sub_string, ' '))
-        split.push_back(sub_string);
-
-    if (split[0][0] != '/' && std::isalnum(split[0][1]))
+    std::cout << "cmd = " << cmd[0] << std::endl;
+    for (std::size_t i = 0; i < 8 ; i++)
     {
-        std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "Invalid command format\n";
-        sendMessagetoClient(client.getMySocket(), msg);
-        return (0);
-    }
-    for (std::size_t i = 0; i < 7 ; i++)
-    {
-        if (ref[i] == split[0])
+        if (ref[i] == cmd[0])
         {
-            (this->*(tab[i]))(client, split);
+            (this->*(tab[i]))(client, cmd);
             return (1);
         }
     }
@@ -253,17 +250,13 @@ void    Irc::closeServer()
     close(server_fd);
 }
 
-
-bool Irc::isNicknameAvaible(std::string nickname)
+bool Irc::ping(Client& Client, std::vector<std::string> cmd)
 {
-    if (nickname == "\n")
-        return (0);
-    for(size_t i = 0; i < _client.size(); i++)
-        if (nickname == _client[i].getMyNickname())
-            return (0);
-    return (1);
+    (void)Client;
+    (void)cmd;
+    sendMessagetoClient(Client.getMySocket(), RPL_PING);
+    return (true);
 }
-
 bool Irc::msg(Client& client, std::vector<std::string> cmd)
 {
     std::string msg;
