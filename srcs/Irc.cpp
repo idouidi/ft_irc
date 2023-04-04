@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 14:09:57 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/04 15:05:33 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,13 @@ struct epoll_event* Irc::getEventTab()
 
 void    Irc::addClient(int client_fd)
 {
+	static unsigned int			token = 0;
+	std::stringstream		op;
+	std::string				ret;
+
+	op << token;
+	op >> ret;
+	
     fcntl(client_fd, F_SETFL, O_NONBLOCK);
     event.data.fd = client_fd;
     event.events = EPOLLIN;
@@ -100,6 +107,8 @@ void    Irc::addClient(int client_fd)
         exit(EXIT_FAILURE);
     }
     _client.push_back(Client(client_fd));
+
+	sendMessagetoClient(_client.back(), CMD_PING(ret));
 }
 
 void     Irc::eraseClient(Client& client)
