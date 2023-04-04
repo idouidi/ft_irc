@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/30 16:04:20 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/04 14:09:57 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,7 +312,7 @@ bool Irc::whois(Client& client, std::vector<std::string> cmd)
 bool Irc::ping(Client& client, std::vector<std::string> cmd)
 {
     (void)cmd;
-    sendMessagetoClient(client, RPL_PING);
+    sendMessagetoClient(client, RPL_PONG);
     return (true);
 }
 

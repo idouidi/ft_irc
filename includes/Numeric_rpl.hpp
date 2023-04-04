@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/30 19:14:42 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/04 14:10:19 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@
 // MODE
 # define RPL_MODE(nickname, username,  mode) (user_id(nickname, username) + " MODE " + nickname + " :+" + mode + "\r\n")
 
-//PING
-# define RPL_PING ":localhost PONG localhost :localhost\r\n"
+//PONG
+# define RPL_PONG ":localhost PONG localhost :localhost\r\n"
 
 // PASS
 # define ERR_PASSWDMISMATCH(nickname) (":localhost 464 " + nickname + " :Password incorrect.\r\n")
