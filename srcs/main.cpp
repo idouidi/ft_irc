@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/30 18:55:05 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/04 15:40:56 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void start_server(char *port, char *pswd)
 				{
 					printInServer(std::string(buf), *current_client);
 					std::vector<std::string> cmd = split(std::string(buf), " \n\r");
-					if (current_client->isNewClient())
+					if (cmd[0] != "PONG" && current_client->isNewClient())
 					{
 						if ((irc.parsInfo(*current_client, cmd)) == 0)
 						{
@@ -154,7 +154,7 @@ void start_server(char *port, char *pswd)
 							continue ;
 						}
 				}
-				else if (current_client->isUserModeUp() != 0)
+				else if (cmd[0] != "PONG" && current_client->isUserModeUp() != 0)
 					irc.setClientMode(*current_client, 'i');
 				else
 					irc.execCmd(*current_client, cmd);

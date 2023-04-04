@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 14:27:36 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/04 16:19:40 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ class Irc
 	bool who(Client&, std::vector<std::string>);
 	bool whois(Client&, std::vector<std::string>);
 	bool ping(Client&, std::vector<std::string>);
+	bool pong(Client&, std::vector<std::string>);
 
 	bool execCmd(Client& client , std::vector<std::string>);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/

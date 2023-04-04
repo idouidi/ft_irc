@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 14:28:47 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/04 16:24:36 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@
 
 // MISS PARAMS
 # define ERR_NEEDMOREPARAMS(nickname, cmd) (":localhost 461 " + nickname + " " + cmd + ":Not enough parameters\r\n")
-
+# define ERR_BADPING(nickname) (":localhost 513 " + nickname + " has'nt send a right PONG\r\n")
 /*
 *  NICK
 */

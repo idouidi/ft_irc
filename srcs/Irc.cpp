@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 15:05:33 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/04 16:24:12 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ struct epoll_event* Irc::getEventTab()
 
 void    Irc::addClient(int client_fd)
 {
-	static unsigned int			token = 0;
+	static unsigned int			token = 1;
 	std::stringstream		op;
 	std::string				ret;
 
@@ -106,9 +106,10 @@ void    Irc::addClient(int client_fd)
         perror("epoll_ctl EPOLL_CTL_ADD client soscket");
         exit(EXIT_FAILURE);
     }
-    _client.push_back(Client(client_fd));
+    _client.push_back(Client(client_fd, ret));
 
 	sendMessagetoClient(_client.back(), CMD_PING(ret));
+	token++;
 }
 
 void     Irc::eraseClient(Client& client)
@@ -254,7 +255,8 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                                                                 &Irc::quit,
                                                                 &Irc::who,
                                                                 &Irc::whois,
-                                                                &Irc::ping};
+                                                                &Irc::ping,
+																&Irc::pong};
     std::string ref[] = {"MSG",
                         "JOIN",
                         "LEAVE",
@@ -263,8 +265,9 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                         "QUIT",
                         "WHO",
                         "WHOIS",
-                        "PING"};
-    for (std::size_t i = 0; i < 9 ; i++)
+                        "PING", 
+						"PONG"};
+    for (std::size_t i = 0; i < 10 ; i++)
     {
         if (ref[i] == cmd[0])
         {
@@ -287,6 +290,12 @@ void    Irc::closeServer()
     close(server_fd);
 }
 
+bool	Irc::pong(Client& client, std::vector<std::string> cmd)
+{
+	if (cmd[1] != client.getToken())
+		sendMessagetoClient(client, ERR_BADPING(client.getMyNickname()));
+	return true;
+}
 
 std::string Irc::clientLastActiveTime(Client& client)
 {

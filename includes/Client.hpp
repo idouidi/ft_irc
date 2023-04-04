@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/03/30 16:04:03 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/04 16:23:51 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ class Client
 {
 	public:
 
-		Client(int socket): my_socket(socket), new_client(1), user_mode(0), last_active_time(time(0))
+		Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), user_mode(0), last_active_time(time(0))
 		{}
 
-		Client(const Client& c):my_socket(c.my_socket), nickname(c.nickname), new_client(c.new_client), 
+		Client(const Client& c):my_socket(c.my_socket), token_ping(c.token_ping), nickname(c.nickname), new_client(c.new_client), 
 		user_mode(c.user_mode), last_active_time(c.last_active_time)
 		{
 			if (!c.my_chanel.empty())
@@ -37,6 +37,7 @@ class Client
 			if (this != &c)
 			{;
 				my_socket = c.my_socket;
+				token_ping = c.token_ping;
 				nickname = c.nickname;
 				new_client = c.new_client;
 				user_mode = c.user_mode;
@@ -55,6 +56,7 @@ class Client
 		std::string getMyUserName() const { return (username); }
 		char 		getMyUserMode() const { return (user_mode); }
 		time_t 		getLastActiveTime() const { return (last_active_time); }
+		std::string	getToken() const { return (token_ping);}
 		
 		void 		setStatusClient(bool status) { new_client = status; }
 		void 		setNickName(std::string nick) { nickname.assign(nick); }
@@ -67,6 +69,7 @@ class Client
 
 	private:
 		int							my_socket;
+		std::string				token_ping;
 		std::string 				nickname;
 		std::string					username;
 		bool						new_client;
