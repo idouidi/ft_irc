@@ -16,17 +16,23 @@
 # define user_id(nickname, username, cmd) (":" + nickname + "!~" + username + "@localhost " + cmd + " ")
 
             /* = = =    TO CONNECT    = = = */
-// #001
+// 001
 # define RPL_WELCOME(nickname) (":localhost 001 " + nickname + " :Welcome to the Internet Relay Network " + nickname + "\r\n")
-// #002
+// 002
 # define RPL_YOURHOST(nickname, version) (":localhost 002 " + nickname + " :Your host is localhost, " + "running version " + version + "\r\n")
-// #003
+// 003
 # define RPL_CREATED(nickname, date) (":localhost 003 " + nickname + " :This server was created " + date + "\r\n")
-// #004
+// 004
 # define RPL_MYINFO(nickname, version) (":localhost 004 " + nickname + " localhost " + version + "\r\n")
 
             /* = = =    MODE    = = = */
-# define RPL_MODE(nickname, username, cmd, mode) (user_id(nickname, username, cmd) + nickname + " :+" + mode + "\r\n")
+# define SET_CLIENT_MODE(nickname, username, cmd, mode) (user_id(nickname, username, cmd) + nickname + " :+" + mode + "\r\n")
+// 324
+# define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + "+" chanel_mods + "\r\n")
+// 329
+# define RPL_CREATIONTIME(nickname, chanel, date) (":localhost 329 " + nickname + " " + chanel + date + "\r\n")
+// 368
+# define RPL_ENDOFBANLIST(nickname, chanel) (":localhost 368 " + nickname + " " + chanel + ":End of channel ban list\r\n")
 
             /* = = =    PASS    = = = */
 // 464
@@ -37,10 +43,14 @@
 # define RPL_WHOISUSER(nickname, other_nick, username) (":localhost 311 " + nickname + " " + other_nick + "~" + username + " localhost * :" + username + "\r\n")
 // 312
 # define RPL_WHOISSERVER(nickname, other_nick) (":localhost 312 " + nickname + " " + other_nick + " localhost :<insert catchy phrase here>\r\n")
+// 315
+# define RPL_ENDOFWHO(nickname, chanel) (":localhost 315 " + nickname + " " + chanel + ":End of /WHO list.\r\n")
 // 317
 # define RPL_WHOISIDLE(nickname, other_nick, create_time) (":localhost 317 " + nickname + " " + other_nick + " " + create_time + " :second idle, signon time\r\n")
 // 318
 # define RPL_ENDOFWHOIS(nickname, other_nick) (":localhost 318 " + nickname + " " + other_nick + " :End of /WHOIS list.\r\n")
+// 352
+# define RPL_WHOREPLY(nickname, chanel, username, status) (":localhost 352 " + nickname + " " + chanel + " ~" + username + "localhost localhost " + nickname + " " + status + "@ :0 " + username + "\r\n")
 // 369
 # define RPL_ENDOFWHOWAS(nickname, other_nick) (":localhost 369 " + nickname + " " + other_nick + " :End of WHOWAS\r\n")
 
@@ -70,9 +80,12 @@
 # define RPL_PONG ":localhost PONG localhost :localhost\r\n"
 # define CMD_PING(token) ("PING :" + token + "\r\n")
 
-
-
-
+            /* = = =    JOIN     = = = */
+# define SET_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + ":" + chanel + "\r\n")
+// 353
+# define RPL_NAMREPLY(nickname, chanel) (":localhost 353 " + nickname + " = " + chanel + " :@" + nickname + "\r\n")
+// 366
+# define RPL_ENDOFNAMES(nickname, chanel) (":localhost 366 " + nickname + " " + chanel + " :End of /NAMES list.\r\n")
 
 
 #endif

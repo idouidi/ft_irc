@@ -219,7 +219,7 @@ bool Irc::parsInfo(Client& client, std::vector<std::string> info)
 void Irc::setClientMode(Client& client, std::string cmd,char mode)
 {
     client.setUserMode(mode);
-    sendMessagetoClient(client, RPL_MODE(client.getMyNickname(), client.getMyUserName(), cmd, client.getMyUserMode()));
+    sendMessagetoClient(client, SET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, client.getMyUserMode()));
 }
 
 Client*     Irc::findClient(int fd_client)
@@ -254,6 +254,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
 {
     bool (Irc::*tab[])(Client&, std::vector<std::string> ) = {&Irc::msg,
                                                                 &Irc::join,
+                                                                &Irc::mode,
                                                                 &Irc::leave,
                                                                 &Irc::list,
                                                                 &Irc::nick,
@@ -265,6 +266,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
 																&Irc::pong};
     std::string ref[] = {"MSG",
                         "JOIN",
+                        "MODE"
                         "LEAVE",
                         "LIST",
                         "NICK",
@@ -307,12 +309,15 @@ bool	Irc::pong(Client& client, std::vector<std::string> cmd)
 	return true;
 }
 
-bool Irc::whowas(Client& client, std::vector<std::string> cmd)
+bool Irc::who(Client& client, std::vector<std::string> cmd)
 {
-    (void)client;
-    (void)cmd;
-    return (true);
+    //the letter H to indicate that the user is here,
+    // the letter G to indicate that the user is gone.
+    sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H")
+    + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+    return (1);
 }
+
 bool Irc::whois(Client& client, std::vector<std::string> cmd)
 {
     if (isNicknameAvaible(cmd[1]) != 0)
@@ -333,6 +338,13 @@ bool Irc::whois(Client& client, std::vector<std::string> cmd)
         }
     }
     return (true);    
+}
+
+bool Irc::whowas(Client& client, std::vector<std::string> cmd)
+{
+    sendMessagetoClient(client, ERR_WASNOSUCHNICK(client.getMyNickname(), cmd[1]) 
+    + RPL_ENDOFWHOWAS(client.getMyNickname(), cmd[1]));
+    return (true);
 }
 
 bool Irc::msg(Client& client, std::vector<std::string> cmd)
@@ -373,9 +385,29 @@ bool Irc::msg(Client& client, std::vector<std::string> cmd)
 
 bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
-    (void)client;
-    (void)cmd;
+    sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
+    + RPL_NAMREPLY(client.getMyNickname(), cmd[1]) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
     return (1);
+}
+bool Irc::mode(Client& client, std::vector<std::string> cmd)
+{
+    if (cmd.size() == 2)
+    {
+        // - "n" indique que le canal est en mode "no external messages" 
+        // (seuls les utilisateurs présents dans le canal peuvent envoyer des messages)
+        // - "t" indique que le canal est en mode "topic lock" (seul un opérateur de canal peut changer le sujet du canal).
+        time_t t = time(0);
+        std::stringstream		ss;
+	    std::string				stime;
+
+	    ss << t;
+	    ss >> stime;
+        sendMessagetoClient(client, RPL_CHANNELMODEIS(client.getMyNickname(), cmd[1], "nt")
+        + RPL_CREATIONTIME(client.getMyNickname(), cmd[1], stime));
+    }
+    else
+        sendMessagetoClient(client, RPL_ENDOFBANLIST(client.getMyNickname(), cmd[1]));
+    return (true);
 }
 
 bool Irc::leave(Client& client, std::vector<std::string> cmd)
@@ -410,13 +442,6 @@ bool Irc::nick(Client& client, std::vector<std::string> cmd)
     client.setNickName(cmd[1]);
     return (true);
 
-}
-
-bool Irc::who(Client& client, std::vector<std::string> cmd)
-{
-    (void)client;
-    (void)cmd;
-    return (1);
 }
 
 bool Irc::quit(Client& client, std::vector<std::string> cmd)

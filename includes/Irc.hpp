@@ -81,6 +81,7 @@ class Irc
 
 	bool msg(Client&, std::vector<std::string>);
 	bool join(Client&, std::vector<std::string>);
+	bool mode(Client&, std::vector<std::string>);
 	bool leave(Client&, std::vector<std::string>);
 	bool list(Client&, std::vector<std::string>);
 	bool nick(Client&, std::vector<std::string>);
