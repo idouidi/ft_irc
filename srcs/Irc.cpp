@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 16:24:12 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/04 16:43:05 by othabchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -384,8 +384,9 @@ bool Irc::leave(Client& client, std::vector<std::string> cmd)
 }
 bool Irc::list(Client& client, std::vector<std::string> cmd)
 {
-
-    (void)client;
+    RPL_LISTSTART(client.getMyNickname())
+    + RPL_LIST(client.getMyNickname()/*, channelname, usercount*/)
+    + RPL_LISTEND(client.getMyNickname());
     (void)cmd;
     return (1);
 }

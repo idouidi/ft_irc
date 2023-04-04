@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Numeric_rpl.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 16:24:36 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/04 16:43:31 by othabchi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,11 @@
 # define RPL_PONG ":localhost PONG localhost :localhost\r\n"
 
 # define CMD_PING(token) ("PING :" + token + "\r\n")
+
+// LIST
+# define RPL_LISTSTART(nickname) (":localhost 321 " + nickname + " Channel :Users Name\r\n")
+# define RPL_LIST(nickname) (":localhost 322 " + nickname + " "/* + channelname + " " + usercount */+ "#test 1 :\r\n")
+# define RPL_LISTEND(nickname) (":localhost 323 " + nickname + " :End of /LIST\r\n")
 
 // PASS
 # define ERR_PASSWDMISMATCH(nickname) (":localhost 464 " + nickname + " :Password incorrect.\r\n")
