@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 15:40:56 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/04 18:54:14 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,7 @@ void start_server(char *port, char *pswd)
 						}
 				}
 				else if (cmd[0] != "PONG" && current_client->isUserModeUp() != 0)
-					irc.setClientMode(*current_client, 'i');
+					irc.setClientMode(*current_client, cmd[0],  'i');
 				else
 					irc.execCmd(*current_client, cmd);
 				}

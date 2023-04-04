@@ -1,0 +1,41 @@
+listening on 127.0.0.1 port 1235
+calling accept FD 3
+calling accept FD 3
+connection from localhost [127.0.0.1] fd= 4
+connected to 127.0.0.1:8081 fd= 5
+=============== read 81 bytes from CLIENT (4) ==================
+CAP LS
+PASS Baghdadi7
+NICK dedi
+USER idouidi idouidi localhost :Ilyes DOUIDI
+
+=============== read 9 bytes from SERVER (5) ===================
+PING :1
+
+=============== read 9 bytes from CLIENT (4) ==================
+PONG :1
+
+=============== read 266 bytes from SERVER (5) ===================
+:localhost 001 dedi :Welcome to the Internet Relay Network dedi
+:localhost 002 dedi :Your host is localhost, running version Les Oubliés 1.0.0
+:localhost 003 dedi :This server was created 2023-04-04 19:19:58 GMT
+:localhost 004 dedi localhost Les Oubliés 1.0.0
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE dedi +i
+
+=============== read 46 bytes from SERVER (5) ===================
+:localhost 513 dedi has'nt send a right PONG
+
+=============== read 40 bytes from SERVER (5) ===================
+:dedi!~idouidi@localhost MODE dedi :+i
+
+=============== read 16 bytes from CLIENT (4) ==================
+PING localhost
+
+=============== read 38 bytes from SERVER (5) ===================
+:localhost PONG localhost :localhost
+
+exiting
+calling accept FD 3
+Cleaning up...

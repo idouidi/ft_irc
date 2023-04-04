@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 16:19:40 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/04 19:18:52 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ class Irc
 	bool parsInfo(Client& client, std::vector<std::string> cmd);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-	void setClientMode(Client& client, char mode);
+	void setClientMode(Client& client, std::string cmd, char mode);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 
@@ -87,6 +87,7 @@ class Irc
 	bool quit(Client&, std::vector<std::string>);
 	bool who(Client&, std::vector<std::string>);
 	bool whois(Client&, std::vector<std::string>);
+	bool whowas(Client&, std::vector<std::string>);
 	bool ping(Client&, std::vector<std::string>);
 	bool pong(Client&, std::vector<std::string>);
 

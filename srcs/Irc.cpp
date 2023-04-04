@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: othabchi <othabchi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 16:43:05 by othabchi         ###   ########.fr       */
+/*   Updated: 2023/04/04 19:19:48 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,16 @@ Irc::~Irc()
     return ;
 }
 
+void    Irc::closeServer()
+{
+    while(!_client.empty())
+        _client.erase(_client.begin());
+
+    while(!_chanel.empty())
+        _chanel.erase(_chanel.begin());
+    close(server_fd);
+}
+
 void     Irc::init_server()
 {
     if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0 )
@@ -69,25 +79,13 @@ void     Irc::init_server()
     }
 }
 
-int Irc::getServerFd() const 
-{ 
-    return (server_fd); 
-}
+int Irc::getServerFd() const { return (server_fd); }
 		
-int Irc::getEpollFd() const 
-{ 
-    return (epoll_fd); 
-}
+int Irc::getEpollFd() const { return (epoll_fd); }
 		
-struct epoll_event Irc::getEvent(int i) const 
-{ 
-    return (events[i]); 
-} 
+struct epoll_event Irc::getEvent(int i) const { return (events[i]); } 
 		
-struct epoll_event* Irc::getEventTab() 
-{ 
-    return (events); 
-}
+struct epoll_event* Irc::getEventTab() {  return (events);  }
 
 void    Irc::addClient(int client_fd)
 {
@@ -141,7 +139,6 @@ void        Irc::sendMessagetoClient(Client& client, std::string msg)
         throw std::runtime_error("Error when sending a message to the client");
         client.setLastActiveTime();
     }
-
 }
 
 std::string     Irc::recvMessageFromClient(int client_fd)
@@ -219,10 +216,10 @@ bool Irc::parsInfo(Client& client, std::vector<std::string> info)
     return (true);
 }
 
-void Irc::setClientMode(Client& client, char mode)
+void Irc::setClientMode(Client& client, std::string cmd,char mode)
 {
     client.setUserMode(mode);
-    sendMessagetoClient(client, RPL_MODE(client.getMyNickname(), client.getMyUserName(), client.getMyUserMode()));
+    sendMessagetoClient(client, RPL_MODE(client.getMyNickname(), client.getMyUserName(), cmd, client.getMyUserMode()));
 }
 
 Client*     Irc::findClient(int fd_client)
@@ -245,6 +242,14 @@ Client*     Irc::findClient(std::string nick)
     return (NULL);
 }
 
+std::string Irc::clientLastActiveTime(Client& client)
+{
+    char buffer[20];
+    int idle_time = time(0) - client.getLastActiveTime();
+    sprintf(buffer, "%d", idle_time); // conversion de la valeur en chaîne de caractères
+    return (std::string(buffer));  
+}
+
 bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
 {
     bool (Irc::*tab[])(Client&, std::vector<std::string> ) = {&Irc::msg,
@@ -255,6 +260,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                                                                 &Irc::quit,
                                                                 &Irc::who,
                                                                 &Irc::whois,
+                                                                &Irc::whowas,
                                                                 &Irc::ping,
 																&Irc::pong};
     std::string ref[] = {"MSG",
@@ -265,9 +271,15 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                         "QUIT",
                         "WHO",
                         "WHOIS",
+                        "WHOWAS",
                         "PING", 
-						"PONG"};
-    for (std::size_t i = 0; i < 10 ; i++)
+						"PONG",
+                        "NULL"};
+
+    std::size_t size = 0;
+    while (ref[size] != "NULL")
+        size++;
+    for(std::size_t i = 0; i < size; i++)
     {
         if (ref[i] == cmd[0])
         {
@@ -280,14 +292,12 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
     return (0);
 }
 
-void    Irc::closeServer()
-{
-    while(!_client.empty())
-        _client.erase(_client.begin());
 
-    while(!_chanel.empty())
-        _chanel.erase(_chanel.begin());
-    close(server_fd);
+bool Irc::ping(Client& client, std::vector<std::string> cmd)
+{
+    (void)cmd;
+    sendMessagetoClient(client, RPL_PONG);
+    return (true);
 }
 
 bool	Irc::pong(Client& client, std::vector<std::string> cmd)
@@ -297,14 +307,12 @@ bool	Irc::pong(Client& client, std::vector<std::string> cmd)
 	return true;
 }
 
-std::string Irc::clientLastActiveTime(Client& client)
+bool Irc::whowas(Client& client, std::vector<std::string> cmd)
 {
-    char buffer[20];
-    int idle_time = time(0) - client.getLastActiveTime();
-    sprintf(buffer, "%d", idle_time); // conversion de la valeur en chaîne de caractères
-    return (std::string(buffer));  
+    (void)client;
+    (void)cmd;
+    return (true);
 }
-
 bool Irc::whois(Client& client, std::vector<std::string> cmd)
 {
     if (isNicknameAvaible(cmd[1]) != 0)
@@ -325,13 +333,6 @@ bool Irc::whois(Client& client, std::vector<std::string> cmd)
         }
     }
     return (true);    
-}
-
-bool Irc::ping(Client& client, std::vector<std::string> cmd)
-{
-    (void)cmd;
-    sendMessagetoClient(client, RPL_PONG);
-    return (true);
 }
 
 bool Irc::msg(Client& client, std::vector<std::string> cmd)
@@ -376,12 +377,14 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
     (void)cmd;
     return (1);
 }
+
 bool Irc::leave(Client& client, std::vector<std::string> cmd)
 {
     (void)client;
     (void)cmd;
     return (1);
 }
+
 bool Irc::list(Client& client, std::vector<std::string> cmd)
 {
     RPL_LISTSTART(client.getMyNickname())
@@ -390,6 +393,7 @@ bool Irc::list(Client& client, std::vector<std::string> cmd)
     (void)cmd;
     return (1);
 }
+
 bool Irc::nick(Client& client, std::vector<std::string> cmd)
 {
     std::string msg;
@@ -407,6 +411,14 @@ bool Irc::nick(Client& client, std::vector<std::string> cmd)
     return (true);
 
 }
+
+bool Irc::who(Client& client, std::vector<std::string> cmd)
+{
+    (void)client;
+    (void)cmd;
+    return (1);
+}
+
 bool Irc::quit(Client& client, std::vector<std::string> cmd)
 {
     if (cmd.size() > 1)
@@ -415,11 +427,5 @@ bool Irc::quit(Client& client, std::vector<std::string> cmd)
         return (0);
     }
     eraseClient(client);
-    return (1);
-}
-bool Irc::who(Client& client, std::vector<std::string> cmd)
-{
-    (void)client;
-    (void)cmd;
     return (1);
 }
