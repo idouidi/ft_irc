@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 19:19:48 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/05 14:56:11 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,7 +266,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
 																&Irc::pong};
     std::string ref[] = {"MSG",
                         "JOIN",
-                        "MODE"
+                        "MODE",
                         "LEAVE",
                         "LIST",
                         "NICK",

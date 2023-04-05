@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 15:13:12 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 15:54:14 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,13 @@
 std::string getDateTime();
 
 # include "Numeric_rpl.hpp"
+
+class Client;
+class Chanel;
+
 # include "Client.hpp"
 # include "Irc.hpp"
+# include "Chanel.hpp"
 
 
 
