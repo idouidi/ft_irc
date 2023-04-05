@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/05 17:22:09 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 18:07:12 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ Chanel::~Chanel() {
 }
 
 bool		Chanel::deleteClient(Client& client_to_delete) {
-	for (std::map<Client, mode>::iterator it = _clients_in.begin(), ite = _clients_in.end(); it != ite; it++) {
+	for (std::map<Client, mode_client>::iterator it = _clients_in.begin(), ite = _clients_in.end(); it != ite; it++) {
 		if (it->first == const_cast<const Client&>(client_to_delete)) {
 			_clients_in.erase(it);
 			return (true);
@@ -30,8 +30,8 @@ bool		Chanel::deleteClient(Client& client_to_delete) {
 	return (false);
 }
 
-bool		Chanel::addClient(Client& client_to_add, mode mode_to_give) {
-	return (_clients_in.insert(std::pair<Client, mode>(client_to_add, mode_to_give)).second);
+bool		Chanel::addClient(Client& client_to_add, mode_client mode_to_give) {
+	return (_clients_in.insert(std::pair<Client, mode_client>(client_to_add, mode_to_give)).second);
 }
 
 size_t		Chanel::getNumClient() const {

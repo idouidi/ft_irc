@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/05 17:14:15 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 18:03:47 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
     to avoid irssi to retest this port when an error appear
 */
 
+
 # define RESET	            "\033[0m"
 # define BLACK	            "\033[1;30m"
 # define RED	            "\033[1;31m"
@@ -50,6 +51,8 @@
 # define MAX_EVENTS         10
 # define BUFFER_SIZE        1024
 
+enum mode_client { I, W, O, P, S, T, N, M, L, B, K, V };
+
 std::string getDateTime();
 
 # include "Numeric_rpl.hpp"
@@ -61,6 +64,7 @@ class Chanel;
 # include "Client.hpp"
 # include "Chanel.hpp"
 # include "Irc.hpp"
+
 
 
 

@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/05 17:21:28 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 18:06:55 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,11 @@
 class Chanel {
 	
 	public:
-		enum mode { I, S, W, O, P, T, N, M, L, B, K, V };
 		
 		Chanel(std::string, size_t);
 		~Chanel();
 		bool		deleteClient(Client& client_to_delete);
-		bool		addClient(Client& client_to_add, mode mode);
+		bool		addClient(Client& client_to_add, mode_client mode);
 		size_t		getNumClient() const;
 
 		template <typename T1>
@@ -35,7 +34,7 @@ class Chanel {
 		size_t								_id;
 		std::string							_name;
 		std::string							_topic;
-		std::map<Client, mode>				_clients_in;
+		std::map<Client, mode_client>				_clients_in;
 };
 
 #endif

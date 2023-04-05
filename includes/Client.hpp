@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/05 17:22:33 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 18:03:20 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 class Client
 {
 	public:
-
-		enum mode_client { I, W, O, P, S, T, N, M, L, B, K, V };
 		
 		Client(int socket, std::string token);
 
