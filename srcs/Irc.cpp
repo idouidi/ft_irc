@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/05 15:17:40 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/05 15:29:56 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,7 +305,7 @@ bool Irc::ping(Client& client, std::vector<std::string> cmd)
 
 bool	Irc::pong(Client& client, std::vector<std::string> cmd)
 {
-	if (cmd[1] != client.getToken())
+	if (cmd[1] != ":" + client.getToken())
 		sendMessagetoClient(client, ERR_BADPING(client.getMyNickname()));
 	return true;
 }

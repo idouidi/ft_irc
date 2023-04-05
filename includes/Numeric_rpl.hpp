@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 18:52:46 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/05 15:30:57 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,11 +76,12 @@
 
             /* = = =    PING / PONG     = = = */
 // 513
-# define ERR_BADPING(nickname) (":localhost 513 " + nickname + " has'nt send a right PONG\r\n")
+# define ERR_BADPING(nickname) (":localhost 513 " + nickname + std::string(RED) + "Error: " + std::string(RESET) + "Wrong password !\r\n")
 # define RPL_PONG ":localhost PONG localhost :localhost\r\n"
 # define CMD_PING(token) ("PING :" + token + "\r\n")
 
             /* = = =    JOIN     = = = */
+
 # define SET_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + ":" + chanel + "\r\n")
 // 353
 # define RPL_NAMREPLY(nickname, chanel) (":localhost 353 " + nickname + " = " + chanel + " :@" + nickname + "\r\n")
