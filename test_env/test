@@ -1,0 +1,444 @@
+listening on 127.0.0.1 port 1234
+calling accept FD 3
+calling accept FD 3
+connection from localhost [127.0.0.1] fd= 4
+connected to 127.0.0.1:6667 fd= 5
+=============== read 76 bytes from CLIENT (4) ==================
+CAP LS
+PASS Baghdadi7
+NICK dedi
+USER idouidi idouidi localhost :idouidi
+
+=============== read 69 bytes from SERVER (5) ===================
+NOTICE AUTH :*** Checking Ident
+NOTICE AUTH :*** No ident response
+
+=============== read 18 bytes from SERVER (5) ===================
+PING :1586723423
+
+=============== read 18 bytes from CLIENT (4) ==================
+PONG :1586723423
+
+=============== read 945 bytes from SERVER (5) ===================
+:my.server.name 001 dedi :Welcome to the Internet Relay Network dedi
+:my.server.name 002 dedi :Your host is my.server.name, running version beware1.6.3
+:my.server.name 003 dedi :This server was created Mon Aug 11 2014 at 17:47:17 GMT
+:my.server.name 004 dedi my.server.name beware1.6.3 dgikoswx biklmnoprstv
+:my.server.name 005 dedi MAP SILENCE=15 WHOX WALLCHOPS WALLVOICES USERIP CPRIVMSG CNOTICE MODES=6 MAXCHANNELS=10 MAXBANS=45 :are supported by this server
+:my.server.name 005 dedi NICKLEN=12 TOPICLEN=160 AWAYLEN=160 KICKLEN=160 CHANTYPES=#& PREFIX=(ov)@+ CHANMODES=b,k,l,rimnpst CASEMAPPING=rfc1459 :are supported by this server
+:my.server.name 251 dedi :There are 1 users and 0 invisible on 1 servers
+:my.server.name 255 dedi :I have 1 clients and 0 servers
+:my.server.name NOTICE dedi :Highest connection count: 3 (3 clients)
+:my.server.name 422 dedi :MOTD File is missing
+:my.server.name NOTICE dedi :on 1 ca 1(4) ft 10(10)
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE dedi +i
+
+=============== read 45 bytes from SERVER (5) ===================
+:dedi!~idouidi@my.server.name MODE dedi :+i
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+calling accept FD 3
+connection from localhost [127.0.0.1] fd= 4
+connected to 127.0.0.1:6667 fd= 5
+=============== read 76 bytes from CLIENT (4) ==================
+CAP LS
+PASS Baghdadi7
+NICK toto
+USER idouidi idouidi localhost :idouidi
+
+=============== read 69 bytes from SERVER (5) ===================
+NOTICE AUTH :*** Checking Ident
+NOTICE AUTH :*** No ident response
+
+=============== read 16 bytes from SERVER (5) ===================
+PING :28543929
+
+=============== read 16 bytes from CLIENT (4) ==================
+PONG :28543929
+
+=============== read 948 bytes from SERVER (5) ===================
+:my.server.name 001 toto :Welcome to the Internet Relay Network toto
+:my.server.name 002 toto :Your host is my.server.name, running version beware1.6.3
+:my.server.name 003 toto :This server was created Mon Aug 11 2014 at 17:47:17 GMT
+:my.server.name 004 toto my.server.name beware1.6.3 dgikoswx biklmnoprstv
+:my.server.name 005 toto MAP SILENCE=15 WHOX WALLCHOPS WALLVOICES USERIP CPRIVMSG CNOTICE MODES=6 MAXCHANNELS=10 MAXBANS=45 :are supported by this server
+:my.server.name 005 toto NICKLEN=12 TOPICLEN=160 AWAYLEN=160 KICKLEN=160 CHANTYPES=#& PREFIX=(ov)@+ CHANMODES=b,k,l,rimnpst CASEMAPPING=rfc1459 :are supported by this server
+:my.server.name 251 toto :There are 1 users and 1 invisible on 1 servers
+:my.server.name 255 toto :I have 2 clients and 0 servers
+:my.server.name NOTICE toto :Highest connection count: 3 (3 clients)
+:my.server.name 422 toto :MOTD File is missing
+:my.server.name NOTICE toto :on 2 ca 1(4) ft 10(10) tr
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE toto +i
+
+=============== read 45 bytes from SERVER (5) ===================
+:toto!~idouidi@my.server.name MODE toto :+i
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 12 bytes from CLIENT (4) ==================
+JOIN #test
+
+=============== read 137 bytes from SERVER (5) ===================
+:dedi!~idouidi@my.server.name JOIN :#test
+:my.server.name 353 dedi = #test :@dedi
+:my.server.name 366 dedi #test :End of /NAMES list.
+
+=============== read 12 bytes from CLIENT (4) ==================
+MODE #test
+
+=============== read 79 bytes from SERVER (5) ===================
+:my.server.name 324 dedi #test +nt
+:my.server.name 329 dedi #test 1680724302
+
+=============== read 11 bytes from CLIENT (4) ==================
+WHO #test
+
+=============== read 141 bytes from SERVER (5) ===================
+:my.server.name 352 dedi #test ~idouidi my.server.name my.server.name dedi H@ :0 idouidi
+:my.server.name 315 dedi #test :End of /WHO list.
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE #test b
+
+=============== read 57 bytes from SERVER (5) ===================
+:my.server.name 368 dedi #test :End of channel ban list
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 12 bytes from CLIENT (4) ==================
+JOIN #test
+
+=============== read 142 bytes from SERVER (5) ===================
+=============== read 43 bytes from SERVER (5) ===================
+:toto!~idouidi@my.server.name JOIN :#test
+:my.server.name 353 toto = #test :toto @dedi
+:my.server.name 366 toto #test :End of /NAMES list.
+
+:toto!~idouidi@my.server.name JOIN :#test
+
+=============== read 12 bytes from CLIENT (4) ==================
+MODE #test
+
+=============== read 79 bytes from SERVER (5) ===================
+:my.server.name 324 toto #test +nt
+:my.server.name 329 toto #test 1680724302
+
+=============== read 11 bytes from CLIENT (4) ==================
+WHO #test
+
+=============== read 230 bytes from SERVER (5) ===================
+:my.server.name 352 toto #test ~idouidi my.server.name my.server.name toto H :0 idouidi
+:my.server.name 352 toto #test ~idouidi my.server.name my.server.name dedi H@ :0 idouidi
+:my.server.name 315 toto #test :End of /WHO list.
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE #test b
+
+=============== read 57 bytes from SERVER (5) ===================
+:my.server.name 368 toto #test :End of channel ban list
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 5 bytes from CLIENT (4) ==================
+die
+
+=============== read 70 bytes from SERVER (5) ===================
+:my.server.name 481 dedi :Permission Denied: Insufficient privileges
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 15 bytes from CLIENT (4) ==================
+QUIT :leaving
+
+=============== read 51 bytes from SERVER (5) ===================
+:dedi!~idouidi@my.server.name QUIT :Quit: leaving
+
+exiting
+=============== read 15 bytes from CLIENT (4) ==================
+QUIT :leaving
+
+exiting
+calling accept FD 3
+connection from localhost [127.0.0.1] fd= 4
+connected to 127.0.0.1:6667 fd= 5
+=============== read 76 bytes from CLIENT (4) ==================
+CAP LS
+PASS Baghdadi7
+NICK dedi
+USER idouidi idouidi localhost :idouidi
+
+=============== read 69 bytes from SERVER (5) ===================
+NOTICE AUTH :*** Checking Ident
+NOTICE AUTH :*** No ident response
+
+=============== read 17 bytes from SERVER (5) ===================
+PING :783035686
+
+=============== read 17 bytes from CLIENT (4) ==================
+PONG :783035686
+
+=============== read 948 bytes from SERVER (5) ===================
+:my.server.name 001 dedi :Welcome to the Internet Relay Network dedi
+:my.server.name 002 dedi :Your host is my.server.name, running version beware1.6.3
+:my.server.name 003 dedi :This server was created Mon Aug 11 2014 at 17:47:17 GMT
+:my.server.name 004 dedi my.server.name beware1.6.3 dgikoswx biklmnoprstv
+:my.server.name 005 dedi MAP SILENCE=15 WHOX WALLCHOPS WALLVOICES USERIP CPRIVMSG CNOTICE MODES=6 MAXCHANNELS=10 MAXBANS=45 :are supported by this server
+:my.server.name 005 dedi NICKLEN=12 TOPICLEN=160 AWAYLEN=160 KICKLEN=160 CHANTYPES=#& PREFIX=(ov)@+ CHANMODES=b,k,l,rimnpst CASEMAPPING=rfc1459 :are supported by this server
+:my.server.name 251 dedi :There are 1 users and 0 invisible on 1 servers
+:my.server.name 255 dedi :I have 1 clients and 0 servers
+:my.server.name NOTICE dedi :Highest connection count: 3 (3 clients)
+:my.server.name 422 dedi :MOTD File is missing
+:my.server.name NOTICE dedi :on 1 ca 1(4) ft 10(10) tr
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE dedi +i
+
+=============== read 45 bytes from SERVER (5) ===================
+:dedi!~idouidi@my.server.name MODE dedi :+i
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+calling accept FD 3
+connection from localhost [127.0.0.1] fd= 4
+connected to 127.0.0.1:6667 fd= 5
+=============== read 76 bytes from CLIENT (4) ==================
+CAP LS
+PASS Baghdadi7
+NICK toto
+USER idouidi idouidi localhost :idouidi
+
+=============== read 69 bytes from SERVER (5) ===================
+NOTICE AUTH :*** Checking Ident
+NOTICE AUTH :*** No ident response
+
+=============== read 18 bytes from SERVER (5) ===================
+PING :2119566117
+
+=============== read 18 bytes from CLIENT (4) ==================
+PONG :2119566117
+
+=============== read 948 bytes from SERVER (5) ===================
+:my.server.name 001 toto :Welcome to the Internet Relay Network toto
+:my.server.name 002 toto :Your host is my.server.name, running version beware1.6.3
+:my.server.name 003 toto :This server was created Mon Aug 11 2014 at 17:47:17 GMT
+:my.server.name 004 toto my.server.name beware1.6.3 dgikoswx biklmnoprstv
+:my.server.name 005 toto MAP SILENCE=15 WHOX WALLCHOPS WALLVOICES USERIP CPRIVMSG CNOTICE MODES=6 MAXCHANNELS=10 MAXBANS=45 :are supported by this server
+:my.server.name 005 toto NICKLEN=12 TOPICLEN=160 AWAYLEN=160 KICKLEN=160 CHANTYPES=#& PREFIX=(ov)@+ CHANMODES=b,k,l,rimnpst CASEMAPPING=rfc1459 :are supported by this server
+:my.server.name 251 toto :There are 1 users and 1 invisible on 1 servers
+:my.server.name 255 toto :I have 2 clients and 0 servers
+:my.server.name NOTICE toto :Highest connection count: 3 (3 clients)
+:my.server.name 422 toto :MOTD File is missing
+:my.server.name NOTICE toto :on 2 ca 2(4) ft 10(10) tr
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE toto +i
+
+=============== read 45 bytes from SERVER (5) ===================
+:toto!~idouidi@my.server.name MODE toto :+i
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 12 bytes from CLIENT (4) ==================
+JOIN #test
+
+=============== read 137 bytes from SERVER (5) ===================
+:dedi!~idouidi@my.server.name JOIN :#test
+:my.server.name 353 dedi = #test :@dedi
+:my.server.name 366 dedi #test :End of /NAMES list.
+
+=============== read 12 bytes from CLIENT (4) ==================
+MODE #test
+
+=============== read 79 bytes from SERVER (5) ===================
+:my.server.name 324 dedi #test +nt
+:my.server.name 329 dedi #test 1680724660
+
+=============== read 11 bytes from CLIENT (4) ==================
+WHO #test
+
+=============== read 141 bytes from SERVER (5) ===================
+:my.server.name 352 dedi #test ~idouidi my.server.name my.server.name dedi H@ :0 idouidi
+:my.server.name 315 dedi #test :End of /WHO list.
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE #test b
+
+=============== read 57 bytes from SERVER (5) ===================
+:my.server.name 368 dedi #test :End of channel ban list
+
+=============== read 12 bytes from CLIENT (4) ==================
+JOIN #test
+
+=============== read 142 bytes from SERVER (5) ===================
+=============== read 43 bytes from SERVER (5) ===================
+:toto!~idouidi@my.server.name JOIN :#test
+:my.server.name 353 toto = #test :toto @dedi
+:my.server.name 366 toto #test :End of /NAMES list.
+
+:toto!~idouidi@my.server.name JOIN :#test
+
+=============== read 12 bytes from CLIENT (4) ==================
+MODE #test
+
+=============== read 79 bytes from SERVER (5) ===================
+:my.server.name 324 toto #test +nt
+:my.server.name 329 toto #test 1680724660
+
+=============== read 11 bytes from CLIENT (4) ==================
+WHO #test
+
+=============== read 230 bytes from SERVER (5) ===================
+:my.server.name 352 toto #test ~idouidi my.server.name my.server.name toto H :0 idouidi
+:my.server.name 352 toto #test ~idouidi my.server.name my.server.name dedi H@ :0 idouidi
+:my.server.name 315 toto #test :End of /WHO list.
+
+=============== read 14 bytes from CLIENT (4) ==================
+MODE #test b
+
+=============== read 57 bytes from SERVER (5) ===================
+:my.server.name 368 toto #test :End of channel ban list
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 21 bytes from CLIENT (4) ==================
+PING my.server.name
+
+=============== read 53 bytes from SERVER (5) ===================
+:my.server.name PONG my.server.name :my.server.name
+
+=============== read 15 bytes from CLIENT (4) ==================
+QUIT :leaving
+
+=============== read 51 bytes from SERVER (5) ===================
+:dedi!~idouidi@my.server.name QUIT :Quit: leaving
+
+exiting
+=============== read 12 bytes from CLIENT (4) ==================
+PART #test
+
+=============== read 42 bytes from SERVER (5) ===================
+:toto!~idouidi@my.server.name PART #test
+
+Cleaning up...
+Cleaning up...

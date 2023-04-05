@@ -104,7 +104,7 @@ class Irc
 	struct epoll_event						event;
 	struct epoll_event						events[MAX_EVENTS];
 	struct sockaddr_in 						server_addr;
-	std::vector<int> 						_chanel;
+	std::vector<Chanel> 					_chanel;
 	std::vector<Client>						_client;
 	std::string 							server_pswd;
 

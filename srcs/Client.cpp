@@ -79,8 +79,8 @@ bool 		Client::isUserModeUp() const {
 	return (user_mode == 0);
 }
 
-bool		Client::insertChanel(Chanel& chanel_to_add, mode_client chanel_mode) {
-	return (my_chanels.insert(std::pair<Chanel, mode_client>(chanel_to_add, chanel_mode)).second);
+bool		Client::insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode) {
+	return (my_chanels.insert(std::pair<Chanel, chanel_mode>(chanel_to_add, chan_mode)).second);
 }
 
 

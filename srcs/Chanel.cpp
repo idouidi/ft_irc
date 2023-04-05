@@ -21,7 +21,7 @@ Chanel::~Chanel() {
 }
 
 bool		Chanel::deleteClient(Client& client_to_delete) {
-	for (std::map<Client, mode>::iterator it = _clients_in.begin(), ite = _clients_in.end(); it != ite; it++) {
+	for (map_iterator it = _clients_in.begin(), ite = _clients_in.end(); it != ite; it++) {
 		if (it->first == const_cast<const Client&>(client_to_delete)) {
 			_clients_in.erase(it);
 			return (true);
@@ -30,8 +30,8 @@ bool		Chanel::deleteClient(Client& client_to_delete) {
 	return (false);
 }
 
-bool		Chanel::addClient(Client& client_to_add, mode mode_to_give) {
-	return (_clients_in.insert(std::pair<Client, mode>(client_to_add, mode_to_give)).second);
+bool		Chanel::addClient(Client& client_to_add, client_mode mode_to_give) {
+	return (_clients_in.insert(std::pair<Client, client_mode>(client_to_add, mode_to_give)).second);
 }
 
 size_t		Chanel::getNumClient() const {

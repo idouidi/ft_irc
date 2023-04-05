@@ -18,7 +18,7 @@ class Client
 {
 	public:
 
-		enum mode_client { I, W, O, P, S, T, N, M, L, B, K, V };
+		enum chanel_mode { I, W, O, P, S, T, N, M, L, B, K, V };
 		
 		Client(int socket, std::string token);
 
@@ -43,7 +43,7 @@ class Client
 		bool 		isNewClient() const;
 		bool 		isUserModeUp() const;
 
-		bool		insertChanel(Chanel& chanel_to_add, mode_client chan_mode);
+		bool		insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode);
 
 		Client& 	operator=(const Client& c);
 
@@ -66,7 +66,7 @@ class Client
 		bool									new_client;
 		char									user_mode;
 		time_t									last_active_time;
-		std::map<Chanel, mode_client>			my_chanels;
+		std::map<Chanel, chanel_mode>			my_chanels;
 		
 };
 
