@@ -21,9 +21,8 @@ class Client
 		enum chanel_mode { I, W, O, P, S, T, N, M, L, B, K, V };
 		
 		Client(int socket, std::string token);
-
 		Client(const Client& c);
-
+		Client& 	operator=(const Client& c);
 		~Client();
 
 		
@@ -45,17 +44,12 @@ class Client
 
 		bool		insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode);
 
-		Client& 	operator=(const Client& c);
 
 		template <typename t2>
-		bool		operator==(t2& rhs) const {
-			return (my_socket == rhs.my_socket);
-		};
+		bool		operator==(t2& rhs) const { return (my_socket == rhs.my_socket); }
 
 		template<typename T1>
-		bool		operator<(T1& rhs) const{
-			return (token_ping < rhs.token_ping);
-		};
+		bool		operator<(T1& rhs) const{ return (token_ping < rhs.token_ping); }
 
 	private:
 	

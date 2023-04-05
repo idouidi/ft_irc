@@ -25,65 +25,6 @@ user_mode(c.user_mode), last_active_time(c.last_active_time)
 	}
 }
 
-Client::~Client() {}
-
-int			Client::getMySocket() const {
-	return (my_socket);
-}
-
-std::string Client::getMyNickname() const {
-	return (nickname);
-}
-
-std::string Client::getMyUserName() const {
-	return (username);
-}
-
-char 		Client::getMyUserMode() const {
-	return (user_mode);
-}
-
-time_t 		Client::getLastActiveTime() const {
-	return (last_active_time);
-}
-
-std::string	Client::getToken() const {
-	return (token_ping);
-}
-
-void 		Client::setStatusClient(bool status) {
-	new_client = status;
-}
-
-void 		Client::setNickName(std::string nick) {
-	nickname.assign(nick);
-}
-
-void 		Client::setUserName(std::string user) {
-	username.assign(user);
-}
-
-void 		Client::setUserMode(char mode) {
-	user_mode = mode;
-}
-
-void		Client::setLastActiveTime() {
-	last_active_time = time(0);
-}
-
-bool 		Client::isNewClient() const  {
-	return (new_client);
-}
-
-bool 		Client::isUserModeUp() const {
-	return (user_mode == 0);
-}
-
-bool		Client::insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode) {
-	return (my_chanels.insert(std::pair<Chanel, chanel_mode>(chanel_to_add, chan_mode)).second);
-}
-
-
 Client& Client::operator=(const Client& c)
 {
 	if (this != &c)
@@ -101,4 +42,37 @@ Client& Client::operator=(const Client& c)
 		}
 	}
 	return (*this);
+}
+
+Client::~Client() {}
+
+int			Client::getMySocket() const { return (my_socket); }
+
+time_t 		Client::getLastActiveTime() const { return (last_active_time); }
+
+char 		Client::getMyUserMode() const {return (user_mode); }
+
+std::string Client::getMyNickname() const { return (nickname); }
+
+std::string Client::getMyUserName() const { return (username); }
+
+std::string	Client::getToken() const { return (token_ping); }
+
+void 		Client::setStatusClient(bool status) { new_client = status; }
+
+void 		Client::setNickName(std::string nick) { nickname.assign(nick); }
+
+void 		Client::setUserName(std::string user) { username.assign(user); }
+
+void 		Client::setUserMode(char mode) { user_mode = mode; }
+
+void		Client::setLastActiveTime() { last_active_time = time(0); }
+
+bool 		Client::isNewClient() const  { return (new_client); }
+
+bool 		Client::isUserModeUp() const { return (user_mode == 0); }
+
+bool		Client::insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode) 
+{
+	return (my_chanels.insert(std::pair<Chanel, chanel_mode>(chanel_to_add, chan_mode)).second);
 }

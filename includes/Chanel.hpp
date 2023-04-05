@@ -17,42 +17,27 @@
 class Chanel {
 	
 	public:
-		enum	client_mode { I, S, W, O, P, T, N, M, L, B, K, V };
-		typedef std::map<Client, client_mode> client_map;
-		typedef client_map::iterator map_iterator;
+		enum									client_mode { I, S, W, O, P, T, N, M, L, B, K, V };
+		typedef std::map<Client, client_mode> 	client_map;
+		typedef client_map::iterator 			map_iterator;
 		
 		Chanel(std::string, size_t);
 		~Chanel();
-		bool		deleteClient(Client& client_to_delete);
+
 		bool		addClient(Client& client_to_add, client_mode chan_mode);
+		bool		deleteClient(Client& client_to_delete);
 		size_t		getNumClient() const;
-		std::string list_client()
-		{
-			map_iterator it = _clients_in.begin();
-			map_iterator ite = _clients_in.end();
-			std::string list;
-			for (; it != ite; it++)
-			{
-				char mode = it->second;
-				std::string nick = it->first.getMyNickname();
-				list += mode + nick;
-				if (it++ != ite)
-					list += " ";
-			}
-			return (list);
-		}
+		std::string list_client();
 
 		template <typename T1>
-		bool		operator<(T1& rhs) const {
-			return (_id < rhs._id);
-		};
+		bool		operator<(T1& rhs) const { return (_id < rhs._id); }
 		
 		
 	private:
-		size_t								_id;
-		std::string							_name;
-		std::string							_topic;
-		client_map							_clients_in;
+		size_t									_id;
+		std::string								_name;
+		std::string								_topic;
+		client_map								_clients_in;
 };
 
 #endif
