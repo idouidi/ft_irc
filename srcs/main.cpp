@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 18:54:14 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/05 14:20:21 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,11 +153,11 @@ void start_server(char *port, char *pswd)
 							irc.eraseClient(*current_client);
 							continue ;
 						}
-				}
-				else if (cmd[0] != "PONG" && current_client->isUserModeUp() != 0)
-					irc.setClientMode(*current_client, cmd[0],  'i');
-				else
-					irc.execCmd(*current_client, cmd);
+					}
+					else if (cmd[0] != "PONG" && current_client->isUserModeUp() != 0)
+						irc.setClientMode(*current_client, cmd[0],  'i');
+					else
+						irc.execCmd(*current_client, cmd);
 				}
 				memset(buf, '\0', sizeof(buf));
 			}

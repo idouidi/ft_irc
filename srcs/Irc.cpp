@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/04 19:19:48 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/05 15:17:40 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,7 +266,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
 																&Irc::pong};
     std::string ref[] = {"MSG",
                         "JOIN",
-                        "MODE"
+                        "MODE",
                         "LEAVE",
                         "LIST",
                         "NICK",
@@ -281,6 +281,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
     std::size_t size = 0;
     while (ref[size] != "NULL")
         size++;
+
     for(std::size_t i = 0; i < size; i++)
     {
         if (ref[i] == cmd[0])
@@ -342,6 +343,7 @@ bool Irc::whois(Client& client, std::vector<std::string> cmd)
 
 bool Irc::whowas(Client& client, std::vector<std::string> cmd)
 {
+    std::cout << "func whowhas cmd = " << cmd[0] << std::endl;
     sendMessagetoClient(client, ERR_WASNOSUCHNICK(client.getMyNickname(), cmd[1]) 
     + RPL_ENDOFWHOWAS(client.getMyNickname(), cmd[1]));
     return (true);
@@ -387,6 +389,7 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
     + RPL_NAMREPLY(client.getMyNickname(), cmd[1]) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
+    
     return (1);
 }
 bool Irc::mode(Client& client, std::vector<std::string> cmd)
