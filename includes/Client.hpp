@@ -6,14 +6,13 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/05 16:35:59 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 17:22:33 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __CLIENT_HPP__
 # define __CLIENT_HPP__
-
-#include "Control.hpp"
+# include "Control.hpp"
 
 class Client
 {
@@ -49,10 +48,14 @@ class Client
 		Client& 	operator=(const Client& c);
 
 		template <typename t2>
-		bool		operator==(t2& rgh) const;
+		bool		operator==(t2& rhs) const {
+			return (my_socket == rhs.my_socket);
+		};
 
 		template<typename T1>
-		bool		operator<(T1& rhs) const;
+		bool		operator<(T1& rhs) const{
+			return (token_ping < rhs.token_ping);
+		};
 
 	private:
 	

@@ -6,7 +6,7 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/05 16:34:38 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 17:21:28 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@ class Chanel {
 		size_t		getNumClient() const;
 
 		template <typename T1>
-		bool		operator<(T1& rhs) const;
+		bool		operator<(T1& rhs) const {
+			return (_id < rhs._id);
+		};
 		
 		
 	private:

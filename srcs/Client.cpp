@@ -6,11 +6,11 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/05 16:25:40 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 17:22:06 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Client.hpp"
+#include "../includes/Control.hpp"
 
 Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), user_mode(0), last_active_time(time(0))
 {}
@@ -101,14 +101,4 @@ Client& Client::operator=(const Client& c)
 		}
 	}
 	return (*this);
-}
-
-template <typename t2 >
-bool		Client::operator==(t2& rhs) const {
-	return (my_socket == rhs.my_socket);
-}
-
-template <typename T1>
-bool		Client::operator<(T1& rhs) const {
-	return (token_ping < rhs.token_ping);
 }

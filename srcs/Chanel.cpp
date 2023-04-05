@@ -6,11 +6,11 @@
 /*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/05 16:37:56 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/05 17:22:09 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/Chanel.hpp"
+#include "../includes/Control.hpp"
 
 Chanel::Chanel(std::string name, size_t id):  _id(id), _name(name) {
 	return ;
@@ -36,9 +36,4 @@ bool		Chanel::addClient(Client& client_to_add, mode mode_to_give) {
 
 size_t		Chanel::getNumClient() const {
 	return (_clients_in.size());
-}
-
-template <typename T1>
-bool		Chanel::operator<(T1& rhs) const {
-	return (_id < rhs._id);
 }
