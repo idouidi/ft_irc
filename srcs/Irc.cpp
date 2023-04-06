@@ -216,10 +216,18 @@ bool Irc::parsInfo(Client& client, std::vector<std::string> info)
     return (true);
 }
 
-void Irc::setClientMode(Client& client, std::string cmd,char mode)
+void Irc::setClientMode(Client& client, std::string cmd, char mode)
 {
-    client.setUserMode(mode);
-    sendMessagetoClient(client, SET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, client.getMyUserMode()));
+    //:dedi!~idouidi@my.server.name MODE dedi :+mode
+    if (client.setModes(mode))
+        sendMessagetoClient(client, SET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, mode));
+}
+
+void Irc::unsetClientMode(Client& client, std::string cmd, char mode)
+{
+    //:dedi!~idouidi@my.server.name MODE dedi :-mode
+    if (client.unsetModes(mode))
+        sendMessagetoClient(client, UNSET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, mode));
 }
 
 Client*     Irc::findClient(int fd_client)
@@ -355,7 +363,6 @@ bool Irc::whois(Client& client, std::vector<std::string> cmd)
 
 bool Irc::whowas(Client& client, std::vector<std::string> cmd)
 {
-    std::cout << "func whowhas cmd = " << cmd[0] << std::endl;
     sendMessagetoClient(client, ERR_WASNOSUCHNICK(client.getMyNickname(), cmd[1]) 
     + RPL_ENDOFWHOWAS(client.getMyNickname(), cmd[1]));
     return (true);
@@ -433,24 +440,30 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
     
     return (1);
 }
+
 bool Irc::mode(Client& client, std::vector<std::string> cmd)
 {
-
     //MODE FOR A CLIENT
     if (cmd[1][0] != '#')
     {
         for (std::size_t i = 0; i < cmd[2].size(); i++)
         {
-            if (cmd[2][i] != '+' || cmd[2][i] != '-' || (client.isValidMode(cmd[2][i], ) == 0))
+            client_mode c_m = NON_CLIENT_MODE;
+            if (client.isValidMode(cmd[2][i], c_m) == true)
             {
-                //:my.server.name 501 dedi :Unknown MODE flag
-                continue;
+                    setClientMode(client, cmd[0], cmd[2][i]);
             }
-            else if (cmd[2][i] == '+')
-
-            //:dedi!~idouidi@my.server.name MODE dedi :+w
-        }
-        
+            else if ((cmd[2][i] == '+' || cmd[2][i] == '-') && cmd[2][i + 1]  && client.isValidMode(cmd[2][i + 1], c_m) == true)
+            {
+                if (cmd[2][i] == '+')
+                    setClientMode(client, cmd[0], cmd[2][i + 1]);
+                else if (cmd[2][i] == '-')
+                    unsetClientMode(client, cmd[0], cmd[2][i + 1]);
+                i++;
+            }
+            else
+                sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
+        }   
     }
     //MODE FOR A CHANEL
     else

@@ -154,7 +154,7 @@ void start_server(char *port, char *pswd)
 							continue ;
 						}
 					}
-					else if (cmd[0] != "PONG" && current_client->isUserModeUp() != 0)
+					else if (cmd[0] != "PONG" && current_client->getActiveModes().size() == 0)
 						irc.setClientMode(*current_client, cmd[0],  'i');
 					else
 						irc.execCmd(*current_client, cmd);

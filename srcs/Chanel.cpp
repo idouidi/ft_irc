@@ -89,8 +89,8 @@ std::string					Chanel::listClients()
 std::string				Chanel::listModes()
 {
 	std::string list;
-	for (std::size_t i = 0; i < activeModes.size(); i++)
-		list += activeModes[i];
+	for (std::size_t i = 0; i < active_modes.size(); i++)
+		list += active_modes[i];
 	return (list);
 }
 
@@ -134,8 +134,8 @@ void				Chanel::setModes(char mode)
 	if (isValidMode(mode, idx) == 0)
 		return ;
 
-	for (std::size_t i = 0; i < activeModes.size(); i++)
-		if (idx = activeModes[i])
+	for (std::size_t i = 0; i < active_modes.size(); i++)
+		if (idx == active_modes[i])
 			return ;
-	activeModes.push_back(idx);
+	active_modes.push_back(idx);
 }

@@ -53,23 +53,40 @@
 
 /*
 *   - +o : (operateur)
+*
 *   - +v : (voice) pour donner la permission de parler sur un canal modéré
+*
 *   - +h : (half-op) pour donner des privilèges supplémentaires à un utilisateur sur un canal
+*
 *   - +a : (admin) pour donner des privilèges administratifs à un utilisateur
 *          permet à un utilisateur de devenir automatiquement opérateur dès qu'il se connecte au canal.
+*
 *   - +i : permet de rendre l'utilisateur invisible (son nom n'apparaîtra pas dans la liste des membres du salon)
+*
+*   - +w : permet aux utilisateurs ayant ce mode activé de recevoir certains types de messages dits "importants", 
+*          tels que les erreurs de serveur, les déconnexions et les reconnexions d'utilisateurs importants, etc.
 */
-enum client_mode {o, v, h, a, ii, NON_CLIENT_MODE};
+
+// ====> (ii = i, vu que je peux pas utiliser i dans client_mode et chanel_mode) 
+enum client_mode {o, v, h, a, ii, w, NON_CLIENT_MODE}; 
 
 /*
 *   - +t : canal protégé, seuls les opérateurs peuvent changer le sujet
+*
 *   - +n : pas de messages privés depuis le canal
+*
 *   - +s : canal secret, n'apparaît pas dans la liste des canaux
+*
 *   - +m : modéré, seuls les utilisateurs avec le mode voice ou supérieur peuvent parler
+*
 *   - +i : canal invite-only, seuls les utilisateurs invités peuvent rejoindre le canal
+*
 *   - +p : canal privé, n'apparaît pas dans la liste des canaux publics
+*
 *   - +k : canal avec mot de passe, les utilisateurs doivent fournir le mot de passe pour rejoindre le canal
+*
 *   - +l : limite d'utilisateurs sur le canal, empêche les utilisateurs supplémentaires de rejoindre une fois que la limite est atteinte
+*
 */
 enum chanel_mode {t, n, s, m, i, p, k, l, NON_CHANEL_MODE};
 

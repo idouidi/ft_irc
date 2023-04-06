@@ -50,7 +50,7 @@ class Chanel {
 		std::string								_topic;
 		std::vector<std::string>				black_list;
 		std::vector<std::string>				white_list;
-		std::vector<chanel_mode>				activeModes;
+		std::vector<chanel_mode>				active_modes;
 		client_map								_clients_in;
 };
 

@@ -12,11 +12,11 @@
 
 #include "../includes/Control.hpp"
 
-Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), user_mode(0), last_active_time(time(0))
+Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0))
 {}
 
 Client::Client(const Client& c):my_socket(c.my_socket), token_ping(c.token_ping), nickname(c.nickname), new_client(c.new_client), 
-user_mode(c.user_mode), last_active_time(c.last_active_time)
+last_active_time(c.last_active_time)
 {
 	if (!c.my_chanels.empty())
 	{
@@ -33,7 +33,6 @@ Client& Client::operator=(const Client& c)
 		token_ping = c.token_ping;
 		nickname = c.nickname;
 		new_client = c.new_client;
-		user_mode = c.user_mode;
 		last_active_time =  c.last_active_time;
 		if (!c.my_chanels.empty())
 		{
@@ -50,13 +49,14 @@ int					Client::getMySocket() const { return (my_socket); }
 
 time_t 				Client::getLastActiveTime() const { return (last_active_time); }
 
-char 				Client::getMyUserMode() const {return (user_mode); }
 
 std::string 		Client::getMyNickname() const { return (nickname); }
 
 std::string 		Client::getMyUserName() const { return (username); }
 
 std::string			Client::getToken() const { return (token_ping); }
+
+std::vector<client_mode>& Client::getActiveModes()  { return (active_modes); }
 
 Client::chanel_map& Client::getChanelMap() {return (my_chanels); }
 
@@ -66,13 +66,9 @@ void 				Client::setNickName(std::string nick) { nickname.assign(nick); }
 
 void 				Client::setUserName(std::string user) { username.assign(user); }
 
-void 				Client::setUserMode(char mode) { user_mode = mode; }
-
 void				Client::setLastActiveTime() { last_active_time = time(0); }
 
 bool 				Client::isNewClient() const  { return (new_client); }
-
-bool 				Client::isUserModeUp() const { return (user_mode == 0); }
 
 bool				Client::insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode) 
 {
@@ -98,20 +94,42 @@ bool				Client::isValidMode(char mode, client_mode& idx)
         case 'i':
 			idx = ii;
             return (true);
+        case 'w':
+			idx = w;
+            return (true);
         default:
+			idx = NON_CLIENT_MODE;
             return (false);
     }
 }
 
-void				Client::setModes(char mode)
+bool				Client::setModes(char mode)
 {
 	client_mode idx;
 
 	if (isValidMode(mode, idx) == 0)
-		return ;
+		return (false);
+	for (std::size_t i = 0; i < active_modes.size(); i++)
+		if (idx == active_modes[i])
+			return (false);
+	active_modes.push_back(idx);
+	return (true);
+}
 
-	for (std::size_t i = 0; i < activeModes.size(); i++)
-		if (idx = activeModes[i])
-			return ;
-	activeModes.push_back(idx);
+bool				Client::unsetModes(char mode)
+{
+	client_mode idx;
+
+	if (isValidMode(mode, idx) == 0)
+		return (false);
+
+	for (std::size_t i = 0; i < active_modes.size(); i++)
+	{
+		if (idx == active_modes[i])
+		{
+			active_modes.erase(active_modes.begin() + i);
+			return (true);
+		}
+	}
+	return (false);
 }

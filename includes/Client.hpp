@@ -26,43 +26,43 @@ class Client
 		~Client();
 
 		
-		int			getMySocket() const;
-		char 		getMyUserMode() const;
-		std::string getMyNickname() const;
-		std::string getMyUserName() const;
-		std::string	getToken() const;
-		time_t 		getLastActiveTime() const;
-		chanel_map&	getChanelMap();
+		int							getMySocket() const;
+		char 						getMyUserMode() const;
+		std::string 				getMyNickname() const;
+		std::string 				getMyUserName() const;
+		std::string					getToken() const;
+		time_t 						getLastActiveTime() const;
+		std::vector<client_mode>&	getActiveModes() ;
+		chanel_map&					getChanelMap();
 		
-		void 		setStatusClient(bool status);
-		void 		setNickName(std::string nick);
-		void 		setUserName(std::string user);
-		void 		setUserMode(char mode);
-		void		setLastActiveTime();
-		void		setModes(char mode);
+		void 						setStatusClient(bool status);
+		void 						setNickName(std::string nick);
+		void 						setUserName(std::string user);
+		void 						setUserMode(char mode);
+		void						setLastActiveTime();
+		bool						setModes(char mode);
+		bool						unsetModes(char mode);
 
-		bool 		isNewClient() const;
-		bool 		isUserModeUp() const;
-		bool		isValidMode(char mode, client_mode& idx);
-		bool		insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode);
+		bool 						isNewClient() const;
+		bool						isValidMode(char mode, client_mode& idx);
+		bool						insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode);
 
-		template <typename t2>
-		bool		operator==(t2& rhs) const { return (my_socket == rhs.my_socket); }
+		template <typename T2>
+		bool		operator==(T2& rhs) const { return (my_socket == rhs.my_socket); }
 
 		template<typename T1>
 		bool		operator<(T1& rhs) const{ return (token_ping < rhs.token_ping); }
 
 	private:
 	
-		int										my_socket;
-		std::string								token_ping;
-		std::string 							nickname;
-		std::string								username;
-		std::vector<client_mode>				activeModes;
-		bool									new_client;
-		char									user_mode;
-		time_t									last_active_time;
-		chanel_map								my_chanels;
+		int													my_socket;
+		std::string											token_ping;
+		std::string 										nickname;
+		std::string											username;
+		std::vector<client_mode>							active_modes;
+		bool												new_client;
+		time_t												last_active_time;
+		chanel_map											my_chanels;
 		
 };
 

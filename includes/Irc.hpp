@@ -66,6 +66,7 @@ class Irc
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 	void setClientMode(Client& client, std::string cmd, char mode);
+	void unsetClientMode(Client& client, std::string cmd, char mode);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 
