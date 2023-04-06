@@ -26,7 +26,7 @@
 # define RPL_MYINFO(nickname, version) (":localhost 004 " + nickname + " localhost " + version + "\r\n")
 
             /* = = =    MODE    = = = */
-# define SET_CLIENT_MODE(nickname, username, cmd, mode) (user_id(nickname, username, cmd) + nickname + " :+" + mode + "\r\n")
+# define SET_CLIENT_MODE(nickname, username, cmd, client_mode) (user_id(nickname, username, cmd) + nickname + " :+" + client_mode + "\r\n")
 // 324
 # define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + "+" chanel_mods + "\r\n")
 // 329
@@ -50,7 +50,7 @@
 // 318
 # define RPL_ENDOFWHOIS(nickname, other_nick) (":localhost 318 " + nickname + " " + other_nick + " :End of /WHOIS list.\r\n")
 // 352
-# define RPL_WHOREPLY(nickname, chanel, username, status) (":localhost 352 " + nickname + " " + chanel + " ~" + username + "localhost localhost " + nickname + " " + status + "@ :0 " + username + "\r\n")
+# define RPL_WHOREPLY(nickname, chanel, username, status, client_mode) (":localhost 352 " + nickname + " " + chanel + " ~" + username + "localhost localhost " + nickname + " " + status + client_mode + " :0 " + username + "\r\n")
 // 369
 # define RPL_ENDOFWHOWAS(nickname, other_nick) (":localhost 369 " + nickname + " " + other_nick + " :End of WHOWAS\r\n")
 
@@ -84,7 +84,7 @@
 
 # define SET_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + ":" + chanel + "\r\n")
 // 353
-# define RPL_NAMREPLY(nickname, chanel) (":localhost 353 " + nickname + " = " + chanel + " :@" + nickname + "\r\n")
+# define RPL_NAMREPLY(nickname, chanel, list_client) (":localhost 353 " + nickname + " = " + chanel + " :" + list_client +"\r\n")
 // 366
 # define RPL_ENDOFNAMES(nickname, chanel) (":localhost 366 " + nickname + " " + chanel + " :End of /NAMES list.\r\n")
 

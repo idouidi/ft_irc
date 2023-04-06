@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/05 18:06:39 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/06 12:54:05 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ class Irc
 	struct epoll_event						event;
 	struct epoll_event						events[MAX_EVENTS];
 	struct sockaddr_in 						server_addr;
-	std::map<Chanel, std::vector<mode_client> > 						_chanel;
+	std::vector<Chanel> 					_chanel;
 	std::vector<Client>						_client;
 	std::string 							server_pswd;
 

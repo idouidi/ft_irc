@@ -295,7 +295,6 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
     return (0);
 }
 
-
 bool Irc::ping(Client& client, std::vector<std::string> cmd)
 {
     (void)cmd;
@@ -314,7 +313,10 @@ bool Irc::who(Client& client, std::vector<std::string> cmd)
 {
     //the letter H to indicate that the user is here,
     // the letter G to indicate that the user is gone.
-    sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H")
+
+    //"@" client is op
+    //"" normal client
+    sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", "@")
     + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
     return (1);
 }
@@ -387,8 +389,20 @@ bool Irc::msg(Client& client, std::vector<std::string> cmd)
 
 bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
+    // if chanel does not exist
+        //_chanel.push_back(Chanel(cmd[1]))
+        //Chanel current_chanel = _chanel.back();
+    // else 
+        // Chanel current_chanel = find the chanel with cmd[1];
+    
+    // if client is not ban in current_chanel
+        // if client it's not already in current_chanel
+             //current_chanel.map.insert(client, client_mode)
+            // client.map.insert(current_chanel, chanel_mode)
+    
+    // std::string list_client = curren_chanel.list_client();
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
-    + RPL_NAMREPLY(client.getMyNickname(), cmd[1]) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
+    /*+ RPL_NAMREPLY(client.getMyNickname(), cmd[1], list_client)*/ + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
     
     return (1);
 }

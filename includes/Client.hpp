@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/05 18:03:20 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/06 12:53:09 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,12 @@
 class Client
 {
 	public:
+
+		enum chanel_mode { I, W, O, P, S, T, N, M, L, B, K, V };
 		
 		Client(int socket, std::string token);
-
 		Client(const Client& c);
-
+		Client& 	operator=(const Client& c);
 		~Client();
 
 		
@@ -41,19 +42,14 @@ class Client
 		bool 		isNewClient() const;
 		bool 		isUserModeUp() const;
 
-		bool		insertChanel(Chanel& chanel_to_add, mode_client chan_mode);
+		bool		insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode);
 
-		Client& 	operator=(const Client& c);
 
 		template <typename t2>
-		bool		operator==(t2& rhs) const {
-			return (my_socket == rhs.my_socket);
-		};
+		bool		operator==(t2& rhs) const { return (my_socket == rhs.my_socket); }
 
 		template<typename T1>
-		bool		operator<(T1& rhs) const{
-			return (token_ping < rhs.token_ping);
-		};
+		bool		operator<(T1& rhs) const{ return (token_ping < rhs.token_ping); }
 
 	private:
 	
@@ -64,7 +60,7 @@ class Client
 		bool									new_client;
 		char									user_mode;
 		time_t									last_active_time;
-		std::map<Chanel, mode_client>			my_chanels;
+		std::map<Chanel, chanel_mode>			my_chanels;
 		
 };
 
