@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 12:54:05 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/06 14:30:22 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,8 @@ class Irc
 
 	Client* findClient(int fd_client);
 	Client* findClient(std::string nick);
+
+	Chanel* findChanel(std::string chanel_name);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 	bool msg(Client&, std::vector<std::string>);

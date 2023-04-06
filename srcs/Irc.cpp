@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/05 17:49:24 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/06 14:29:44 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,6 +242,16 @@ Client*     Irc::findClient(std::string nick)
     return (NULL);
 }
 
+Chanel*     Irc::findChanel(std::string chanel_name)
+{
+    for (size_t i = 0; i < _chanel.size(); i++)
+    {
+        if (_chanel[i].getChanelName() == chanel_name)
+            return (&_chanel[i]);
+    }
+    return (NULL);
+}
+
 std::string Irc::clientLastActiveTime(Client& client)
 {
     char buffer[20];
@@ -389,16 +399,31 @@ bool Irc::msg(Client& client, std::vector<std::string> cmd)
 
 bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
-    // if chanel does not exist
-        //_chanel.push_back(Chanel(cmd[1]))
-        //Chanel current_chanel = _chanel.back();
-    // else 
-        // Chanel current_chanel = find the chanel with cmd[1];
+    Chanel *current_chanel;
+
+    current_chanel = findChanel(cmd[1]);
+    if (current_chanel == NULL)
+    {
+        _chanel.push_back(Chanel(cmd[1], _chanel.size() + 1));
+        current_chanel = &_chanel[_chanel.size() - 1];
+    }
     
-    // if client is not ban in current_chanel
-        // if client it's not already in current_chanel
-             //current_chanel.map.insert(client, client_mode)
-            // client.map.insert(current_chanel, chanel_mode)
+    if (current_chanel->isPresentInList(current_chanel->getBlackList(), client.getMyNickname()))
+        return (0);
+    else if (current_chanel->getWhiteList().size() > 0 
+            && current_chanel->isPresentInList(current_chanel->getWhiteList(), client.getMyNickname()) == 0)
+        return (0);
+    else if (current_chanel->isPresentInChanel(client.getMyNickname()))
+        return (0);
+    else
+    {
+        std::cout << "insert a chanel in client and insert the client in the chanel" << std::endl; 
+        // LE DEUXIEME PARAM REPRESENTE LE MODE QU'ON DOIT METTRE POUR LE CLIENT ET LE CHANEL
+        // - LE CLIENT A UN MODE DANS UN CHANEL
+        // - LE CHANEL A UN OU DES MODES
+        // current_chanel->getclientMap().insert(client, std::atoi(cmd[1].c_str()));
+        // client.getChanelMap().insert(current_chanel, std::atoi(cmd[1].c_str()));
+    }
     
     // std::string list_client = curren_chanel.list_client();
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])

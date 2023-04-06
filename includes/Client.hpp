@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 12:53:09 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/06 14:14:13 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,9 @@ class Client
 {
 	public:
 
-		enum chanel_mode { I, W, O, P, S, T, N, M, L, B, K, V };
+		enum									chanel_mode { I, W, O, P, S, T, N, M, L, B, K, V };
+		typedef std::map<Chanel, chanel_mode>	chanel_map;
+		typedef chanel_map::iterator			map_iterator;
 		
 		Client(int socket, std::string token);
 		Client(const Client& c);
@@ -31,6 +33,7 @@ class Client
 		std::string getMyUserName() const;
 		char 		getMyUserMode() const;
 		time_t 		getLastActiveTime() const;
+		chanel_map&	getChanelMap();
 		std::string	getToken() const;
 		
 		void 		setStatusClient(bool status);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/05 17:22:06 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/06 14:15:32 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,33 +46,35 @@ Client& Client::operator=(const Client& c)
 
 Client::~Client() {}
 
-int			Client::getMySocket() const { return (my_socket); }
+int					Client::getMySocket() const { return (my_socket); }
 
-time_t 		Client::getLastActiveTime() const { return (last_active_time); }
+time_t 				Client::getLastActiveTime() const { return (last_active_time); }
 
-char 		Client::getMyUserMode() const {return (user_mode); }
+char 				Client::getMyUserMode() const {return (user_mode); }
 
-std::string Client::getMyNickname() const { return (nickname); }
+std::string 		Client::getMyNickname() const { return (nickname); }
 
-std::string Client::getMyUserName() const { return (username); }
+std::string 		Client::getMyUserName() const { return (username); }
 
-std::string	Client::getToken() const { return (token_ping); }
+std::string			Client::getToken() const { return (token_ping); }
 
-void 		Client::setStatusClient(bool status) { new_client = status; }
+Client::chanel_map& Client::getChanelMap() {return (my_chanels); }
 
-void 		Client::setNickName(std::string nick) { nickname.assign(nick); }
+void 				Client::setStatusClient(bool status) { new_client = status; }
 
-void 		Client::setUserName(std::string user) { username.assign(user); }
+void 				Client::setNickName(std::string nick) { nickname.assign(nick); }
 
-void 		Client::setUserMode(char mode) { user_mode = mode; }
+void 				Client::setUserName(std::string user) { username.assign(user); }
 
-void		Client::setLastActiveTime() { last_active_time = time(0); }
+void 				Client::setUserMode(char mode) { user_mode = mode; }
 
-bool 		Client::isNewClient() const  { return (new_client); }
+void				Client::setLastActiveTime() { last_active_time = time(0); }
 
-bool 		Client::isUserModeUp() const { return (user_mode == 0); }
+bool 				Client::isNewClient() const  { return (new_client); }
 
-bool		Client::insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode) 
+bool 				Client::isUserModeUp() const { return (user_mode == 0); }
+
+bool				Client::insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode) 
 {
 	return (my_chanels.insert(std::pair<Chanel, chanel_mode>(chanel_to_add, chan_mode)).second);
 }
