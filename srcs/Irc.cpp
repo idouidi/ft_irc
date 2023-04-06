@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 14:29:44 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/06 19:19:05 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -404,8 +404,10 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
     current_chanel = findChanel(cmd[1]);
     if (current_chanel == NULL)
     {
-        _chanel.push_back(Chanel(cmd[1], _chanel.size() + 1));
+        _chanel.push_back(Chanel(cmd[1], _chanel.size() + 1)); // ( _id = _chanel.size() + 1 )
         current_chanel = &_chanel[_chanel.size() - 1];
+        current_chanel->setModes('n');
+        current_chanel->setModes('t');
     }
     
     if (current_chanel->isPresentInList(current_chanel->getBlackList(), client.getMyNickname()))
@@ -425,7 +427,7 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         // client.getChanelMap().insert(current_chanel, std::atoi(cmd[1].c_str()));
     }
     
-    // std::string list_client = curren_chanel.list_client();
+    // std::string list_client = current_chanel.list_client();
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
     /*+ RPL_NAMREPLY(client.getMyNickname(), cmd[1], list_client)*/ + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
     
@@ -433,22 +435,54 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
 }
 bool Irc::mode(Client& client, std::vector<std::string> cmd)
 {
-    if (cmd.size() == 2)
-    {
-        // - "n" indique que le canal est en mode "no external messages" 
-        // (seuls les utilisateurs présents dans le canal peuvent envoyer des messages)
-        // - "t" indique que le canal est en mode "topic lock" (seul un opérateur de canal peut changer le sujet du canal).
-        time_t t = time(0);
-        std::stringstream		ss;
-	    std::string				stime;
 
-	    ss << t;
-	    ss >> stime;
-        sendMessagetoClient(client, RPL_CHANNELMODEIS(client.getMyNickname(), cmd[1], "nt")
-        + RPL_CREATIONTIME(client.getMyNickname(), cmd[1], stime));
+    //MODE FOR A CLIENT
+    if (cmd[1][0] != '#')
+    {
+        for (std::size_t i = 0; i < cmd[2].size(); i++)
+        {
+            if (cmd[2][i] != '+' || cmd[2][i] != '-' || (client.isValidMode(cmd[2][i], ) == 0))
+            {
+                //:my.server.name 501 dedi :Unknown MODE flag
+                continue;
+            }
+            else if (cmd[2][i] == '+')
+
+            //:dedi!~idouidi@my.server.name MODE dedi :+w
+        }
+        
     }
+    //MODE FOR A CHANEL
     else
-        sendMessagetoClient(client, RPL_ENDOFBANLIST(client.getMyNickname(), cmd[1]));
+    {
+        Chanel* current_chanel;
+        current_chanel = findChanel(cmd[1]);
+        if (current_chanel == NULL)
+        {
+            sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
+            return (false);
+        }
+        else if (cmd.size() == 3)
+        {
+            if (cmd[2] == "b")
+                sendMessagetoClient(client, RPL_ENDOFBANLIST(client.getMyNickname(), cmd[1]));
+            // check over mode....
+        }
+        else
+        {
+            time_t t = time(0);
+            std::stringstream		ss;
+	        std::string				stime;
+            std::string             listChanelMode;
+
+	        ss << t;
+	        ss >> stime;
+
+            listChanelMode = current_chanel->listModes();
+            sendMessagetoClient(client, RPL_CHANNELMODEIS(client.getMyNickname(), cmd[1], + listChanelMode)
+            + RPL_CREATIONTIME(client.getMyNickname(), cmd[1], stime));
+        }
+    }
     return (true);
 }
 

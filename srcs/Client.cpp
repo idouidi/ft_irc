@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/06 14:15:32 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/06 18:49:38 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,41 @@ bool 				Client::isUserModeUp() const { return (user_mode == 0); }
 bool				Client::insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode) 
 {
 	return (my_chanels.insert(std::pair<Chanel, chanel_mode>(chanel_to_add, chan_mode)).second);
+}
+
+bool				Client::isValidMode(char mode, client_mode& idx)
+{
+    switch (mode)
+    {
+        case 'o':
+			idx = o;
+            return (true);
+        case 'v':
+			idx = v;
+            return (true);
+        case 'h':
+			idx = h;
+            return (true);
+        case 'a':
+			idx = a;
+            return (true);
+        case 'i':
+			idx = ii;
+            return (true);
+        default:
+            return (false);
+    }
+}
+
+void				Client::setModes(char mode)
+{
+	client_mode idx;
+
+	if (isValidMode(mode, idx) == 0)
+		return ;
+
+	for (std::size_t i = 0; i < activeModes.size(); i++)
+		if (idx = activeModes[i])
+			return ;
+	activeModes.push_back(idx);
 }

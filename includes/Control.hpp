@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Control.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/05 18:03:47 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/06 19:17:20 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,27 @@
 # define MAX_EVENTS         10
 # define BUFFER_SIZE        1024
 
-enum mode_client { I, W, O, P, S, T, N, M, L, B, K, V };
+/*
+*   - +o : (operateur)
+*   - +v : (voice) pour donner la permission de parler sur un canal modéré
+*   - +h : (half-op) pour donner des privilèges supplémentaires à un utilisateur sur un canal
+*   - +a : (admin) pour donner des privilèges administratifs à un utilisateur
+*          permet à un utilisateur de devenir automatiquement opérateur dès qu'il se connecte au canal.
+*   - +i : permet de rendre l'utilisateur invisible (son nom n'apparaîtra pas dans la liste des membres du salon)
+*/
+enum client_mode {o, v, h, a, ii, NON_CLIENT_MODE};
+
+/*
+*   - +t : canal protégé, seuls les opérateurs peuvent changer le sujet
+*   - +n : pas de messages privés depuis le canal
+*   - +s : canal secret, n'apparaît pas dans la liste des canaux
+*   - +m : modéré, seuls les utilisateurs avec le mode voice ou supérieur peuvent parler
+*   - +i : canal invite-only, seuls les utilisateurs invités peuvent rejoindre le canal
+*   - +p : canal privé, n'apparaît pas dans la liste des canaux publics
+*   - +k : canal avec mot de passe, les utilisateurs doivent fournir le mot de passe pour rejoindre le canal
+*   - +l : limite d'utilisateurs sur le canal, empêche les utilisateurs supplémentaires de rejoindre une fois que la limite est atteinte
+*/
+enum chanel_mode {t, n, s, m, i, p, k, l, NON_CHANEL_MODE};
 
 std::string getDateTime();
 

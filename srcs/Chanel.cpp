@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/06 14:16:28 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/06 18:31:53 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,19 +67,75 @@ size_t						Chanel::getNumClient() const
 	return (_clients_in.size());
 }
 
-std::string					Chanel::list_client()
+std::string					Chanel::listClients()
 {
 	map_iterator it = _clients_in.begin();
 	map_iterator ite = _clients_in.end();
 	std::string list;
+	std::string modes;
 
 	for (; it != ite; it++)
 	{
-		char mode = it->second;
+		for (std::size_t i = 0; i < it->second.size(); i++)
+			modes += it->second[i]; 
 		std::string nick = it->first.getMyNickname();
-		list += mode + nick;
+		list += modes + nick;
 		if (it++ != ite)
 			list += " ";
 	}
 	return (list);
+}
+
+std::string				Chanel::listModes()
+{
+	std::string list;
+	for (std::size_t i = 0; i < activeModes.size(); i++)
+		list += activeModes[i];
+	return (list);
+}
+
+bool				Chanel::isValidMode(char mode, chanel_mode& idx)
+{
+    switch (mode)
+    {
+        case 't':
+			idx = t;
+            return (true);
+        case 'n':
+			idx = n;
+            return (true);
+        case 's':
+			idx = s;
+            return (true);
+        case 'm':
+			idx = m;
+            return (true);
+        case 'i':
+			idx = i;
+            return (true);
+        case 'p':
+			idx = p;
+            return (true);
+        case 'k':
+			idx = k;
+            return (true);
+        case 'l':
+			idx = l;
+            return (true);
+        default:
+            return (false);
+    }
+}
+
+void				Chanel::setModes(char mode)
+{
+	chanel_mode idx;
+
+	if (isValidMode(mode, idx) == 0)
+		return ;
+
+	for (std::size_t i = 0; i < activeModes.size(); i++)
+		if (idx = activeModes[i])
+			return ;
+	activeModes.push_back(idx);
 }

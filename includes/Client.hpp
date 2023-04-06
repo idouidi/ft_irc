@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 14:14:13 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/06 18:48:41 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,8 @@
 class Client
 {
 	public:
-
-		enum									chanel_mode { I, W, O, P, S, T, N, M, L, B, K, V };
-		typedef std::map<Chanel, chanel_mode>	chanel_map;
-		typedef chanel_map::iterator			map_iterator;
+		typedef std::map<Chanel, std::vector<chanel_mode> >	chanel_map;
+		typedef chanel_map::iterator						map_iterator;
 		
 		Client(int socket, std::string token);
 		Client(const Client& c);
@@ -29,24 +27,24 @@ class Client
 
 		
 		int			getMySocket() const;
+		char 		getMyUserMode() const;
 		std::string getMyNickname() const;
 		std::string getMyUserName() const;
-		char 		getMyUserMode() const;
+		std::string	getToken() const;
 		time_t 		getLastActiveTime() const;
 		chanel_map&	getChanelMap();
-		std::string	getToken() const;
 		
 		void 		setStatusClient(bool status);
 		void 		setNickName(std::string nick);
 		void 		setUserName(std::string user);
 		void 		setUserMode(char mode);
 		void		setLastActiveTime();
+		void		setModes(char mode);
 
 		bool 		isNewClient() const;
 		bool 		isUserModeUp() const;
-
+		bool		isValidMode(char mode, client_mode& idx);
 		bool		insertChanel(Chanel& chanel_to_add, chanel_mode chan_mode);
-
 
 		template <typename t2>
 		bool		operator==(t2& rhs) const { return (my_socket == rhs.my_socket); }
@@ -60,10 +58,11 @@ class Client
 		std::string								token_ping;
 		std::string 							nickname;
 		std::string								username;
+		std::vector<client_mode>				activeModes;
 		bool									new_client;
 		char									user_mode;
 		time_t									last_active_time;
-		std::map<Chanel, chanel_mode>			my_chanels;
+		chanel_map								my_chanels;
 		
 };
 
