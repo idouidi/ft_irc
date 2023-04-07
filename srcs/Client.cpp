@@ -61,7 +61,7 @@ void						Client::getMyUserMode() const {}
 
 std::string					Client::getToken() const { return (token_ping); }
 
-std::vector<client_mode>& 	Client::getActiveModes()  { return (active_modes); }
+std::vector<client_mode_e>& 	Client::getActiveModes()  { return (active_modes); }
 
 Client::chanel_map& 		Client::getChanelMap() {return (my_chanels); }
 
@@ -84,7 +84,7 @@ void				Client::setLastActiveTime() { last_active_time = time(0); }
 
 bool				Client::setModes(char mode)
 {
-	client_mode idx;
+	client_mode_e idx;
 
 	if (isValidMode(mode, idx) == 0)
 		return (false);
@@ -97,7 +97,7 @@ bool				Client::setModes(char mode)
 
 bool				Client::unsetModes(char mode)
 {
-	client_mode idx;
+	client_mode_e idx;
 
 	if (isValidMode(mode, idx) == 0)
 		return (false);
@@ -113,9 +113,9 @@ bool				Client::unsetModes(char mode)
 	return (false);
 }
 
-bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode> chan_mode) 
+bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode_e> chan_mode) 
 {
-	return (my_chanels.insert(std::pair<Chanel, std::vector<chanel_mode> >(chanel_to_add, chan_mode)).second);
+	return (my_chanels.insert(std::pair<Chanel, std::vector<chanel_mode_e> >(chanel_to_add, chan_mode)).second);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +124,7 @@ bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode> cha
 bool 				Client::isNewClient() const  { return (new_client); }
 
 
-bool				Client::isValidMode(char mode, client_mode& idx)
+bool				Client::isValidMode(char mode, client_mode_e& idx)
 {
     switch (mode)
     {

@@ -407,7 +407,7 @@ bool Irc::msg(Client& client, std::vector<std::string> cmd)
 bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
     Chanel *current_chanel;
-	// client_mode mode_test;
+	// client_mode_e mode_test;
     bool founder = 0;
 
     current_chanel = findChanel(cmd[1]);
@@ -434,14 +434,14 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         // - LE CLIENT A UN OU DES MODE DANS UN CHANEL
         // - LE CHANEL A UN OU DES MODES
         
-        std::vector<client_mode>	client_mode_in_chanel; // Need to do 
-		std::vector<chanel_mode>	chanel_mode; // Need to do
+        std::vector<client_mode_e>	client_mode_in_chanel; // Need to do 
+		std::vector<chanel_mode_e>	chanel_mode; // Need to do
         if (founder == 1)
 			client_mode_in_chanel.push_back(OPERATOR);
         else
 			client_mode_in_chanel.push_back(NON_CLIENT_MODE);
 		current_chanel->addClient(client, client_mode_in_chanel);
-		client.insertChanel(*current_chanel, current_chanel->getActiveModes());
+		// client.insertChanel(*current_chanel, current_chanel->getActiveModes());
     }
     
     std::string list = current_chanel->listClients();
@@ -458,7 +458,7 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
     {
         for (std::size_t i = 0; i < cmd[2].size(); i++)
         {
-            client_mode c_m = NON_CLIENT_MODE;
+            client_mode_e c_m = NON_CLIENT_MODE;
             if (client.isValidMode(cmd[2][i], c_m) == true)
             {
                     setClientMode(client, cmd[0], cmd[2][i]);

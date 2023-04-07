@@ -28,11 +28,13 @@ std::vector<std::string>&	Chanel::getWhiteList() { return (_white_list); }
 
 Chanel::client_map&			Chanel::getclientMap() { return (_clients_in); }
 
-std::vector<chanel_mode>&	Chanel::getActiveModes() { return (_active_modes); }
+std::vector<chanel_mode_e>&	Chanel::getActiveModes() { return (_active_modes); }
 
-bool						Chanel::addClient(Client& client_to_add, std::vector<client_mode> mode_to_give) 
+bool						Chanel::addClient(Client& client_to_add, std::vector<client_mode_e> mode_to_give) 
 {
-	return (_clients_in.insert(std::pair<Client, std::vector<client_mode> >(client_to_add, mode_to_give)).second);
+	_clients_in.insert(std::make_pair(client_to_add, mode_to_give));
+	std::cout << "client_to_add: [" << client_to_add.getToken()  << "]" << "mode_togive: [" << mode_to_give[0] << "]" << std::endl; 
+	return true;
 }
 
 bool						Chanel::deleteClient(Client& client_to_delete) 
@@ -80,6 +82,7 @@ std::string					Chanel::listClients()
 
 	for (; it != ite; it++)
 	{
+		std::cout << "test" << std::endl;
 		for (std::size_t i = 0; i < it->second.size(); i++)
 		{
 			if (it->second[i] == OPERATOR)
@@ -89,7 +92,8 @@ std::string					Chanel::listClients()
 		}
 		std::string nick = it->first.getMyNickname();
 		list += modes + nick;
-		if (it++ != ite)
+		map_iterator cpy = it;
+		if (++cpy != ite)
 			list += " ";
 	}
 	return (list);
@@ -104,7 +108,7 @@ std::string				Chanel::listModes()
 }
 
 
-bool				Chanel::isValidMode(char mode, chanel_mode& idx)
+bool				Chanel::isValidMode(char mode, chanel_mode_e& idx)
 {
     switch (mode)
     {
@@ -139,7 +143,7 @@ bool				Chanel::isValidMode(char mode, chanel_mode& idx)
 
 void				Chanel::setModes(char mode)
 {
-	chanel_mode idx;
+	chanel_mode_e idx;
 
 	if (isValidMode(mode, idx) == 0)
 		return ;
