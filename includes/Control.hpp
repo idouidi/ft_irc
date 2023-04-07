@@ -66,9 +66,7 @@
 *   - +w : permet aux utilisateurs ayant ce mode activé de recevoir certains types de messages dits "importants", 
 *          tels que les erreurs de serveur, les déconnexions et les reconnexions d'utilisateurs importants, etc.
 */
-
-// ====> (ii = i, vu que je peux pas utiliser i dans client_mode et chanel_mode) 
-enum client_mode {o, v, h, a, ii, w, NON_CLIENT_MODE}; 
+enum client_mode {OPERATOR, VOICE, HALF_OP, ADMIN, INVISIBLE, WALLOPS, NON_CLIENT_MODE}; 
 
 /*
 *   - +t : canal protégé, seuls les opérateurs peuvent changer le sujet
@@ -88,7 +86,7 @@ enum client_mode {o, v, h, a, ii, w, NON_CLIENT_MODE};
 *   - +l : limite d'utilisateurs sur le canal, empêche les utilisateurs supplémentaires de rejoindre une fois que la limite est atteinte
 *
 */
-enum chanel_mode {t, n, s, m, i, p, k, l, NON_CHANEL_MODE};
+enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, NON_CHANEL_MODE};
 
 std::string getDateTime();
 

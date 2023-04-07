@@ -35,6 +35,7 @@ class Chanel {
 		size_t						getNumClient() const;
 		std::vector<std::string>&	getBlackList();
 		std::vector<std::string>&	getWhiteList();
+		std::vector<chanel_mode>&	getActiveModes() ;
 		client_map&					getclientMap();
 		void						setModes(char mode);
 
@@ -50,7 +51,7 @@ class Chanel {
 		std::string								_topic;
 		std::vector<std::string>				black_list;
 		std::vector<std::string>				white_list;
-		std::vector<chanel_mode>				active_modes;
+		std::vector<chanel_mode>				active_modes; // mode in chanel
 		client_map								_clients_in;
 };
 

@@ -24,7 +24,9 @@ std::vector<std::string>&	Chanel::getBlackList() { return (black_list); }
 
 std::vector<std::string>&	Chanel::getWhiteList() { return (white_list); }
 
-Chanel::client_map&			Chanel::getclientMap() {return (_clients_in); }
+Chanel::client_map&			Chanel::getclientMap() { return (_clients_in); }
+
+std::vector<chanel_mode>&	Chanel::getActiveModes() { return (active_modes); }
 
 bool						Chanel::addClient(Client& client_to_add, client_mode mode_to_give) 
 {
@@ -77,7 +79,12 @@ std::string					Chanel::listClients()
 	for (; it != ite; it++)
 	{
 		for (std::size_t i = 0; i < it->second.size(); i++)
-			modes += it->second[i]; 
+		{
+			if (it->second[i] == OPERATOR)
+				modes += '@';
+			else if (it->second[i] == VOICE)
+				modes += '+';
+		}
 		std::string nick = it->first.getMyNickname();
 		list += modes + nick;
 		if (it++ != ite)
@@ -99,28 +106,28 @@ bool				Chanel::isValidMode(char mode, chanel_mode& idx)
     switch (mode)
     {
         case 't':
-			idx = t;
+			idx = TOPIC_PROTECTION;
             return (true);
         case 'n':
-			idx = n;
+			idx = NO_EXTERNAL_MSG;
             return (true);
         case 's':
-			idx = s;
+			idx = SECRET;
             return (true);
         case 'm':
-			idx = m;
+			idx = MODERATED;
             return (true);
         case 'i':
-			idx = i;
+			idx = INVITE_ONLY;
             return (true);
         case 'p':
-			idx = p;
+			idx = PRIVATE;
             return (true);
         case 'k':
-			idx = k;
+			idx = KEY;
             return (true);
         case 'l':
-			idx = l;
+			idx = LIMIT;
             return (true);
         default:
             return (false);

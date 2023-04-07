@@ -407,6 +407,7 @@ bool Irc::msg(Client& client, std::vector<std::string> cmd)
 bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
     Chanel *current_chanel;
+    // bool founder = 0;
 
     current_chanel = findChanel(cmd[1]);
     if (current_chanel == NULL)
@@ -415,6 +416,7 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         current_chanel = &_chanel[_chanel.size() - 1];
         current_chanel->setModes('n');
         current_chanel->setModes('t');
+        // founder = 1;
     }
     
     if (current_chanel->isPresentInList(current_chanel->getBlackList(), client.getMyNickname()))
@@ -428,15 +430,23 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
     {
         std::cout << "insert a chanel in client and insert the client in the chanel" << std::endl; 
         // LE DEUXIEME PARAM REPRESENTE LE MODE QU'ON DOIT METTRE POUR LE CLIENT ET LE CHANEL
-        // - LE CLIENT A UN MODE DANS UN CHANEL
+        // - LE CLIENT A UN OU DES MODE DANS UN CHANEL
         // - LE CHANEL A UN OU DES MODES
-        // current_chanel->getclientMap().insert(client, std::atoi(cmd[1].c_str()));
-        // client.getChanelMap().insert(current_chanel, std::atoi(cmd[1].c_str()));
+        
+        // std::vector<client_mode> client_mode_in_chanel;
+        // if (founder == 1)
+        //     client_mode mode = OPERATOR;
+        // else
+        //      client_mode mode = NON_CLIENT_MODE;
+        // client_mode_in_chanel.push_back(mode);
+
+        // client.getChanelMap().insert(current_chanel, current_chanel->getActiveModes());
+        // current_chanel->getclientMap().insert(client, client_mode_in_chanel);
     }
     
-    // std::string list_client = current_chanel.list_client();
+    std::string list = current_chanel->listClients();
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
-    /*+ RPL_NAMREPLY(client.getMyNickname(), cmd[1], list_client)*/ + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
+    + RPL_NAMREPLY(client.getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
     
     return (1);
 }
@@ -483,6 +493,7 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
         }
         else
         {
+
             time_t t = time(0);
             std::stringstream		ss;
 	        std::string				stime;

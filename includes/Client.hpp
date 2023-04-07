@@ -59,7 +59,7 @@ class Client
 		std::string											token_ping;
 		std::string 										nickname;
 		std::string											username;
-		std::vector<client_mode>							active_modes;
+		std::vector<client_mode>							active_modes; //mode in server
 		bool												new_client;
 		time_t												last_active_time;
 		chanel_map											my_chanels;

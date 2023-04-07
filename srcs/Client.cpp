@@ -80,22 +80,22 @@ bool				Client::isValidMode(char mode, client_mode& idx)
     switch (mode)
     {
         case 'o':
-			idx = o;
+			idx = OPERATOR;
             return (true);
         case 'v':
-			idx = v;
+			idx = VOICE;
             return (true);
         case 'h':
-			idx = h;
+			idx = HALF_OP;
             return (true);
         case 'a':
-			idx = a;
+			idx = ADMIN;
             return (true);
         case 'i':
-			idx = ii;
+			idx = INVISIBLE;
             return (true);
         case 'w':
-			idx = w;
+			idx = WALLOPS;
             return (true);
         default:
 			idx = NON_CLIENT_MODE;
