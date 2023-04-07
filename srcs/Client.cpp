@@ -65,6 +65,10 @@ std::vector<client_mode_e>& 	Client::getActiveModes()  { return (active_modes); 
 
 Client::chanel_map& 		Client::getChanelMap() {return (my_chanels); }
 
+Chanel*						Client::getCurentChanel() const {
+	return (current_chanel);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -75,8 +79,8 @@ void 				Client::setNickName(std::string nick) { nickname.assign(nick); }
 
 void 				Client::setUserName(std::string user) { username.assign(user); }
 
-void				Client::setCurrentChanel(Chanel& current) {
-	current_chanel = &current;
+void				Client::setCurrentChanel(Chanel* current) {
+	current_chanel = current;
 	return ;
 }
 

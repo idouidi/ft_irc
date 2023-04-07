@@ -94,6 +94,7 @@ class Irc
 	bool whowas(Client&, std::vector<std::string>);
 	bool ping(Client&, std::vector<std::string>);
 	bool pong(Client&, std::vector<std::string>);
+	bool privateMessage(Client&, std::vector<std::string>);
 
 	bool execCmd(Client& client , std::vector<std::string>);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/

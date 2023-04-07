@@ -281,7 +281,9 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                                                                 &Irc::whois,
                                                                 &Irc::whowas,
                                                                 &Irc::ping,
-																&Irc::pong};
+																&Irc::pong,
+                                                                &Irc::privateMessage};
+
     std::string ref[] = {"MSG",
                         "JOIN",
                         "MODE",
@@ -294,6 +296,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                         "WHOWAS",
                         "PING", 
 						"PONG",
+                        "PRIVMSG",
                         "NULL"};
 
     std::size_t size = 0;
@@ -441,13 +444,13 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         else
 			client_mode_in_chanel.push_back(NON_CLIENT_MODE);
 		current_chanel->addClient(client, client_mode_in_chanel);
-		// client.insertChanel(*current_chanel, current_chanel->getActiveModes());
+		client.insertChanel(*current_chanel, current_chanel->getActiveModes());
     }
     
     std::string list = current_chanel->listClients();
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
     + RPL_NAMREPLY(client.getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
-    
+    client.setCurrentChanel(current_chanel);
     return (1);
 }
 
@@ -553,4 +556,15 @@ bool Irc::quit(Client& client, std::vector<std::string> cmd)
     }
     eraseClient(client);
     return (1);
+}
+
+
+bool    Irc::privateMessage(Client& client, std::vector<std::string> cmd) {
+    //  ERR_CANNOTSENDTOCHAN 404
+    Chanel*     current =  client.getCurentChanel();
+    Chanel::client_map client_map = current->getclientMap();
+    for (Chanel::map_iterator it = client_map.begin(), ite = client_map.end(); it != ite, it++) {
+        sendMessagetoClient(it->first, cmd[2]);
+    }
+    return true;
 }

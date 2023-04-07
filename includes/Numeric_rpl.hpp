@@ -95,5 +95,8 @@
 // 366
 # define RPL_ENDOFNAMES(nickname, chanel) (":localhost 366 " + nickname + " " + chanel + " :End of /NAMES list.\r\n")
 
+            /* = = =    PRV MESSAGES     = = = */
+
+# define RPL_PRIVMSG(target, msg) (msg + "\r\n")
 
 #endif

@@ -82,7 +82,6 @@ std::string					Chanel::listClients()
 
 	for (; it != ite; it++)
 	{
-		std::cout << "test" << std::endl;
 		for (std::size_t i = 0; i < it->second.size(); i++)
 		{
 			if (it->second[i] == OPERATOR)
