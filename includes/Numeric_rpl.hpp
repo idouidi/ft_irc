@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 16:33:18 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/07 17:18:42 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 # define SET_CLIENT_MODE(nickname, username, cmd, mode) (user_id(nickname, username, cmd) + nickname + " :+" + mode + "\r\n")
 # define UNSET_CLIENT_MODE(nickname, username, cmd, mode) (user_id(nickname, username, cmd) + nickname + " :-" + mode + "\r\n")
 // 324
-# define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + "+" chanel_mods + "\r\n")
+# define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + " +" chanel_mods + "\r\n")
 // 329
 # define RPL_CREATIONTIME(nickname, chanel, date) (":localhost 329 " + nickname + " " + chanel + date + "\r\n")
 // 368

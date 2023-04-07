@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/07 14:25:17 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/07 17:17:58 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -417,6 +417,7 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         current_chanel = &_chanel[_chanel.size() - 1];
         current_chanel->setModes('n');
         current_chanel->setModes('t');
+        current_chanel->setChanelName(cmd[1]);
         founder = 1;
     }
     
@@ -428,12 +429,7 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
     else if (current_chanel->isPresentInChanel(client.getMyNickname()))
         return (0);
     else
-    {
-        std::cout << "insert a chanel in client and insert the client in the chanel" << std::endl; 
-        // LE DEUXIEME PARAM REPRESENTE LE MODE QU'ON DOIT METTRE POUR LE CLIENT ET LE CHANEL
-        // - LE CLIENT A UN OU DES MODE DANS UN CHANEL
-        // - LE CHANEL A UN OU DES MODES
-        
+    {   
         std::vector<client_mode_e>	client_mode_in_chanel; // Need to do 
 		std::vector<chanel_mode_e>	chanel_mode; // Need to do
         if (founder == 1)
@@ -441,7 +437,7 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         else
 			client_mode_in_chanel.push_back(NON_CLIENT_MODE);
 		current_chanel->addClient(client, client_mode_in_chanel);
-		// client.insertChanel(*current_chanel, current_chanel->getActiveModes());
+		client.insertChanel(*current_chanel, current_chanel->getActiveModes());
     }
     
     std::string list = current_chanel->listClients();
@@ -485,15 +481,13 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
             sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
             return (false);
         }
-        else if (cmd.size() == 3)
+        else if (cmd.size() == 3 && cmd[2] == "b")
         {
-            if (cmd[2] == "b")
-                sendMessagetoClient(client, RPL_ENDOFBANLIST(client.getMyNickname(), cmd[1]));
+            sendMessagetoClient(client, RPL_ENDOFBANLIST(client.getMyNickname(), cmd[1]));
             // check over mode....
         }
         else
         {
-
             time_t t = time(0);
             std::stringstream		ss;
 	        std::string				stime;

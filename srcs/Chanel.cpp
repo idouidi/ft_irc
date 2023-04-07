@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Chanel.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/07 12:51:44 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/07 16:54:30 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ std::vector<chanel_mode_e>&	Chanel::getActiveModes() { return (_active_modes); }
 bool						Chanel::addClient(Client& client_to_add, std::vector<client_mode_e> mode_to_give) 
 {
 	_clients_in.insert(std::make_pair(client_to_add, mode_to_give));
-	std::cout << "client_to_add: [" << client_to_add.getToken()  << "]" << "mode_togive: [" << mode_to_give[0] << "]" << std::endl; 
 	return true;
 }
 
@@ -82,7 +81,6 @@ std::string					Chanel::listClients()
 
 	for (; it != ite; it++)
 	{
-		std::cout << "test" << std::endl;
 		for (std::size_t i = 0; i < it->second.size(); i++)
 		{
 			if (it->second[i] == OPERATOR)
@@ -153,3 +151,5 @@ void				Chanel::setModes(char mode)
 			return ;
 	_active_modes.push_back(idx);
 }
+
+void 			Chanel::setChanelName(std::string name) {_name = name; }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Chanel.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/07 14:13:56 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/07 16:53:46 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class Chanel {
 		std::vector<chanel_mode_e>&	getActiveModes() ;
 		client_map&					getclientMap();
 		void						setModes(char mode);
+		void						setChanelName(std::string name);
 
 		std::string 				listClients();
 		std::string 				listModes();
