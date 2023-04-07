@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 19:19:05 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/07 14:25:17 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -407,16 +407,17 @@ bool Irc::msg(Client& client, std::vector<std::string> cmd)
 bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
     Chanel *current_chanel;
-    // bool founder = 0;
+	// client_mode mode_test;
+    bool founder = 0;
 
     current_chanel = findChanel(cmd[1]);
     if (current_chanel == NULL)
     {
-        _chanel.push_back(Chanel(cmd[1], _chanel.size() + 1)); // ( _id = _chanel.size() + 1 )
+        _chanel.push_back(Chanel(cmd[1])); // ( _id = _chanel.size() + 1 )
         current_chanel = &_chanel[_chanel.size() - 1];
         current_chanel->setModes('n');
         current_chanel->setModes('t');
-        // founder = 1;
+        founder = 1;
     }
     
     if (current_chanel->isPresentInList(current_chanel->getBlackList(), client.getMyNickname()))
@@ -433,15 +434,14 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         // - LE CLIENT A UN OU DES MODE DANS UN CHANEL
         // - LE CHANEL A UN OU DES MODES
         
-        // std::vector<client_mode> client_mode_in_chanel;
-        // if (founder == 1)
-        //     client_mode mode = OPERATOR;
-        // else
-        //      client_mode mode = NON_CLIENT_MODE;
-        // client_mode_in_chanel.push_back(mode);
-
-        // client.getChanelMap().insert(current_chanel, current_chanel->getActiveModes());
-        // current_chanel->getclientMap().insert(client, client_mode_in_chanel);
+        std::vector<client_mode>	client_mode_in_chanel; // Need to do 
+		std::vector<chanel_mode>	chanel_mode; // Need to do
+        if (founder == 1)
+			client_mode_in_chanel.push_back(OPERATOR);
+        else
+			client_mode_in_chanel.push_back(NON_CLIENT_MODE);
+		current_chanel->addClient(client, client_mode_in_chanel);
+		client.insertChanel(*current_chanel, current_chanel->getActiveModes());
     }
     
     std::string list = current_chanel->listClients();

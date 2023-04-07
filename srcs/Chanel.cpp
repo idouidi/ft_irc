@@ -3,16 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Chanel.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/06 18:31:53 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/07 12:51:44 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Control.hpp"
 
-Chanel::Chanel(std::string name, size_t id):  _id(id), _name(name) 
+size_t	Chanel::_id_global = 0;
+
+Chanel::Chanel(std::string& name):  _id(_id_global++), _name(name) 
 {}
 
 Chanel::~Chanel() 
@@ -20,17 +22,17 @@ Chanel::~Chanel()
 
 std::string					Chanel::getChanelName() { return (_name); }
 
-std::vector<std::string>&	Chanel::getBlackList() { return (black_list); }
+std::vector<std::string>&	Chanel::getBlackList() { return (_black_list); }
 
-std::vector<std::string>&	Chanel::getWhiteList() { return (white_list); }
+std::vector<std::string>&	Chanel::getWhiteList() { return (_white_list); }
 
 Chanel::client_map&			Chanel::getclientMap() { return (_clients_in); }
 
-std::vector<chanel_mode>&	Chanel::getActiveModes() { return (active_modes); }
+std::vector<chanel_mode>&	Chanel::getActiveModes() { return (_active_modes); }
 
-bool						Chanel::addClient(Client& client_to_add, client_mode mode_to_give) 
+bool						Chanel::addClient(Client& client_to_add, std::vector<client_mode> mode_to_give) 
 {
-	return (_clients_in.insert(std::pair<Client, client_mode>(client_to_add, mode_to_give)).second);
+	return (_clients_in.insert(std::pair<Client, std::vector<client_mode> >(client_to_add, mode_to_give)).second);
 }
 
 bool						Chanel::deleteClient(Client& client_to_delete) 
@@ -96,10 +98,11 @@ std::string					Chanel::listClients()
 std::string				Chanel::listModes()
 {
 	std::string list;
-	for (std::size_t i = 0; i < active_modes.size(); i++)
-		list += active_modes[i];
+	for (std::size_t i = 0; i < _active_modes.size(); i++)
+		list += _active_modes[i];
 	return (list);
 }
+
 
 bool				Chanel::isValidMode(char mode, chanel_mode& idx)
 {
@@ -141,8 +144,8 @@ void				Chanel::setModes(char mode)
 	if (isValidMode(mode, idx) == 0)
 		return ;
 
-	for (std::size_t i = 0; i < active_modes.size(); i++)
-		if (idx == active_modes[i])
+	for (std::size_t i = 0; i < _active_modes.size(); i++)
+		if (idx == _active_modes[i])
 			return ;
-	active_modes.push_back(idx);
+	_active_modes.push_back(idx);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Chanel.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/06 18:46:46 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/07 14:13:56 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ class Chanel {
 		typedef std::map<Client, std::vector<client_mode> > 	client_map;
 		typedef client_map::iterator 							map_iterator;
 		
-		Chanel(std::string, size_t);
+		Chanel(std::string&);
 		~Chanel();
 
 
 		std::string	getChanelName();
 
-		bool						addClient(Client& client_to_add, client_mode chan_mode);
+		bool						addClient(Client& client_to_add, std::vector<client_mode> mode_client);
 		bool						deleteClient(Client& client_to_delete);
 		bool						isPresentInList(std::vector<std::string>& list, std::string name);
 		bool						isPresentInChanel(std::string name);
@@ -46,13 +46,15 @@ class Chanel {
 		bool						operator<(T1& rhs) const { return (_id < rhs._id); }
 
 	private:
+		static size_t							_id_global;
 		size_t									_id;
 		std::string								_name;
 		std::string								_topic;
-		std::vector<std::string>				black_list;
-		std::vector<std::string>				white_list;
-		std::vector<chanel_mode>				active_modes; // mode in chanel
+		std::vector<std::string>				_black_list;
+		std::vector<std::string>				_white_list;
+		std::vector<chanel_mode>				_active_modes; // mode in chanel
 		client_map								_clients_in;
+		std::string								_key;
 };
 
 #endif
