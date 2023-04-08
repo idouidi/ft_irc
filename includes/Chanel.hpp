@@ -43,7 +43,7 @@ class Chanel {
 
 		std::string 				listAllClientsModesAndNames();
 		std::string					listClientmodes(map_iterator it);
-		std::string 				listModes();
+		std::string 				listChanelModes();
 
 		template <typename T1>
 		bool						operator<(T1& rhs) const { return (_id < rhs._id); }

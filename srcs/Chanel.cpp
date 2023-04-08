@@ -118,7 +118,7 @@ std::string					Chanel::listAllClientsModesAndNames()
 	return (list);
 }
 
-std::string				Chanel::listModes()
+std::string				Chanel::listChanelModes()
 {
 	std::string list;
 	for (std::size_t i = 0; i < _active_modes.size(); i++)

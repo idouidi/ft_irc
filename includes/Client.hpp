@@ -17,7 +17,7 @@
 class Client
 {
 	public:
-		typedef std::map<Chanel, std::vector<chanel_mode> >	chanel_map;
+		typedef std::map<Chanel, std::vector<client_mode> >	chanel_map;
 		typedef chanel_map::iterator						map_iterator;
 		
 		Client(int socket, std::string token);
@@ -47,9 +47,10 @@ class Client
 
 		bool 						isNewClient() const;
 		bool						isValidMode(char mode, client_mode& idx);
-		bool						insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode> chan_mode);
+		bool						insertChanel(Chanel& chanel_to_add, std::vector<client_mode> chan_mode);
 
-		std::string 				listModes();
+		std::string 				listClientServerModes();
+		std::string 				listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel);
 
 		template <typename T2>
 		bool		operator==(T2& rhs) const { return (my_socket == rhs.my_socket); }

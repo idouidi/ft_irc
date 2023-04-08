@@ -109,9 +109,9 @@ bool				Client::unsetModes(char mode)
 	return (false);
 }
 
-bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode> chan_mode) 
+bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<client_mode> chan_mode) 
 {
-	return (my_chanels.insert(std::pair<Chanel, std::vector<chanel_mode> >(chanel_to_add, chan_mode)).second);
+	return (my_chanels.insert(std::pair<Chanel, std::vector<client_mode> >(chanel_to_add, chan_mode)).second);
 }
 
 bool 				Client::isNewClient() const  { return (new_client); }
@@ -143,4 +143,20 @@ bool				Client::isValidMode(char mode, client_mode& idx)
 			idx = NON_CLIENT_MODE;
             return (false);
     }
+}
+
+std::string				Client::listClientServerModes()
+{
+	std::string list;
+	for (std::size_t i = 0; i < active_modes.size(); i++)
+		list += active_modes[i];
+	return (list);
+}
+
+std::string				Client::listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel)
+{
+	std::string list;
+	for (std::size_t i = 0; i < client_mode_in_chanel.size(); i++)
+		list += client_mode_in_chanel[i];
+	return (list);
 }
