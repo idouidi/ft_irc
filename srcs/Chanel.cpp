@@ -28,9 +28,21 @@ std::vector<std::string>&	Chanel::getWhiteList() { return (_white_list); }
 
 Chanel::client_map&			Chanel::getclientMap() { return (_clients_in); }
 
-std::vector<chanel_mode_e>&	Chanel::getActiveModes() { return (_active_modes); }
+Chanel::map_iterator&		Chanel::getClient(std::string name)
+{
+	map_iterator it = _clients_in.begin();
+	map_iterator ite = _clients_in.end();
+	for (; it != ite; it++)
+	{
+		if (name == it->first.getMyNickname())
+			return (it);
+	}
+	return (ite);
+}
 
-bool						Chanel::addClient(Client& client_to_add, std::vector<client_mode_e> mode_to_give) 
+std::vector<chanel_mode>&	Chanel::getActiveModes() { return (_active_modes); }
+
+bool						Chanel::addClient(Client& client_to_add, std::vector<client_mode> mode_to_give) 
 {
 	_clients_in.insert(std::make_pair(client_to_add, mode_to_give));
 	return true;
@@ -72,7 +84,21 @@ size_t						Chanel::getNumClient() const
 	return (_clients_in.size());
 }
 
-std::string					Chanel::listClients()
+std::string					Chanel::listClientmodes(map_iterator it)
+{
+	std::string list;
+
+	for(size_t i = 0; i < it->second.size(); i++)
+	{
+		if (it->second[i] == CHANEL_OPERATOR)
+			list += '@';
+			else if (it->second[i] == VOICE)
+			list += '+';
+	}
+	return (list);
+}
+
+std::string					Chanel::listAllClientsModesAndNames()
 {
 	map_iterator it = _clients_in.begin();
 	map_iterator ite = _clients_in.end();
@@ -81,13 +107,7 @@ std::string					Chanel::listClients()
 
 	for (; it != ite; it++)
 	{
-		for (std::size_t i = 0; i < it->second.size(); i++)
-		{
-			if (it->second[i] == OPERATOR)
-				modes += '@';
-			else if (it->second[i] == VOICE)
-				modes += '+';
-		}
+		modes = listClientmodes(it);
 		std::string nick = it->first.getMyNickname();
 		list += modes + nick;
 		map_iterator cpy = it;
@@ -106,7 +126,7 @@ std::string				Chanel::listModes()
 }
 
 
-bool				Chanel::isValidMode(char mode, chanel_mode_e& idx)
+bool				Chanel::isValidMode(char mode, chanel_mode& idx)
 {
     switch (mode)
     {
@@ -141,7 +161,7 @@ bool				Chanel::isValidMode(char mode, chanel_mode_e& idx)
 
 void				Chanel::setModes(char mode)
 {
-	chanel_mode_e idx;
+	chanel_mode idx;
 
 	if (isValidMode(mode, idx) == 0)
 		return ;

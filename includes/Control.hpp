@@ -26,6 +26,7 @@
 # include <vector>
 # include <map>
 # include <exception>
+# include <cstddef>         // for nullptr
 # include <fcntl.h>
 # include <ctime>
 // #include <sys/socket.h>
@@ -66,7 +67,7 @@
 *   - +w : permet aux utilisateurs ayant ce mode activé de recevoir certains types de messages dits "importants", 
 *          tels que les erreurs de serveur, les déconnexions et les reconnexions d'utilisateurs importants, etc.
 */
-typedef enum client_mode {OPERATOR, VOICE, HALF_OP, ADMIN, INVISIBLE, WALLOPS, NON_CLIENT_MODE} client_mode_e; 
+enum client_mode {SERVER_OPERATOR, CHANEL_OPERATOR, VOICE, HALF_OP, ADMIN, INVISIBLE, WALLOPS, NON_CLIENT_MODE}; 
 
 /*
 *   - +t : canal protégé, seuls les opérateurs peuvent changer le sujet
@@ -86,7 +87,7 @@ typedef enum client_mode {OPERATOR, VOICE, HALF_OP, ADMIN, INVISIBLE, WALLOPS, N
 *   - +l : limite d'utilisateurs sur le canal, empêche les utilisateurs supplémentaires de rejoindre une fois que la limite est atteinte
 *
 */
-typedef enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, NON_CHANEL_MODE} chanel_mode_e ;
+enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, NON_CHANEL_MODE} ;
 
 std::string getDateTime();
 

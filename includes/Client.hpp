@@ -17,7 +17,7 @@
 class Client
 {
 	public:
-		typedef std::map<Chanel, std::vector<chanel_mode_e> >	chanel_map;
+		typedef std::map<Chanel, std::vector<chanel_mode> >	chanel_map;
 		typedef chanel_map::iterator						map_iterator;
 		
 		Client(int socket, std::string token);
@@ -32,22 +32,24 @@ class Client
 		std::string 				getMyUserName() const;
 		std::string					getToken() const;
 		time_t 						getLastActiveTime() const;
-		std::vector<client_mode_e>&	getActiveModes() ;
+		std::vector<client_mode>&	getActiveModes() ;
 		chanel_map&					getChanelMap();
-		Chanel&						getCurentChanel() const;
+		// Chanel&						getCurentChanel() const;
 		
 		void 						setStatusClient(bool status);
 		void 						setNickName(std::string nick);
 		void 						setUserName(std::string user);
 		void						setLastActiveTime();
-		void						setCurrentChanel(Chanel& Chanel);
+		// void						setCurrentChanel(Chanel& Chanel);
 
 		bool						setModes(char mode);
 		bool						unsetModes(char mode);
 
 		bool 						isNewClient() const;
-		bool						isValidMode(char mode, client_mode_e& idx);
-		bool						insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode_e> chan_mode);
+		bool						isValidMode(char mode, client_mode& idx);
+		bool						insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode> chan_mode);
+
+		std::string 				listModes();
 
 		template <typename T2>
 		bool		operator==(T2& rhs) const { return (my_socket == rhs.my_socket); }
@@ -61,11 +63,11 @@ class Client
 		std::string											token_ping;
 		std::string 										nickname;
 		std::string											username;
-		std::vector<client_mode_e>							active_modes; //mode in server
+		std::vector<client_mode>							active_modes; //mode in server
 		bool												new_client;
 		time_t												last_active_time;
 		chanel_map											my_chanels;
-		Chanel*												current_chanel;
+		// Chanel*												current_chanel;
 		
 };
 

@@ -329,13 +329,52 @@ bool	Irc::pong(Client& client, std::vector<std::string> cmd)
 
 bool Irc::who(Client& client, std::vector<std::string> cmd)
 {
-    //the letter H to indicate that the user is here,
-    // the letter G to indicate that the user is gone.
+    std::string modes;
 
-    //"@" client is op
-    //"" normal client
-    sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", "@")
-    + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+    if (cmd[1][0] == '#')
+    {
+        Chanel      *potential_chanel = findChanel(cmd[1]);
+        if (potential_chanel == NULL)
+        {
+            sendMessagetoClient(client, RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+            return (false);
+        }
+        for(Chanel::map_iterator it =  potential_chanel->getclientMap().begin(); it != potential_chanel->getclientMap().end(); it++)
+        {
+		    for (std::size_t i = 0; i < it->second.size(); i++)
+		    {
+		    	if (it->second[i] == CHANEL_OPERATOR)
+		    		modes += '@';
+		    	else if (it->second[i] == VOICE)
+		    		modes += '+';
+		    }
+            sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", modes));
+        }
+        sendMessagetoClient(client, RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+    }
+    else
+    {
+        Client  *potentiel_client = findClient(cmd[1]);
+        if (potentiel_client == NULL)
+        {
+            sendMessagetoClient(client, RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+            return (false);      
+        }
+        else if (potentiel_client->getChanelMap().size() == 0)
+        {
+            modes = client.listModes();
+            modes = (modes == "i" ? "" : modes);
+            sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", modes)
+            + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+        }
+        else
+        {
+            for (Client::map_iterator it = potentiel_client->getChanelMap().begin(); it != potentiel_client->getChanelMap().end(); it++)
+            {
+                sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", it->first.listClientmodes(it->first.getClient(client.getMyNickname()))));
+            }
+        }
+    }
     return (1);
 }
 
@@ -407,7 +446,6 @@ bool Irc::msg(Client& client, std::vector<std::string> cmd)
 bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
     Chanel *current_chanel;
-	// client_mode_e mode_test;
     bool founder = 0;
 
     current_chanel = findChanel(cmd[1]);
@@ -430,17 +468,17 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         return (0);
     else
     {   
-        std::vector<client_mode_e>	client_mode_in_chanel; // Need to do 
-		std::vector<chanel_mode_e>	chanel_mode; // Need to do
+        std::vector<client_mode>	client_mode_in_chanel; // Need to do 
+		std::vector<chanel_mode>	chanel_mode; // Need to do
         if (founder == 1)
-			client_mode_in_chanel.push_back(OPERATOR);
+			client_mode_in_chanel.push_back(CHANEL_OPERATOR);
         else
 			client_mode_in_chanel.push_back(NON_CLIENT_MODE);
 		current_chanel->addClient(client, client_mode_in_chanel);
 		client.insertChanel(*current_chanel, current_chanel->getActiveModes());
     }
     
-    std::string list = current_chanel->listClients();
+    std::string list = current_chanel->listAllClientsModesAndNames();
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
     + RPL_NAMREPLY(client.getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
     
@@ -454,7 +492,7 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
     {
         for (std::size_t i = 0; i < cmd[2].size(); i++)
         {
-            client_mode_e c_m = NON_CLIENT_MODE;
+            client_mode c_m = NON_CLIENT_MODE;
             if (client.isValidMode(cmd[2][i], c_m) == true)
             {
                     setClientMode(client, cmd[0], cmd[2][i]);

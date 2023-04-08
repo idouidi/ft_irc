@@ -12,7 +12,7 @@
 
 #include "../includes/Control.hpp"
 
-Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0)), current_chanel(0x0)
+Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0))//, current_chanel(0x0)
 {}
 
 
@@ -61,13 +61,9 @@ void						Client::getMyUserMode() const {}
 
 std::string					Client::getToken() const { return (token_ping); }
 
-std::vector<client_mode_e>& 	Client::getActiveModes()  { return (active_modes); }
+std::vector<client_mode>& 	Client::getActiveModes()  { return (active_modes); }
 
 Client::chanel_map& 		Client::getChanelMap() {return (my_chanels); }
-
-
-////////////////////////////////////////////////////////////////////////////////
-
 
 void 				Client::setStatusClient(bool status) { new_client = status; }
 
@@ -75,16 +71,16 @@ void 				Client::setNickName(std::string nick) { nickname.assign(nick); }
 
 void 				Client::setUserName(std::string user) { username.assign(user); }
 
-void				Client::setCurrentChanel(Chanel& current) {
-	current_chanel = &current;
-	return ;
-}
+// void				Client::setCurrentChanel(Chanel& current) {
+// 	current_chanel = &current;
+// 	return ;
+// }
 
 void				Client::setLastActiveTime() { last_active_time = time(0); }
 
 bool				Client::setModes(char mode)
 {
-	client_mode_e idx;
+	client_mode idx;
 
 	if (isValidMode(mode, idx) == 0)
 		return (false);
@@ -97,7 +93,7 @@ bool				Client::setModes(char mode)
 
 bool				Client::unsetModes(char mode)
 {
-	client_mode_e idx;
+	client_mode idx;
 
 	if (isValidMode(mode, idx) == 0)
 		return (false);
@@ -113,23 +109,20 @@ bool				Client::unsetModes(char mode)
 	return (false);
 }
 
-bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode_e> chan_mode) 
+bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode> chan_mode) 
 {
-	return (my_chanels.insert(std::pair<Chanel, std::vector<chanel_mode_e> >(chanel_to_add, chan_mode)).second);
+	return (my_chanels.insert(std::pair<Chanel, std::vector<chanel_mode> >(chanel_to_add, chan_mode)).second);
 }
-
-////////////////////////////////////////////////////////////////////////////////
-
 
 bool 				Client::isNewClient() const  { return (new_client); }
 
 
-bool				Client::isValidMode(char mode, client_mode_e& idx)
+bool				Client::isValidMode(char mode, client_mode& idx)
 {
     switch (mode)
     {
         case 'o':
-			idx = OPERATOR;
+			idx = CHANEL_OPERATOR;
             return (true);
         case 'v':
 			idx = VOICE;
