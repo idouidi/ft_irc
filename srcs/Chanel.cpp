@@ -28,17 +28,18 @@ std::vector<std::string>&	Chanel::getWhiteList() { return (_white_list); }
 
 Chanel::client_map&			Chanel::getclientMap() { return (_clients_in); }
 
-Chanel::map_iterator&		Chanel::getClient(std::string name)
+Chanel::map_iterator Chanel::getClient(std::string name)
 {
-	map_iterator it = _clients_in.begin();
-	map_iterator ite = _clients_in.end();
-	for (; it != ite; it++)
-	{
-		if (name == it->first.getMyNickname())
-			return (it);
-	}
-	return (ite);
+    map_iterator it = _clients_in.begin();
+    map_iterator ite = _clients_in.end();
+    for (; it != ite; it++)
+    {
+        if (name == it->first.getMyNickname())
+            return it;
+    }
+    return ite;
 }
+
 
 std::vector<chanel_mode>&	Chanel::getActiveModes() { return (_active_modes); }
 

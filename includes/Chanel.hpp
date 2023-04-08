@@ -37,7 +37,7 @@ class Chanel {
 		std::vector<std::string>&	getWhiteList();
 		std::vector<chanel_mode>&	getActiveModes() ;
 		client_map&					getclientMap();
-		map_iterator&				getClient(std::string name);
+		map_iterator				getClient(std::string name);
 		void						setModes(char mode);
 		void						setChanelName(std::string name);
 
