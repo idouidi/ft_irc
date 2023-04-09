@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/09 13:35:34 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 16:07:49 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ class Chanel {
 
 
 		bool						addClient(Client& client_to_add, std::vector<client_mode> mode_client);
-		bool						deleteClient(Client& client_to_delete);
+		bool						deleteClient(std::string name);
+
 		bool						isPresentInList(std::vector<std::string>& list, std::string name);
 		bool						isPresentInChanel(std::string name);
 		bool						isValidMode(char mode, chanel_mode &idx);
@@ -46,6 +47,9 @@ class Chanel {
 		std::string 				listChanelModes();
 		std::string					listClientmodes(std::vector<client_mode>& client_mode_in_chanel);
 		std::string 				listAllClientsModesAndNames();
+
+		template <typename T2>
+		bool						operator==(T2& rhs) const { return (_name == rhs._name); }
 
 		template <typename T1>
 		bool						operator<(T1& rhs) const { return (_id < rhs._id); }

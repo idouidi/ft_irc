@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/07 12:05:43 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/09 14:54:36 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ class Irc
 	bool join(Client&, std::vector<std::string>);
 	bool mode(Client&, std::vector<std::string>);
 	bool leave(Client&, std::vector<std::string>);
+	bool part(Client&, std::vector<std::string>);
 	bool list(Client&, std::vector<std::string>);
 	bool nick(Client&, std::vector<std::string>);
 	bool quit(Client&, std::vector<std::string>);

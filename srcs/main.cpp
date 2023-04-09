@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 13:44:42 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 16:38:55 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,6 @@ void start_server(char *port, char *pswd)
 				{
 					printInServer(std::string(buf), *current_client);
 					std::vector<std::string> cmd = split(std::string(buf), " \n\r");
-					for (std::size_t i = 0; i < cmd.size(); i++)
-        			{
-        			    std::cout << "cmd = " << cmd[i] << std::endl;
-        			}
 					if (cmd[0] != "PONG" && current_client->isNewClient())
 					{
 						if ((irc.parsInfo(*current_client, cmd)) == 0)

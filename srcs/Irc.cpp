@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 13:44:08 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 16:31:48 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,6 +282,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                                                                 &Irc::join,
                                                                 &Irc::mode,
                                                                 &Irc::leave,
+                                                                &Irc::part,
                                                                 &Irc::list,
                                                                 &Irc::nick,
                                                                 &Irc::quit,
@@ -294,6 +295,7 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                         "JOIN",
                         "MODE",
                         "LEAVE",
+                        "PART",
                         "LIST",
                         "NICK",
                         "QUIT",
@@ -382,11 +384,7 @@ bool Irc::who(Client& client, std::vector<std::string> cmd)
         else
         {
             for (Client::map_iterator it = potential_client->getChanelMap().begin(); it != potential_client->getChanelMap().end(); it++)
-            {
-                // Client::chanel_map::const_iterator cit = it;
                 sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), it->first.getChanelName(), client.getMyUserName(), potential_client->getMyNickname() , "H", potential_client->listClientChanelModes(it->second)));
-                // sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", it->first.listClientmodes(it->first.getClient(client.getMyNickname()))));
-            }
         }
     }
     return (1);
@@ -553,6 +551,37 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
     return (true);
 }
 
+
+bool Irc::part(Client& client, std::vector<std::string> cmd)
+{
+    Chanel *current_chanel;
+    if ((current_chanel = findChanel(cmd[1])) == NULL)
+    {
+        sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
+        return (false);
+    }
+    // IF SUCCESS TO DELETE CLIENT IN CHANEL MAP, I CAN DELETE CHANEL IN CLIENT MAP
+    else if (current_chanel->deleteClient(client.getMyNickname()))
+    {
+        client.deleteChanel(current_chanel->getChanelName());
+        if (current_chanel->getclientMap().size() == 0)
+        {
+            for (std::size_t i = 0; i < _chanel.size(); i++)
+            {
+                if (_chanel[i].getChanelName() == current_chanel->getChanelName())
+                {
+                    _chanel.erase(_chanel.begin() + i);
+                    break;
+                }
+            }            
+        }
+        sendMessagetoClient(client, PART_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1]));
+        return (true);
+    }
+    else
+        sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
+    return (false);
+}
 bool Irc::leave(Client& client, std::vector<std::string> cmd)
 {
     (void)client;

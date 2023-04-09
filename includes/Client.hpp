@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/07 14:19:30 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/09 16:04:02 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,14 @@ class Client
 		void						setLastActiveTime();
 		// void						setCurrentChanel(Chanel& Chanel);
 
+		bool 						isNewClient() const;
+
+		bool						isValidMode(char mode, client_mode& idx);
 		bool						setModes(char mode);
 		bool						unsetModes(char mode);
 
-		bool 						isNewClient() const;
-		bool						isValidMode(char mode, client_mode& idx);
 		bool						insertChanel(Chanel& chanel_to_add, std::vector<client_mode> chan_mode);
+		bool						deleteChanel(std::string name);
 
 		std::string 				listClientServerModes();
 		std::string 				listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel);

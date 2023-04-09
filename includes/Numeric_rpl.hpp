@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 12:33:16 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 15:11:07 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,5 +97,7 @@
 // 366
 # define RPL_ENDOFNAMES(nickname, chanel) (":localhost 366 " + nickname + " " + chanel + " :End of /NAMES list.\r\n")
 
+            /* = = =    PART     = = = */
+# define PART_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + chanel + "\r\n")
 
 #endif

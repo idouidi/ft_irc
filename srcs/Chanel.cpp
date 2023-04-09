@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/09 13:36:06 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 16:09:24 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,11 @@ bool						Chanel::addClient(Client& client_to_add, std::vector<client_mode> mode
 	return true;
 }
 
-bool						Chanel::deleteClient(Client& client_to_delete) 
+bool						Chanel::deleteClient(std::string name) 
 {
 	for (map_iterator it = _clients_in.begin(), ite = _clients_in.end(); it != ite; it++) 
 	{
-		if (it->first == const_cast<const Client&>(client_to_delete)) 
+		if (it->first.getMyNickname() == name) 
 		{
 			_clients_in.erase(it);
 			return (true);

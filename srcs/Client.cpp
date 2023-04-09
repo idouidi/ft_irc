@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/09 13:28:45 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 16:05:11 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ Client& Client::operator=(const Client& c)
 	return (*this);
 }
 
-
 int							Client::getMySocket() const { return (my_socket); }
 
 time_t 						Client::getLastActiveTime() const { return (last_active_time); }
@@ -62,53 +61,17 @@ std::vector<client_mode>& 	Client::getActiveModes()  { return (active_modes); }
 
 Client::chanel_map& 		Client::getChanelMap() {return (my_chanels); }
 
-void 				Client::setStatusClient(bool status) { new_client = status; }
+void 						Client::setStatusClient(bool status) { new_client = status; }
 
-void 				Client::setNickName(std::string nick) { nickname.assign(nick); }
+void 						Client::setNickName(std::string nick) { nickname.assign(nick); }
 
-void 				Client::setUserName(std::string user) { username.assign(user); }
+void 						Client::setUserName(std::string user) { username.assign(user); }
 
-void				Client::setLastActiveTime() { last_active_time = time(0); }
+void						Client::setLastActiveTime() { last_active_time = time(0); }
 
-bool				Client::setModes(char mode)
-{
-	client_mode idx;
+bool 						Client::isNewClient() const  { return (new_client); }
 
-	if (isValidMode(mode, idx) == 0)
-		return (false);
-	for (std::size_t i = 0; i < active_modes.size(); i++)
-		if (idx == active_modes[i])
-			return (false);
-	active_modes.push_back(idx);
-	return (true);
-}
-
-bool				Client::unsetModes(char mode)
-{
-	client_mode idx;
-
-	if (isValidMode(mode, idx) == 0)
-		return (false);
-
-	for (std::size_t i = 0; i < active_modes.size(); i++)
-	{
-		if (idx == active_modes[i])
-		{
-			active_modes.erase(active_modes.begin() + i);
-			return (true);
-		}
-	}
-	return (false);
-}
-
-bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<client_mode> chan_mode) 
-{
-	return (my_chanels.insert(std::pair<Chanel, std::vector<client_mode> >(chanel_to_add, chan_mode)).second);
-}
-
-bool 				Client::isNewClient() const  { return (new_client); }
-
-bool				Client::isValidMode(char mode, client_mode& idx)
+bool						Client::isValidMode(char mode, client_mode& idx)
 {
     switch (mode)
     {
@@ -139,7 +102,58 @@ bool				Client::isValidMode(char mode, client_mode& idx)
     }
 }
 
-std::string				Client::listClientServerModes()
+bool						Client::setModes(char mode)
+{
+	client_mode idx;
+
+	if (isValidMode(mode, idx) == 0)
+		return (false);
+	for (std::size_t i = 0; i < active_modes.size(); i++)
+		if (idx == active_modes[i])
+			return (false);
+	active_modes.push_back(idx);
+	return (true);
+}
+
+bool						Client::unsetModes(char mode)
+{
+	client_mode idx;
+
+	if (isValidMode(mode, idx) == 0)
+		return (false);
+
+	for (std::size_t i = 0; i < active_modes.size(); i++)
+	{
+		if (idx == active_modes[i])
+		{
+			active_modes.erase(active_modes.begin() + i);
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool						Client::insertChanel(Chanel& chanel_to_add, std::vector<client_mode> chan_mode) 
+{
+	return (my_chanels.insert(std::pair<Chanel, std::vector<client_mode> >(chanel_to_add, chan_mode)).second);
+}
+
+bool						Client::deleteChanel(std::string name)
+{
+	for (map_iterator it = my_chanels.begin(), ite = my_chanels.end( ); it != ite; it++)
+	{
+		if (it->first.getChanelName() == name)
+		{
+			my_chanels.erase(it);
+			return (true);
+		}
+	}
+	return (false);
+}			
+
+
+
+std::string					Client::listClientServerModes()
 {
 	std::string list;
 	for (std::size_t i = 0; i < active_modes.size(); i++)
@@ -147,7 +161,7 @@ std::string				Client::listClientServerModes()
 	return (list);
 }
 
-std::string				Client::listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel)
+std::string					Client::listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel)
 {
 	std::string list;
 	for (std::size_t i = 0; i < client_mode_in_chanel.size(); i++)
