@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 19:17:20 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 12:17:30 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,14 +89,21 @@ enum client_mode {SERVER_OPERATOR, CHANEL_OPERATOR, VOICE, HALF_OP, ADMIN, INVIS
 */
 enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, NON_CHANEL_MODE} ;
 
-std::string getDateTime();
-
-# include "Numeric_rpl.hpp"
-
-
 class Client;
 class Chanel;
 
+void                        printInServer(std::string msg, Client& client);
+bool                        check_port(std::string port);
+bool                        check_pswd(std::string pswd);
+std::string                 getDateTime();
+std::vector<std::string>    split(std::string str, const std::string charset);
+char                        convertClientModeToChar(client_mode mode);
+char                        convertChanelModeToChar(chanel_mode mode);
+
+
+
+
+# include "Numeric_rpl.hpp"
 # include "Client.hpp"
 # include "Chanel.hpp"
 # include "Irc.hpp"

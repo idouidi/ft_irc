@@ -65,8 +65,8 @@ class Irc
 	bool parsInfo(Client& client, std::vector<std::string> cmd);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-	void setClientMode(Client& client, std::string cmd, char mode);
-	void unsetClientMode(Client& client, std::string cmd, char mode);
+	bool setClientMode(Client& client, std::string cmd, char mode);
+	bool unsetClientMode(Client& client, std::string cmd, char mode);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 

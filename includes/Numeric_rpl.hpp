@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/07 17:18:42 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 12:33:16 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 // 324
 # define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + " +" chanel_mods + "\r\n")
 // 329
-# define RPL_CREATIONTIME(nickname, chanel, date) (":localhost 329 " + nickname + " " + chanel + date + "\r\n")
+# define RPL_CREATIONTIME(nickname, chanel, date) (":localhost 329 " + nickname + " " + chanel + " " +date + "\r\n")
 // 368
 # define RPL_ENDOFBANLIST(nickname, chanel) (":localhost 368 " + nickname + " " + chanel + ":End of channel ban list\r\n")
 //501
@@ -47,13 +47,15 @@
 // 312
 # define RPL_WHOISSERVER(nickname, other_nick) (":localhost 312 " + nickname + " " + other_nick + " localhost :<insert catchy phrase here>\r\n")
 // 315
-# define RPL_ENDOFWHO(nickname, chanel) (":localhost 315 " + nickname + " " + chanel + ":End of /WHO list.\r\n")
+# define RPL_ENDOFWHO(nickname, chanel) (":localhost 315 " + nickname + " " + chanel + " :End of /WHO list.\r\n")
 // 317
 # define RPL_WHOISIDLE(nickname, other_nick, create_time) (":localhost 317 " + nickname + " " + other_nick + " " + create_time + " :second idle, signon time\r\n")
 // 318
 # define RPL_ENDOFWHOIS(nickname, other_nick) (":localhost 318 " + nickname + " " + other_nick + " :End of /WHOIS list.\r\n")
 // 352
-# define RPL_WHOREPLY(nickname, chanel, username, status, mode) (":localhost 352 " + nickname + " " + chanel + " ~" + username + "localhost localhost " + nickname + " " + status + mode + " :0 " + username + "\r\n")
+# define RPL_WHOREPLY(nickname, chanel, username, concerned_client_nickname, status, mode) (":localhost 352 " + nickname + " " + chanel + " ~" + username + " localhost localhost " + concerned_client_nickname + " " + status + mode + " :0 " + username + "\r\n")
+//352_bis
+# define RPL_WHOREPLY_BIS(nickname, chanel, username, concerned_client_nickname, status) (":localhost 352 " + nickname + " " + chanel + " ~" + username + " localhost localhost " + concerned_client_nickname + " " + status +  " :0 " + username + "\r\n")
 // 369
 # define RPL_ENDOFWHOWAS(nickname, other_nick) (":localhost 369 " + nickname + " " + other_nick + " :End of WHOWAS\r\n")
 

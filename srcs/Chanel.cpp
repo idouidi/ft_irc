@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/07 16:54:30 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 13:36:06 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ Chanel::Chanel(std::string& name):  _id(_id_global++), _name(name)
 Chanel::~Chanel() 
 {}
 
-std::string					Chanel::getChanelName() { return (_name); }
+std::string					Chanel::getChanelName() const { return (_name); }
 
 std::vector<std::string>&	Chanel::getBlackList() { return (_black_list); }
 
@@ -85,15 +85,24 @@ size_t						Chanel::getNumClient() const
 	return (_clients_in.size());
 }
 
-std::string					Chanel::listClientmodes(map_iterator it)
+std::string				Chanel::listChanelModes()
 {
 	std::string list;
+	for (std::size_t i = 0; i < _active_modes.size(); i++)
+		list += convertChanelModeToChar(_active_modes[i]);
+	return (list);
+}
 
-	for(size_t i = 0; i < it->second.size(); i++)
+std::string					Chanel::listClientmodes(std::vector<client_mode>& client_mode_in_chanel)
+{
+	std::string list;
+	for (std::size_t i = 0; i < client_mode_in_chanel.size(); i++)
 	{
-		if (it->second[i] == CHANEL_OPERATOR)
+		if (client_mode_in_chanel[i] == SERVER_OPERATOR)
+			list += "*";
+		else if (client_mode_in_chanel[i] == CHANEL_OPERATOR)
 			list += '@';
-			else if (it->second[i] == VOICE)
+		else if (client_mode_in_chanel[i] == VOICE)
 			list += '+';
 	}
 	return (list);
@@ -108,7 +117,7 @@ std::string					Chanel::listAllClientsModesAndNames()
 
 	for (; it != ite; it++)
 	{
-		modes = listClientmodes(it);
+		modes = listClientmodes(it->second);
 		std::string nick = it->first.getMyNickname();
 		list += modes + nick;
 		map_iterator cpy = it;
@@ -117,15 +126,6 @@ std::string					Chanel::listAllClientsModesAndNames()
 	}
 	return (list);
 }
-
-std::string				Chanel::listChanelModes()
-{
-	std::string list;
-	for (std::size_t i = 0; i < _active_modes.size(); i++)
-		list += _active_modes[i];
-	return (list);
-}
-
 
 bool				Chanel::isValidMode(char mode, chanel_mode& idx)
 {

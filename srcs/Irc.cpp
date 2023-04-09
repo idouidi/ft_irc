@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/07 17:17:58 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 13:44:08 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,18 +216,26 @@ bool Irc::parsInfo(Client& client, std::vector<std::string> info)
     return (true);
 }
 
-void Irc::setClientMode(Client& client, std::string cmd, char mode)
+bool Irc::setClientMode(Client& client, std::string cmd, char mode)
 {
     //:dedi!~idouidi@my.server.name MODE dedi :+mode
     if (client.setModes(mode))
+    {
         sendMessagetoClient(client, SET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, mode));
+        return (true);
+    }
+    return (false);
 }
 
-void Irc::unsetClientMode(Client& client, std::string cmd, char mode)
+bool Irc::unsetClientMode(Client& client, std::string cmd, char mode)
 {
     //:dedi!~idouidi@my.server.name MODE dedi :-mode
     if (client.unsetModes(mode))
+    {
         sendMessagetoClient(client, UNSET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, mode));
+        return (true);
+    }
+    return (false);
 }
 
 Client*     Irc::findClient(int fd_client)
@@ -348,7 +356,7 @@ bool Irc::who(Client& client, std::vector<std::string> cmd)
 		    	else if (it->second[i] == VOICE)
 		    		modes += '+';
 		    }
-            sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", modes));
+            sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), it->first.getMyNickname(), "H", modes));
             modes.clear();
         }
         sendMessagetoClient(client, RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
@@ -361,18 +369,22 @@ bool Irc::who(Client& client, std::vector<std::string> cmd)
             sendMessagetoClient(client, RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
             return (false);      
         }
-        else if (potential_client->getChanelMap().size() == 0)
+        else if (potential_client->getChanelMap().size() == 0) // IF THE CLIENT JOIN NO CHANELS
         {
-            modes = potential_client->listClientServerModes();
-            modes = (modes == "i" ? "" : modes);
-            sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), "*", client.getMyUserName(), "H", modes)
-            + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+            //IF THE CLIENT HAS NO SPECIAL MODES (LIKES INVISIBLE AT START)
+            if ((modes = potential_client->listClientServerModes()) == "i")
+                sendMessagetoClient(client, RPL_WHOREPLY_BIS(client.getMyNickname(), "*", client.getMyUserName(), potential_client->getMyNickname(), "H")
+                + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+            else
+                sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), "*", client.getMyUserName(), potential_client->getMyNickname(), "H", modes)
+                + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
         }
         else
         {
             for (Client::map_iterator it = potential_client->getChanelMap().begin(); it != potential_client->getChanelMap().end(); it++)
             {
-                sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", potential_client->listClientChanelModes(it->second)));
+                // Client::chanel_map::const_iterator cit = it;
+                sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), it->first.getChanelName(), client.getMyUserName(), potential_client->getMyNickname() , "H", potential_client->listClientChanelModes(it->second)));
                 // sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), "H", it->first.listClientmodes(it->first.getClient(client.getMyNickname()))));
             }
         }
@@ -493,22 +505,20 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
     {
         for (std::size_t i = 0; i < cmd[2].size(); i++)
         {
-            client_mode c_m = NON_CLIENT_MODE;
-            if (client.isValidMode(cmd[2][i], c_m) == true)
+            if (setClientMode(client, cmd[0], cmd[2][i]))
+                ;
+            else if (cmd[2][i + 1])
             {
-                    setClientMode(client, cmd[0], cmd[2][i]);
-            }
-            else if ((cmd[2][i] == '+' || cmd[2][i] == '-') && cmd[2][i + 1]  && client.isValidMode(cmd[2][i + 1], c_m) == true)
-            {
-                if (cmd[2][i] == '+')
-                    setClientMode(client, cmd[0], cmd[2][i + 1]);
-                else if (cmd[2][i] == '-')
-                    unsetClientMode(client, cmd[0], cmd[2][i + 1]);
-                i++;
+                if (cmd[2][i] == '+' && setClientMode(client, cmd[0], cmd[2][i + 1]))
+                    i++;
+                else if (cmd[2][i] == '-' && unsetClientMode(client, cmd[0], cmd[2][i + 1]))
+                    i++;
+                else
+                    sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
             }
             else
                 sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
-        }   
+        }
     }
     //MODE FOR A CHANEL
     else

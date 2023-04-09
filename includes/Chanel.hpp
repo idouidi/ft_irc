@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/07 16:53:46 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 13:35:34 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,26 +24,28 @@ class Chanel {
 		~Chanel();
 
 
-		std::string	getChanelName();
 
 		bool						addClient(Client& client_to_add, std::vector<client_mode> mode_client);
 		bool						deleteClient(Client& client_to_delete);
 		bool						isPresentInList(std::vector<std::string>& list, std::string name);
 		bool						isPresentInChanel(std::string name);
 		bool						isValidMode(char mode, chanel_mode &idx);
-		
+
+	
+		std::string					getChanelName() const;
 		size_t						getNumClient() const;
 		std::vector<std::string>&	getBlackList();
 		std::vector<std::string>&	getWhiteList();
 		std::vector<chanel_mode>&	getActiveModes() ;
 		client_map&					getclientMap();
 		map_iterator				getClient(std::string name);
+
 		void						setModes(char mode);
 		void						setChanelName(std::string name);
 
-		std::string 				listAllClientsModesAndNames();
-		std::string					listClientmodes(map_iterator it);
 		std::string 				listChanelModes();
+		std::string					listClientmodes(std::vector<client_mode>& client_mode_in_chanel);
+		std::string 				listAllClientsModesAndNames();
 
 		template <typename T1>
 		bool						operator<(T1& rhs) const { return (_id < rhs._id); }

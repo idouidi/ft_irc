@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/07 14:19:21 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/09 13:28:45 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0))//, current_chanel(0x0)
 {}
-
 
 Client::~Client() {}
 
@@ -46,8 +45,6 @@ Client& Client::operator=(const Client& c)
 	return (*this);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
 
 int							Client::getMySocket() const { return (my_socket); }
 
@@ -70,11 +67,6 @@ void 				Client::setStatusClient(bool status) { new_client = status; }
 void 				Client::setNickName(std::string nick) { nickname.assign(nick); }
 
 void 				Client::setUserName(std::string user) { username.assign(user); }
-
-// void				Client::setCurrentChanel(Chanel& current) {
-// 	current_chanel = &current;
-// 	return ;
-// }
 
 void				Client::setLastActiveTime() { last_active_time = time(0); }
 
@@ -116,12 +108,14 @@ bool				Client::insertChanel(Chanel& chanel_to_add, std::vector<client_mode> cha
 
 bool 				Client::isNewClient() const  { return (new_client); }
 
-
 bool				Client::isValidMode(char mode, client_mode& idx)
 {
     switch (mode)
     {
-        case 'o':
+		case 'o':
+			idx = SERVER_OPERATOR;
+			return (true);
+        case 'O':
 			idx = CHANEL_OPERATOR;
             return (true);
         case 'v':
@@ -149,7 +143,7 @@ std::string				Client::listClientServerModes()
 {
 	std::string list;
 	for (std::size_t i = 0; i < active_modes.size(); i++)
-		list += active_modes[i];
+		list += convertClientModeToChar(active_modes[i]);
 	return (list);
 }
 
@@ -157,6 +151,13 @@ std::string				Client::listClientChanelModes(std::vector<client_mode>& client_mo
 {
 	std::string list;
 	for (std::size_t i = 0; i < client_mode_in_chanel.size(); i++)
-		list += client_mode_in_chanel[i];
+	{
+		if (client_mode_in_chanel[i] == SERVER_OPERATOR)
+			list += "*";
+		else if (client_mode_in_chanel[i] == CHANEL_OPERATOR)
+			list += '@';
+		else if (client_mode_in_chanel[i] == VOICE)
+			list += '+';
+	}
 	return (list);
 }
