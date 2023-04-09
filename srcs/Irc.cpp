@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 16:31:48 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 23:02:31 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -492,7 +492,13 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
     std::string list = current_chanel->listAllClientsModesAndNames();
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
     + RPL_NAMREPLY(client.getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
-    
+    for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
+    {
+        if (it->first.getMyNickname() == client.getMyNickname())
+            continue;
+        sendMessagetoClient(const_cast<Client&>(it->first), JOINING_MSG(client.getMyNickname(), it->first.getMyUserName(), cmd[1]));
+    }
+
     return (1);
 }
 
@@ -576,6 +582,12 @@ bool Irc::part(Client& client, std::vector<std::string> cmd)
             }            
         }
         sendMessagetoClient(client, PART_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1]));
+    for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
+    {
+        if (it->first.getMyNickname() == client.getMyNickname())
+            continue;
+        sendMessagetoClient(const_cast<Client&>(it->first), LEAVE_MSG(client.getMyNickname(), it->first.getMyUserName(), cmd[1]));
+    }
         return (true);
     }
     else

@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 15:11:07 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 22:37:52 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,6 @@
 // 433
 # define ERR_NICKNAMEINUSE(nickname) (":localhost 433 * " + nickname + " :Nickname is already in use\r\n")
 
-            /* = = =    CHANEL     = = = */
-// 403
-# define ERR_NOSUCHCHANNEL(nickname, chanel) (":localhost 403 " + nickname + " " + chanel + " :No such channel\r\n")
-
             /* = = =    GENERIC ERR     = = = */
 // 461
 # define ERR_NEEDMOREPARAMS(nickname, cmd) (":localhost 461 " + nickname + " " + cmd + ":Not enough parameters\r\n")
@@ -91,13 +87,15 @@
 
             /* = = =    JOIN     = = = */
 
+# define JOINING_MSG(nickname, username, chanel) (nickname + " [~" + username + "@localhost] has joined " + chanel + "\r\n")
+# define LEAVE_MSG(nickname, username, chanel) (nickname + " [~" + username + "@localhost] has left " + chanel + " []\r\n")
+# define PART_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + chanel + "\r\n")
 # define SET_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + ":" + chanel + "\r\n")
 // 353
 # define RPL_NAMREPLY(nickname, chanel, list_client) (":localhost 353 " + nickname + " = " + chanel + " :" + list_client +"\r\n")
 // 366
 # define RPL_ENDOFNAMES(nickname, chanel) (":localhost 366 " + nickname + " " + chanel + " :End of /NAMES list.\r\n")
-
-            /* = = =    PART     = = = */
-# define PART_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + chanel + "\r\n")
+// 403
+# define ERR_NOSUCHCHANNEL(nickname, chanel) (":localhost 403 " + nickname + " " + chanel + " :No such channel\r\n")
 
 #endif
