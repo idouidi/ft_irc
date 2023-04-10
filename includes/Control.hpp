@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 19:17:20 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/09 12:17:30 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <vector>
 # include <map>
 # include <exception>
+# include <cstddef>         // for nullptr
 # include <fcntl.h>
 # include <ctime>
 // #include <sys/socket.h>
@@ -66,7 +67,7 @@
 *   - +w : permet aux utilisateurs ayant ce mode activé de recevoir certains types de messages dits "importants", 
 *          tels que les erreurs de serveur, les déconnexions et les reconnexions d'utilisateurs importants, etc.
 */
-typedef enum client_mode {OPERATOR, VOICE, HALF_OP, ADMIN, INVISIBLE, WALLOPS, NON_CLIENT_MODE} client_mode_e; 
+enum client_mode {SERVER_OPERATOR, CHANEL_OPERATOR, VOICE, HALF_OP, ADMIN, INVISIBLE, WALLOPS, NON_CLIENT_MODE}; 
 
 /*
 *   - +t : canal protégé, seuls les opérateurs peuvent changer le sujet
@@ -86,16 +87,23 @@ typedef enum client_mode {OPERATOR, VOICE, HALF_OP, ADMIN, INVISIBLE, WALLOPS, N
 *   - +l : limite d'utilisateurs sur le canal, empêche les utilisateurs supplémentaires de rejoindre une fois que la limite est atteinte
 *
 */
-typedef enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, NON_CHANEL_MODE} chanel_mode_e ;
-
-std::string getDateTime();
-
-# include "Numeric_rpl.hpp"
-
+enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, NON_CHANEL_MODE} ;
 
 class Client;
 class Chanel;
 
+void                        printInServer(std::string msg, Client& client);
+bool                        check_port(std::string port);
+bool                        check_pswd(std::string pswd);
+std::string                 getDateTime();
+std::vector<std::string>    split(std::string str, const std::string charset);
+char                        convertClientModeToChar(client_mode mode);
+char                        convertChanelModeToChar(chanel_mode mode);
+
+
+
+
+# include "Numeric_rpl.hpp"
 # include "Client.hpp"
 # include "Chanel.hpp"
 # include "Irc.hpp"

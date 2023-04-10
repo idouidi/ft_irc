@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/07 14:19:30 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/09 16:04:02 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 class Client
 {
 	public:
-		typedef std::map<Chanel, std::vector<chanel_mode_e> >	chanel_map;
+		typedef std::map<Chanel, std::vector<client_mode> >	chanel_map;
 		typedef chanel_map::iterator						map_iterator;
 		
 		Client(int socket, std::string token);
@@ -32,7 +32,7 @@ class Client
 		std::string 				getMyUserName() const;
 		std::string					getToken() const;
 		time_t 						getLastActiveTime() const;
-		std::vector<client_mode_e>&	getActiveModes() ;
+		std::vector<client_mode>&	getActiveModes() ;
 		chanel_map&					getChanelMap();
 		std::string					getCurentChanelName() const;
 		
@@ -41,12 +41,17 @@ class Client
 		void 						setUserName(std::string user);
 		void						setLastActiveTime();
 
+		bool 						isNewClient() const;
+
+		bool						isValidMode(char mode, client_mode& idx);
 		bool						setModes(char mode);
 		bool						unsetModes(char mode);
 
-		bool 						isNewClient() const;
-		bool						isValidMode(char mode, client_mode_e& idx);
-		bool						insertChanel(Chanel& chanel_to_add, std::vector<chanel_mode_e> chan_mode);
+		bool						insertChanel(Chanel& chanel_to_add, std::vector<client_mode> chan_mode);
+		bool						deleteChanel(std::string name);
+
+		std::string 				listClientServerModes();
+		std::string 				listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel);
 
 		template <typename T2>
 		bool		operator==(T2& rhs) const { return (my_socket == rhs.my_socket); }
@@ -60,7 +65,7 @@ class Client
 		std::string											token_ping;
 		std::string 										nickname;
 		std::string											username;
-		std::vector<client_mode_e>							active_modes; //mode in server
+		std::vector<client_mode>							active_modes; //mode in server
 		bool												new_client;
 		time_t												last_active_time;
 		chanel_map											my_chanels;

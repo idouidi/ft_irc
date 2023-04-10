@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/07 12:05:43 by asimon           ###   ########.fr       */
+/*   Updated: 2023/04/10 14:11:00 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,11 @@ class Irc
 	bool parsInfo(Client& client, std::vector<std::string> cmd);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-	void setClientMode(Client& client, std::string cmd, char mode);
-	void unsetClientMode(Client& client, std::string cmd, char mode);
+	bool setClientMode(Client& client, std::string cmd, char mode);
+	bool unsetClientMode(Client& client, std::string cmd, char mode);
+
+	bool setChanelMode(Client& client, Chanel& chanel, std::string cmd, char mode);
+	bool unsetChanelMode(Client& client, Chanel& chanel, std::string cmd, char mode);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 
@@ -82,19 +85,20 @@ class Irc
 	Chanel* findChanel(std::string chanel_name);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-	bool msg(Client&, std::vector<std::string>);
-	bool join(Client&, std::vector<std::string>);
+	bool ping(Client&, std::vector<std::string>);
+	bool pong(Client&, std::vector<std::string>);
 	bool mode(Client&, std::vector<std::string>);
-	bool leave(Client&, std::vector<std::string>);
-	bool list(Client&, std::vector<std::string>);
-	bool nick(Client&, std::vector<std::string>);
-	bool quit(Client&, std::vector<std::string>);
 	bool who(Client&, std::vector<std::string>);
 	bool whois(Client&, std::vector<std::string>);
 	bool whowas(Client&, std::vector<std::string>);
-	bool ping(Client&, std::vector<std::string>);
-	bool pong(Client&, std::vector<std::string>);
 	bool privateMessage(Client&, std::vector<std::string>);
+	bool join(Client&, std::vector<std::string>);
+	bool part(Client&, std::vector<std::string>);
+	bool msg(Client&, std::vector<std::string>);
+	bool list(Client&, std::vector<std::string>);
+	bool nick(Client&, std::vector<std::string>);
+	bool invite(Client&, std::vector<std::string>);
+	bool quit(Client&, std::vector<std::string>);
 
 	bool execCmd(Client& client , std::vector<std::string>);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/

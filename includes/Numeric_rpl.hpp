@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/06 16:33:18 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/10 14:10:27 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,17 @@
             /* = = =    MODE    = = = */
 # define SET_CLIENT_MODE(nickname, username, cmd, mode) (user_id(nickname, username, cmd) + nickname + " :+" + mode + "\r\n")
 # define UNSET_CLIENT_MODE(nickname, username, cmd, mode) (user_id(nickname, username, cmd) + nickname + " :-" + mode + "\r\n")
+
+# define SET_CHANEL_MODE(nickname, username, cmd, chanel, mode) (user_id(nickname, username, cmd) + chanel + " :+" + mode + "\r\n")
+# define UNSET_CHANEL_MODE(nickname, username, cmd, chanel, mode) (user_id(nickname, username, cmd) + chanel + " :-" + mode + "\r\n")
 // 324
-# define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + "+" chanel_mods + "\r\n")
+# define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + " +" chanel_mods + "\r\n")
 // 329
-# define RPL_CREATIONTIME(nickname, chanel, date) (":localhost 329 " + nickname + " " + chanel + date + "\r\n")
+# define RPL_CREATIONTIME(nickname, chanel, date) (":localhost 329 " + nickname + " " + chanel + " " +date + "\r\n")
 // 368
 # define RPL_ENDOFBANLIST(nickname, chanel) (":localhost 368 " + nickname + " " + chanel + ":End of channel ban list\r\n")
+// 472
+# define ERR_UNKNOWNMODE(nickname, mode) (":localhost 472 " + nickname + " " + mode + " :is unknown char to me\r\n")
 //501
 # define ERR_UMODEUNKNOWNFLAG(nickname) (":localhost 501 " + nickname + " :Unknown MODE flag\r\n") 
 
@@ -47,13 +52,15 @@
 // 312
 # define RPL_WHOISSERVER(nickname, other_nick) (":localhost 312 " + nickname + " " + other_nick + " localhost :<insert catchy phrase here>\r\n")
 // 315
-# define RPL_ENDOFWHO(nickname, chanel) (":localhost 315 " + nickname + " " + chanel + ":End of /WHO list.\r\n")
+# define RPL_ENDOFWHO(nickname, chanel) (":localhost 315 " + nickname + " " + chanel + " :End of /WHO list.\r\n")
 // 317
 # define RPL_WHOISIDLE(nickname, other_nick, create_time) (":localhost 317 " + nickname + " " + other_nick + " " + create_time + " :second idle, signon time\r\n")
 // 318
 # define RPL_ENDOFWHOIS(nickname, other_nick) (":localhost 318 " + nickname + " " + other_nick + " :End of /WHOIS list.\r\n")
 // 352
-# define RPL_WHOREPLY(nickname, chanel, username, status, mode) (":localhost 352 " + nickname + " " + chanel + " ~" + username + "localhost localhost " + nickname + " " + status + mode + " :0 " + username + "\r\n")
+# define RPL_WHOREPLY(nickname, chanel, username, concerned_client_nickname, status, mode) (":localhost 352 " + nickname + " " + chanel + " ~" + username + " localhost localhost " + concerned_client_nickname + " " + status + mode + " :0 " + username + "\r\n")
+//352_bis
+# define RPL_WHOREPLY_BIS(nickname, chanel, username, concerned_client_nickname, status) (":localhost 352 " + nickname + " " + chanel + " ~" + username + " localhost localhost " + concerned_client_nickname + " " + status +  " :0 " + username + "\r\n")
 // 369
 # define RPL_ENDOFWHOWAS(nickname, other_nick) (":localhost 369 " + nickname + " " + other_nick + " :End of WHOWAS\r\n")
 
@@ -61,7 +68,7 @@
 // 321
 # define RPL_LISTSTART(nickname) (":localhost 321 " + nickname + " Channel :Users Name\r\n")
 // 322
-# define RPL_LIST(nickname) (":localhost 322 " + nickname + " " /* == + channelname + " " + usercount == */+ "#test 1 :\r\n")
+# define RPL_LIST(nickname, chanel, usercount) (":localhost 322 " + nickname + " " + chanel + " " + usercount + " :\r\n")
 // 323
 # define RPL_LISTEND(nickname) (":localhost 323 " + nickname + " :End of /LIST\r\n")
 
@@ -73,11 +80,9 @@
 // 433
 # define ERR_NICKNAMEINUSE(nickname) (":localhost 433 * " + nickname + " :Nickname is already in use\r\n")
 
-            /* = = =    CHANEL     = = = */
-// 403
-# define ERR_NOSUCHCHANNEL(nickname, chanel) (":localhost 403 " + nickname + " " + chanel + " :No such channel\r\n")
-
             /* = = =    GENERIC ERR     = = = */
+//421
+# define ERR_UNKNOWNCOMMAND(nickname, cmd) (":localhost 421 " + nickname + " " + cmd + " :Unknown command\r\n")
 // 461
 # define ERR_NEEDMOREPARAMS(nickname, cmd) (":localhost 461 " + nickname + " " + cmd + ":Not enough parameters\r\n")
 
@@ -89,14 +94,23 @@
 
             /* = = =    JOIN     = = = */
 
+# define JOINING_MSG(nickname, username, chanel) (nickname + " [~" + username + "@localhost] has joined " + chanel + "\r\n")
+# define LEAVE_MSG(nickname, username, chanel) (nickname + " [~" + username + "@localhost] has left " + chanel + " []\r\n")
+# define PART_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + chanel + "\r\n")
 # define SET_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + ":" + chanel + "\r\n")
 // 353
 # define RPL_NAMREPLY(nickname, chanel, list_client) (":localhost 353 " + nickname + " = " + chanel + " :" + list_client +"\r\n")
 // 366
 # define RPL_ENDOFNAMES(nickname, chanel) (":localhost 366 " + nickname + " " + chanel + " :End of /NAMES list.\r\n")
+// 403
+# define ERR_NOSUCHCHANNEL(nickname, chanel) (":localhost 403 " + nickname + " " + chanel + " :No such channel\r\n")
 
             /* = = =    PRV MESSAGES     = = = */
 
 # define RPL_PRIVMSG(nickname, username, cmd, chanel, msg) (user_id(nickname, username, cmd) + chanel + " " + msg + "\r\n")
+            /* = = =    INVITE     = = = */
+# define INVITE_CLIENT(nickname, username, cmd, concerned_client_nickname, chanel) (user_id(nickname, username, cmd) + concerned_client_nickname + " :" + chanel + "\r\n")
+//473
+# define ERR_INVITEONLYCHAN(nickname, chanel) (":localhost 473 " +  nickname + " " + chanel + " :Cannot join channel (+i)\r\n")
 
 #endif
