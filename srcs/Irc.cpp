@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 23:02:31 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/10 14:43:50 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,7 +218,6 @@ bool Irc::parsInfo(Client& client, std::vector<std::string> info)
 
 bool Irc::setClientMode(Client& client, std::string cmd, char mode)
 {
-    //:dedi!~idouidi@my.server.name MODE dedi :+mode
     if (client.setModes(mode))
     {
         sendMessagetoClient(client, SET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, mode));
@@ -229,10 +228,29 @@ bool Irc::setClientMode(Client& client, std::string cmd, char mode)
 
 bool Irc::unsetClientMode(Client& client, std::string cmd, char mode)
 {
-    //:dedi!~idouidi@my.server.name MODE dedi :-mode
     if (client.unsetModes(mode))
     {
         sendMessagetoClient(client, UNSET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, mode));
+        return (true);
+    }
+    return (false);
+}
+
+bool Irc::setChanelMode(Client& client, Chanel& chanel, std::string cmd, char mode)
+{
+    if (chanel.setModes(mode))
+    {
+        sendMessagetoClient(client, SET_CHANEL_MODE(client.getMyNickname(), client.getMyUserName(), cmd, chanel.getChanelName(), mode));
+        return (true);
+    }
+    return (false);
+}
+
+bool Irc::unsetChanelMode(Client& client, Chanel& chanel, std::string cmd, char mode)
+{
+    if (chanel.unsetModes(mode))
+    {
+        sendMessagetoClient(client, UNSET_CHANEL_MODE(client.getMyNickname(), client.getMyUserName(), cmd, chanel.getChanelName(), mode));
         return (true);
     }
     return (false);
@@ -278,32 +296,33 @@ std::string Irc::clientLastActiveTime(Client& client)
 
 bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
 {
-    bool (Irc::*tab[])(Client&, std::vector<std::string> ) = {&Irc::msg,
-                                                                &Irc::join,
+    bool (Irc::*tab[])(Client&, std::vector<std::string> ) = {&Irc::ping,
+																&Irc::pong,
                                                                 &Irc::mode,
-                                                                &Irc::leave,
-                                                                &Irc::part,
-                                                                &Irc::list,
-                                                                &Irc::nick,
-                                                                &Irc::quit,
                                                                 &Irc::who,
                                                                 &Irc::whois,
                                                                 &Irc::whowas,
-                                                                &Irc::ping,
-																&Irc::pong};
-    std::string ref[] = {"MSG",
-                        "JOIN",
+                                                                &Irc::join,
+                                                                &Irc::part,
+                                                                &Irc::msg,
+                                                                &Irc::list,
+                                                                &Irc::nick,
+                                                                &Irc::quit,
+                                                                &Irc::invite
+                                                                };
+    std::string ref[] = {"PING", 
+						"PONG",
                         "MODE",
-                        "LEAVE",
-                        "PART",
-                        "LIST",
-                        "NICK",
-                        "QUIT",
                         "WHO",
                         "WHOIS",
                         "WHOWAS",
-                        "PING", 
-						"PONG",
+                        "JOIN",
+                        "PART",
+                        "MSG",
+                        "LIST",
+                        "NICK",
+                        "QUIT",
+                        "INVITE",
                         "NULL"};
 
     std::size_t size = 0;
@@ -315,12 +334,11 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
         if (ref[i] == cmd[0])
         {
             (this->*(tab[i]))(client, cmd);
-            return (1);
+            return (true);
         }
     }
-    std::string msg = std::string(RED) + "Error: " + std::string(RESET) + "command not found\n";
-    sendMessagetoClient(client, msg);
-    return (0);
+    sendMessagetoClient(client, ERR_UNKNOWNCOMMAND(client.getMyNickname(), cmd[0]));
+    return (false);
 }
 
 bool Irc::ping(Client& client, std::vector<std::string> cmd)
@@ -335,6 +353,83 @@ bool	Irc::pong(Client& client, std::vector<std::string> cmd)
 	if (cmd[1] != ":" + client.getToken())
 		sendMessagetoClient(client, ERR_BADPING(client.getMyNickname()));
 	return true;
+}
+
+bool Irc::mode(Client& client, std::vector<std::string> cmd)
+{
+    //MODE FOR A CLIENT
+    if (cmd[1][0] != '#')
+    {
+        for (std::size_t i = 0; i < cmd[2].size(); i++)
+        {
+            if (setClientMode(client, cmd[0], cmd[2][i]))
+                ;
+            else if (cmd[2][i + 1])
+            {
+                if (cmd[2][i] == '+' && setClientMode(client, cmd[0], cmd[2][i + 1]))
+                    i++;
+                else if (cmd[2][i] == '-' && unsetClientMode(client, cmd[0], cmd[2][i + 1]))
+                    i++;
+                else
+                    sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
+            }
+            else
+                sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
+        }
+    }
+    //MODE FOR A CHANEL
+    else
+    {
+        Chanel* current_chanel;
+        current_chanel = findChanel(cmd[1]);
+        if (current_chanel == NULL)
+        {
+            sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
+            return (false);
+        }
+        else if (cmd.size() == 3)
+        {
+            bool before_setting_modes = current_chanel->isModeActivated(INVITE_ONLY);
+            if (cmd[2] == "b")
+                sendMessagetoClient(client, RPL_ENDOFBANLIST(client.getMyNickname(), cmd[1]));
+            else
+            {
+                for (std::size_t i = 0; i < cmd[2].size(); i++)
+                {
+                    if (setChanelMode(client, *current_chanel, cmd[0], cmd[2][i]))
+                        ;
+                    else if (cmd[2][i + 1])
+                    {
+                        if (cmd[2][i] == '+' && setChanelMode(client, *current_chanel, cmd[0], cmd[2][i + 1]))
+                            i++;
+                        else if (cmd[2][i] == '-' && unsetChanelMode(client, *current_chanel, cmd[0], cmd[2][i + 1]))
+                            i++;
+                        else
+                            sendMessagetoClient(client, ERR_UNKNOWNMODE(client.getMyNickname(), cmd[2][i + i]));
+                    }
+                    else
+                        sendMessagetoClient(client, ERR_UNKNOWNMODE(client.getMyNickname(), cmd[2][i + i]));
+                }
+                if (before_setting_modes == false && current_chanel->isModeActivated(INVITE_ONLY))
+                    current_chanel->getWhiteList().push_back(client.getMyNickname());
+            }
+        }
+        else
+        {
+            time_t t = time(0);
+            std::stringstream		ss;
+	        std::string				stime;
+            std::string             listChanelMode;
+
+	        ss << t;
+	        ss >> stime;
+
+            listChanelMode = current_chanel->listChanelModes();
+            sendMessagetoClient(client, RPL_CHANNELMODEIS(client.getMyNickname(), cmd[1], + listChanelMode)
+            + RPL_CREATIONTIME(client.getMyNickname(), cmd[1], stime));
+        }
+    }
+    return (true);
 }
 
 bool Irc::who(Client& client, std::vector<std::string> cmd)
@@ -419,42 +514,6 @@ bool Irc::whowas(Client& client, std::vector<std::string> cmd)
     return (true);
 }
 
-bool Irc::msg(Client& client, std::vector<std::string> cmd)
-{
-    std::string msg;
-    if (cmd.size() < 3)
-    {
-        msg = std::string(RED) + "Error: " + std::string(RESET) + "Invalid command format\n";
-        return (false);
-    }
-    for (size_t i = 0; i < _client.size(); i++)
-    {
-        if (cmd[1] == _client[i].getMyNickname())
-        {
-            if (client.getMyNickname() == _client[i].getMyNickname())
-			{
-				msg = std::string(RED) + "Error: " +  std::string(RESET) + "You can't send a message to yourself!";
-				sendMessagetoClient(_client[i], msg);
-				return (false);
-			}
-            msg = std::string(YELLOW) + "[" + std::string(CYAN) + client.getMyNickname() + std::string(YELLOW ) + "]"\
-			+ std::string(CYAN) + " >" + std::string(RESET);
-            sendMessagetoClient(_client[i], msg);
-
-            for (size_t j = 2 ; j < cmd.size(); j++ )
-                sendMessagetoClient(_client[i], " " + std::string(YELLOW) + cmd[j] + std::string(RESET));
-
-            sendMessagetoClient(_client[i], "\n");
-            return (true);
-        }
-    }
-	msg = std::string(RED) + "Error: " +  std::string(RESET) +  std::string(YELLOW) + "["\
-	+ std::string(CYAN) + cmd[1] + std::string(YELLOW ) + "]" + std::string(RESET) +\
-	" is not referenced on the server.";
-	sendMessagetoClient(client, msg);
-    return (false);
-}
-
 bool Irc::join(Client& client, std::vector<std::string> cmd)
 {
     Chanel *current_chanel;
@@ -475,7 +534,10 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         return (0);
     else if (current_chanel->getWhiteList().size() > 0 
             && current_chanel->isPresentInList(current_chanel->getWhiteList(), client.getMyNickname()) == 0)
+    {
+        sendMessagetoClient(client, ERR_INVITEONLYCHAN(client.getMyNickname(), current_chanel->getChanelName()));
         return (0);
+    }
     else if (current_chanel->isPresentInChanel(client.getMyNickname()))
         return (0);
     else
@@ -498,65 +560,8 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
             continue;
         sendMessagetoClient(const_cast<Client&>(it->first), JOINING_MSG(client.getMyNickname(), it->first.getMyUserName(), cmd[1]));
     }
-
     return (1);
 }
-
-bool Irc::mode(Client& client, std::vector<std::string> cmd)
-{
-    //MODE FOR A CLIENT
-    if (cmd[1][0] != '#')
-    {
-        for (std::size_t i = 0; i < cmd[2].size(); i++)
-        {
-            if (setClientMode(client, cmd[0], cmd[2][i]))
-                ;
-            else if (cmd[2][i + 1])
-            {
-                if (cmd[2][i] == '+' && setClientMode(client, cmd[0], cmd[2][i + 1]))
-                    i++;
-                else if (cmd[2][i] == '-' && unsetClientMode(client, cmd[0], cmd[2][i + 1]))
-                    i++;
-                else
-                    sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
-            }
-            else
-                sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
-        }
-    }
-    //MODE FOR A CHANEL
-    else
-    {
-        Chanel* current_chanel;
-        current_chanel = findChanel(cmd[1]);
-        if (current_chanel == NULL)
-        {
-            sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
-            return (false);
-        }
-        else if (cmd.size() == 3 && cmd[2] == "b")
-        {
-            sendMessagetoClient(client, RPL_ENDOFBANLIST(client.getMyNickname(), cmd[1]));
-            // check over mode....
-        }
-        else
-        {
-            time_t t = time(0);
-            std::stringstream		ss;
-	        std::string				stime;
-            std::string             listChanelMode;
-
-	        ss << t;
-	        ss >> stime;
-
-            listChanelMode = current_chanel->listChanelModes();
-            sendMessagetoClient(client, RPL_CHANNELMODEIS(client.getMyNickname(), cmd[1], + listChanelMode)
-            + RPL_CREATIONTIME(client.getMyNickname(), cmd[1], stime));
-        }
-    }
-    return (true);
-}
-
 
 bool Irc::part(Client& client, std::vector<std::string> cmd)
 {
@@ -594,19 +599,60 @@ bool Irc::part(Client& client, std::vector<std::string> cmd)
         sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
     return (false);
 }
-bool Irc::leave(Client& client, std::vector<std::string> cmd)
+
+bool Irc::msg(Client& client, std::vector<std::string> cmd)
 {
-    (void)client;
-    (void)cmd;
-    return (1);
+    std::string msg;
+    if (cmd.size() < 3)
+    {
+        msg = std::string(RED) + "Error: " + std::string(RESET) + "Invalid command format\n";
+        return (false);
+    }
+    for (size_t i = 0; i < _client.size(); i++)
+    {
+        if (cmd[1] == _client[i].getMyNickname())
+        {
+            if (client.getMyNickname() == _client[i].getMyNickname())
+			{
+				msg = std::string(RED) + "Error: " +  std::string(RESET) + "You can't send a message to yourself!";
+				sendMessagetoClient(_client[i], msg);
+				return (false);
+			}
+            msg = std::string(YELLOW) + "[" + std::string(CYAN) + client.getMyNickname() + std::string(YELLOW ) + "]"\
+			+ std::string(CYAN) + " >" + std::string(RESET);
+            sendMessagetoClient(_client[i], msg);
+
+            for (size_t j = 2 ; j < cmd.size(); j++ )
+                sendMessagetoClient(_client[i], " " + std::string(YELLOW) + cmd[j] + std::string(RESET));
+
+            sendMessagetoClient(_client[i], "\n");
+            return (true);
+        }
+    }
+	msg = std::string(RED) + "Error: " +  std::string(RESET) +  std::string(YELLOW) + "["\
+	+ std::string(CYAN) + cmd[1] + std::string(YELLOW ) + "]" + std::string(RESET) +\
+	" is not referenced on the server.";
+	sendMessagetoClient(client, msg);
+    return (false);
 }
 
 bool Irc::list(Client& client, std::vector<std::string> cmd)
 {
-    RPL_LISTSTART(client.getMyNickname())
-    + RPL_LIST(client.getMyNickname()/*, channelname, usercount*/)
-    + RPL_LISTEND(client.getMyNickname());
+    std::stringstream		ss;
+	std::string				num;
     (void)cmd;
+    sendMessagetoClient(client, RPL_LISTSTART(client.getMyNickname()));
+    for (std::size_t i = 0; i < _chanel.size(); i++)
+    {
+        if (_chanel[i].isModeActivated(SECRET))
+        {
+            continue;
+        }
+	    ss << _chanel[i].getNumClient();
+	    ss >> num;
+        sendMessagetoClient(client, RPL_LIST(client.getMyNickname(), _chanel[i].getChanelName(), num));
+    }
+    sendMessagetoClient(client, RPL_LISTEND(client.getMyNickname()));
     return (1);
 }
 
@@ -627,6 +673,22 @@ bool Irc::nick(Client& client, std::vector<std::string> cmd)
     return (true);
 
 }
+
+bool Irc::invite(Client& client, std::vector<std::string> cmd)
+{
+    Client *potential_client = findClient(cmd[1]);
+
+    if (potential_client == NULL)
+    {
+        sendMessagetoClient(client, ERR_NOSUCHNICK(client.getMyNickname(), cmd[1]));
+        return (false);
+    }
+    Chanel *current_chanel = findChanel(cmd[2]);
+    current_chanel->getWhiteList().push_back(potential_client->getMyNickname());
+    sendMessagetoClient(client, INVITE_CLIENT(client.getMyNickname(), client.getMyUserName(), cmd[0], potential_client->getMyNickname(), cmd[2]));
+    return (true);
+}
+
 
 bool Irc::quit(Client& client, std::vector<std::string> cmd)
 {

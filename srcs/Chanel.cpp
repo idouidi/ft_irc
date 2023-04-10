@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/09 16:09:24 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/10 14:02:05 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,17 +160,47 @@ bool				Chanel::isValidMode(char mode, chanel_mode& idx)
     }
 }
 
-void				Chanel::setModes(char mode)
+bool				Chanel::isModeActivated(chanel_mode mode)
+{
+	for (std::size_t i = 0; i < _active_modes.size(); i++)
+	{
+		if (mode == _active_modes[i])
+			return (true);
+	}
+	return (false);
+	
+}
+
+bool				Chanel::setModes(char mode)
 {
 	chanel_mode idx;
 
 	if (isValidMode(mode, idx) == 0)
-		return ;
+		return (false);
 
 	for (std::size_t i = 0; i < _active_modes.size(); i++)
 		if (idx == _active_modes[i])
-			return ;
+			return (false);
 	_active_modes.push_back(idx);
+	return (true);
+}
+
+bool						Chanel::unsetModes(char mode)
+{
+	chanel_mode idx;
+
+	if (isValidMode(mode, idx) == 0)
+		return (false);
+
+	for (std::size_t i = 0; i < _active_modes.size(); i++)
+	{
+		if (idx == _active_modes[i])
+		{
+			_active_modes.erase(_active_modes.begin() + i);
+			return (true);
+		}
+	}
+	return (false);
 }
 
 void 			Chanel::setChanelName(std::string name) {_name = name; }
