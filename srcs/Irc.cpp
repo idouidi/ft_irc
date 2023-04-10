@@ -708,8 +708,17 @@ bool Irc::quit(Client& client, std::vector<std::string> cmd)
 
 bool    Irc::privateMessage(Client& client, std::vector<std::string> cmd) {
     //  ERR_CANNOTSENDTOCHAN 404
-    std::cout << cmd[2] << std::endl
-    << client.getCurentChanelName() << std::endl;
-    sendMessagetoClient(client, RPL_PRIVMSG(client.getMyNickname(), client.getMyUserName(), "PRIVMSG", client.getCurentChanelName(), cmd[2]));
+
+    Client::chanel_map chan_in_client = client.getChanelMap();
+
+    if (chan_in_client.size() == 0)
+        return false; // Error message to set
+    Chanel  current = (--(chan_in_client.end()))->first; // Recupere le dernier elem de la map
+    Chanel::client_map      clients = current.getclientMap(); 
+    for (Chanel::client_map::iterator it = clients.begin(), ite = clients.end(); it != ite; it++) {
+        std::cout << "value test: [" << it->first.getMyNickname() << "] | size : [" << clients.size() << "]" << std::endl; 
+        if (it->first.getMyNickname() != client.getMyNickname())
+            sendMessagetoClient(const_cast<Client&>(it->first), RPL_PRIVMSG(client.getMyNickname(), client.getMyUserName(), "PRIVMSG", client.getCurentChanelName(), cmd[2]));
+    }
     return true;
 }
