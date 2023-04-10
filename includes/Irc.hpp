@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/10 14:11:00 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/10 18:48:08 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,8 @@ class Irc
 	bool list(Client&, std::vector<std::string>);
 	bool nick(Client&, std::vector<std::string>);
 	bool invite(Client&, std::vector<std::string>);
+	bool privatemsg(Client&, std::vector<std::string>);
+	bool kick(Client&, std::vector<std::string>);
 	bool quit(Client&, std::vector<std::string>);
 
 	bool execCmd(Client& client , std::vector<std::string>);

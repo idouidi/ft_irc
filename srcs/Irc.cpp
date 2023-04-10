@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/10 16:11:34 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/10 19:14:01 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,6 +308,8 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                                                                 &Irc::list,
                                                                 &Irc::nick,
                                                                 &Irc::quit,
+                                                                &Irc::privatemsg,
+                                                                &Irc::kick,
                                                                 &Irc::invite
                                                                 };
     std::string ref[] = {"PING", 
@@ -323,6 +325,8 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                         "NICK",
                         "QUIT",
                         "INVITE",
+                        "PRIVMSG",
+                        "KICK",
                         "NULL"};
 
     std::size_t size = 0;
@@ -704,4 +708,44 @@ bool Irc::quit(Client& client, std::vector<std::string> cmd)
     }
     eraseClient(client);
     return (1);
+}
+
+bool    Irc::privatemsg(Client& client, std::vector<std::string> cmd) 
+{
+    Chanel *current_chanel = findChanel(cmd[1]);
+    if (current_chanel)
+    {
+        for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
+        {
+            if (it->first.getMyNickname() == client.getMyNickname())
+                continue;
+            sendMessagetoClient(const_cast<Client&>(it->first), RPL_PRIVMSG(client.getMyNickname(), client.getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), cmd[2]));
+        }
+    }
+    return (true);
+}
+
+bool    Irc::kick(Client& client, std::vector<std::string> cmd)
+{
+    Chanel *current_chanel = findChanel(cmd[1]);
+    Client *current_client;
+    if (current_chanel)
+    {
+        if (current_chanel->isPresentInChanel(cmd[2]) == 0)
+        {
+            sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client.getMyNickname(), cmd[2], cmd[1]));
+            return (false);
+        }
+        else if ((current_client = findClient(cmd[2])) == NULL)
+        {
+            sendMessagetoClient(client, ERR_NOSUCHNICK(client.getMyNickname(), cmd[2]));
+            return (false);          
+        }
+        for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
+            sendMessagetoClient(const_cast<Client&>(it->first), KIK_CLIENT(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1], cmd[2]));
+        current_chanel->deleteClient(current_client->getMyNickname());
+        current_client->deleteChanel(current_chanel->getChanelName());
+        return (true);
+    }
+    return (false);
 }
