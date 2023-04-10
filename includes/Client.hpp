@@ -34,13 +34,12 @@ class Client
 		time_t 						getLastActiveTime() const;
 		std::vector<client_mode_e>&	getActiveModes() ;
 		chanel_map&					getChanelMap();
-		Chanel*						getCurentChanel() const;
+		std::string					getCurentChanelName() const;
 		
 		void 						setStatusClient(bool status);
 		void 						setNickName(std::string nick);
 		void 						setUserName(std::string user);
 		void						setLastActiveTime();
-		void						setCurrentChanel(Chanel* Chanel);
 
 		bool						setModes(char mode);
 		bool						unsetModes(char mode);
@@ -65,7 +64,6 @@ class Client
 		bool												new_client;
 		time_t												last_active_time;
 		chanel_map											my_chanels;
-		Chanel*												current_chanel;
 		
 };
 

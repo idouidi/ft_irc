@@ -97,6 +97,6 @@
 
             /* = = =    PRV MESSAGES     = = = */
 
-# define RPL_PRIVMSG(target, msg) (msg + "\r\n")
+# define RPL_PRIVMSG(nickname, username, cmd, chanel, msg) (user_id(nickname, username, cmd) + chanel + " " + msg + "\r\n")
 
 #endif

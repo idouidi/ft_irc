@@ -432,7 +432,6 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         return (0);
     else
     {
-        std::cout << "insert a chanel in client and insert the client in the chanel" << std::endl; 
         // LE DEUXIEME PARAM REPRESENTE LE MODE QU'ON DOIT METTRE POUR LE CLIENT ET LE CHANEL
         // - LE CLIENT A UN OU DES MODE DANS UN CHANEL
         // - LE CHANEL A UN OU DES MODES
@@ -450,7 +449,7 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
     std::string list = current_chanel->listClients();
     sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
     + RPL_NAMREPLY(client.getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
-    client.setCurrentChanel(current_chanel);
+    std::cout << "current chanl: " << current_chanel->getChanelName() << std::endl;
     return (1);
 }
 
@@ -561,10 +560,8 @@ bool Irc::quit(Client& client, std::vector<std::string> cmd)
 
 bool    Irc::privateMessage(Client& client, std::vector<std::string> cmd) {
     //  ERR_CANNOTSENDTOCHAN 404
-    Chanel*     current =  client.getCurentChanel();
-    Chanel::client_map client_map = current->getclientMap();
-    for (Chanel::map_iterator it = client_map.begin(), ite = client_map.end(); it != ite, it++) {
-        sendMessagetoClient(it->first, cmd[2]);
-    }
+    std::cout << cmd[2] << std::endl
+    << client.getCurentChanelName() << std::endl;
+    sendMessagetoClient(client, RPL_PRIVMSG(client.getMyNickname(), client.getMyUserName(), "PRIVMSG", client.getCurentChanelName(), cmd[2]));
     return true;
 }

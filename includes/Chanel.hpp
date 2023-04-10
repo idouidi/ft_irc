@@ -24,7 +24,7 @@ class Chanel {
 		~Chanel();
 
 
-		std::string	getChanelName();
+		std::string	getChanelName() const;
 
 		bool						addClient(Client& client_to_add, std::vector<client_mode_e> mode_client);
 		bool						deleteClient(Client& client_to_delete);

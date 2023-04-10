@@ -20,7 +20,7 @@ Chanel::Chanel(std::string& name):  _id(_id_global++), _name(name)
 Chanel::~Chanel() 
 {}
 
-std::string					Chanel::getChanelName() { return (_name); }
+std::string					Chanel::getChanelName() const { return (_name); }
 
 std::vector<std::string>&	Chanel::getBlackList() { return (_black_list); }
 

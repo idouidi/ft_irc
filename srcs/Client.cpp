@@ -12,7 +12,7 @@
 
 #include "../includes/Control.hpp"
 
-Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0)), current_chanel(0x0)
+Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0))
 {}
 
 
@@ -65,8 +65,14 @@ std::vector<client_mode_e>& 	Client::getActiveModes()  { return (active_modes); 
 
 Client::chanel_map& 		Client::getChanelMap() {return (my_chanels); }
 
-Chanel*						Client::getCurentChanel() const {
-	return (current_chanel);
+std::string						Client::getCurentChanelName() const {
+	chanel_map::const_iterator		ite = my_chanels.end();
+
+	if (my_chanels.size() > 0) {
+		ite--;
+		return ((ite->first).getChanelName());
+	}
+	return (std::string());
 }
 
 
@@ -78,11 +84,6 @@ void 				Client::setStatusClient(bool status) { new_client = status; }
 void 				Client::setNickName(std::string nick) { nickname.assign(nick); }
 
 void 				Client::setUserName(std::string user) { username.assign(user); }
-
-void				Client::setCurrentChanel(Chanel* current) {
-	current_chanel = current;
-	return ;
-}
 
 void				Client::setLastActiveTime() { last_active_time = time(0); }
 
