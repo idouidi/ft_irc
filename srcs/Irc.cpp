@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/10 15:19:53 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/10 16:11:34 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -411,7 +411,10 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
                         sendMessagetoClient(client, ERR_UNKNOWNMODE(client.getMyNickname(), cmd[2][i + i]));
                 }
                 if (before_setting_modes == false && current_chanel->isModeActivated(INVITE_ONLY))
-                    current_chanel->getWhiteList().push_back(client.getMyNickname());
+                {
+                    for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
+                        current_chanel->getWhiteList().push_back(it->first.getMyNickname());
+                }
             }
         }
         else
