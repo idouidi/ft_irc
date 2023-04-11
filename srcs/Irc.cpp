@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/11 18:14:03 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 18:45:36 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,14 @@ void     Irc::eraseClient(Client* client)
             {
                 if (it->first->getNumClient() == 1)
                 {
-                    delete findChanel(it->first->getChanelName());
+                    Chanel *chanel_ptr = findChanel(it->first->getChanelName());
+                    for (std::size_t i = 0; i <_chanel.size(); i++)
+                        if (_chanel[i]->getChanelName() == it->first->getChanelName())
+                        {
+                            _chanel.erase(_chanel.begin() + i);
+                            delete chanel_ptr;
+                            break ;
+                        }
                 }
             }
             close(client->getMySocket());
@@ -549,7 +556,7 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
 		current_chanel->addClient(client, client_mode_in_chanel);
         client->insertChanel(current_chanel, client_mode_in_chanel);        
         //DEBUG PART
-        CheckChanelInfo(current_chanel);
+        // CheckChanelInfo(current_chanel);
     }
     
     std::string list = current_chanel->listAllClientsModesAndNames();
