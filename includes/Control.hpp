@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/11 11:36:08 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 23:44:58 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,6 @@ std::string                 getDateTime();
 std::vector<std::string>    split(std::string str, const std::string charset);
 char                        convertClientModeToChar(client_mode mode);
 char                        convertChanelModeToChar(chanel_mode mode);
-
-
 
 
 # include "Numeric_rpl.hpp"

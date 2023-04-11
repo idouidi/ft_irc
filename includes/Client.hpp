@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/11 14:39:30 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 23:02:30 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ class Client
 		bool 						isNewClient() const;
 
 		bool						isValidMode(char mode, client_mode& idx);
+		bool						isServerModeActivated(client_mode mode);
 		bool						setModes(char mode);
 		bool						unsetModes(char mode);
 

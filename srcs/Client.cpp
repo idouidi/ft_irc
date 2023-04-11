@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/11 14:11:53 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 23:02:58 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,17 @@ bool						Client::isValidMode(char mode, client_mode& idx)
 			idx = NON_CLIENT_MODE;
             return (false);
     }
+}
+
+bool				Client::isServerModeActivated(client_mode mode)
+{
+	for (std::size_t i = 0; i < active_modes.size(); i++)
+	{
+		if (mode == active_modes[i])
+			return (true);
+	}
+	return (false);
+	
 }
 
 bool						Client::setModes(char mode)

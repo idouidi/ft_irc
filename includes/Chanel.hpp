@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/11 14:39:16 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 23:07:17 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ class Chanel {
 		bool						isPresentInList(std::vector<std::string>& list, std::string name);
 		bool						isPresentInChanel(std::string name);
 		bool						isValidMode(char mode, chanel_mode &idx);
-		bool						isModeActivated(chanel_mode mode);
+		bool						isChanelModeActivated(chanel_mode mode);
+		bool						isClientModeActivated(std::vector<client_mode>& modes, client_mode mode);
 
 	
 		std::string					getChanelName() const;
@@ -40,7 +41,7 @@ class Chanel {
 		std::vector<std::string>&	getWhiteList();
 		std::vector<chanel_mode>&	getActiveModes() ;
 		client_map&					getclientMap();
-		// map_iterator				getClient(std::string name);
+		map_iterator				getClient(std::string name);
 
 		bool						setModes(char mode);
 		bool						unsetModes(char mode);

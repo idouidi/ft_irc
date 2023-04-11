@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/11 14:00:27 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 23:07:12 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,17 @@ std::vector<std::string>&	Chanel::getWhiteList() { return (_white_list); }
 
 Chanel::client_map&			Chanel::getclientMap() { return (_clients_in); }
 
-// Chanel::map_iterator Chanel::getClient(std::string name)
-// {
-//     map_iterator it = _clients_in.begin();
-//     map_iterator ite = _clients_in.end();
-//     for (; it != ite; it++)
-//     {
-//         if (name == it->first.getMyNickname())
-//             return it;
-//     }
-//     return ite;
-// }
+Chanel::map_iterator Chanel::getClient(std::string name)
+{
+    map_iterator it = _clients_in.begin();
+    map_iterator ite = _clients_in.end();
+    for (; it != ite; it++)
+    {
+        if (name == it->first->getMyNickname())
+            return it;
+    }
+    return ite;
+}
 
 
 std::vector<chanel_mode>&	Chanel::getActiveModes() { return (_active_modes); }
@@ -161,7 +161,7 @@ bool				Chanel::isValidMode(char mode, chanel_mode& idx)
     }
 }
 
-bool				Chanel::isModeActivated(chanel_mode mode)
+bool				Chanel::isChanelModeActivated(chanel_mode mode)
 {
 	for (std::size_t i = 0; i < _active_modes.size(); i++)
 	{
@@ -170,6 +170,16 @@ bool				Chanel::isModeActivated(chanel_mode mode)
 	}
 	return (false);
 	
+}
+
+bool				Chanel::isClientModeActivated(std::vector<client_mode>& modes, client_mode mode)
+{
+	for (std::size_t i = 0; i < modes.size(); i++)
+	{
+		if (mode == modes[i])
+			return (true);
+	}
+	return (false);
 }
 
 bool				Chanel::setModes(char mode)
