@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/11 14:37:08 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 18:14:03 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void    Irc::closeServer()
 
     while(!_chanel.empty())
         _chanel.erase(_chanel.begin());
+    close(epoll_fd);
     close(server_fd);
 }
 
@@ -128,6 +129,13 @@ void     Irc::eraseClient(Client* client)
                 exit(EXIT_FAILURE);			
             }
             std::cout << RED << "Client[ " << CYAN << client->getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
+            for (Client::map_iterator it = client->getChanelMap().begin(); it != client->getChanelMap().end(); it++)
+            {
+                if (it->first->getNumClient() == 1)
+                {
+                    delete findChanel(it->first->getChanelName());
+                }
+            }
             close(client->getMySocket());
             _client.erase(_client.begin() + i);
         }
