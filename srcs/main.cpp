@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 16:38:55 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 14:11:26 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,21 +52,21 @@ void start_server(char *port, char *pswd)
 					exit(EXIT_FAILURE);
 				}
 				else if (ret == 0)
-						irc.eraseClient(*current_client);
+						irc.eraseClient(current_client);
 				else
 				{
 					printInServer(std::string(buf), *current_client);
 					std::vector<std::string> cmd = split(std::string(buf), " \n\r");
 					if (cmd[0] != "PONG" && current_client->isNewClient())
 					{
-						if ((irc.parsInfo(*current_client, cmd)) == 0)
+						if ((irc.parsInfo(current_client, cmd)) == 0)
 						{
-							irc.eraseClient(*current_client);
+							irc.eraseClient(current_client);
 							continue ;
 						}
 					}
 					else
-						irc.execCmd(*current_client, cmd);
+						irc.execCmd(current_client, cmd);
 				}
 				memset(buf, '\0', sizeof(buf));
 			}

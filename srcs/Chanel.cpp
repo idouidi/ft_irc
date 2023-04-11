@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/10 14:02:05 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 14:00:27 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,24 +28,25 @@ std::vector<std::string>&	Chanel::getWhiteList() { return (_white_list); }
 
 Chanel::client_map&			Chanel::getclientMap() { return (_clients_in); }
 
-Chanel::map_iterator Chanel::getClient(std::string name)
-{
-    map_iterator it = _clients_in.begin();
-    map_iterator ite = _clients_in.end();
-    for (; it != ite; it++)
-    {
-        if (name == it->first.getMyNickname())
-            return it;
-    }
-    return ite;
-}
+// Chanel::map_iterator Chanel::getClient(std::string name)
+// {
+//     map_iterator it = _clients_in.begin();
+//     map_iterator ite = _clients_in.end();
+//     for (; it != ite; it++)
+//     {
+//         if (name == it->first.getMyNickname())
+//             return it;
+//     }
+//     return ite;
+// }
 
 
 std::vector<chanel_mode>&	Chanel::getActiveModes() { return (_active_modes); }
 
-bool						Chanel::addClient(Client& client_to_add, std::vector<client_mode> mode_to_give) 
+bool						Chanel::addClient(Client* client_to_add, std::vector<client_mode> mode_to_give) 
 {
-	_clients_in.insert(std::make_pair(client_to_add, mode_to_give));
+	_clients_in[client_to_add] = mode_to_give;
+	// _clients_in.insert(std::make_pair(client_to_add, mode_to_give));
 	return true;
 }
 
@@ -53,7 +54,7 @@ bool						Chanel::deleteClient(std::string name)
 {
 	for (map_iterator it = _clients_in.begin(), ite = _clients_in.end(); it != ite; it++) 
 	{
-		if (it->first.getMyNickname() == name) 
+		if (it->first->getMyNickname() == name)
 		{
 			_clients_in.erase(it);
 			return (true);
@@ -75,7 +76,7 @@ bool						Chanel::isPresentInChanel(std::string client_name)
 	map_iterator it = _clients_in.begin();
 	map_iterator ite = _clients_in.end();
 	for (; it != ite; it++)
-		if (it->first.getMyNickname() == client_name)
+		if (it->first->getMyNickname() == client_name)
 			return (1);
 	return (0);
 }
@@ -118,7 +119,7 @@ std::string					Chanel::listAllClientsModesAndNames()
 	for (; it != ite; it++)
 	{
 		modes = listClientmodes(it->second);
-		std::string nick = it->first.getMyNickname();
+		std::string nick = it->first->getMyNickname();
 		list += modes + nick;
 		map_iterator cpy = it;
 		if (++cpy != ite)

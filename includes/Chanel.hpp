@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/10 14:04:44 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 14:39:16 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 class Chanel {
 	
 	public:
-		typedef std::map<Client, std::vector<client_mode> > 	client_map;
+		typedef std::map<Client*, std::vector<client_mode> > 	client_map;
 		typedef client_map::iterator 							map_iterator;
 		
 		Chanel(std::string&);
@@ -25,7 +25,7 @@ class Chanel {
 
 
 
-		bool						addClient(Client& client_to_add, std::vector<client_mode> mode_client);
+		bool						addClient(Client* client_to_add, std::vector<client_mode> mode_client);
 		bool						deleteClient(std::string name);
 
 		bool						isPresentInList(std::vector<std::string>& list, std::string name);
@@ -40,7 +40,7 @@ class Chanel {
 		std::vector<std::string>&	getWhiteList();
 		std::vector<chanel_mode>&	getActiveModes() ;
 		client_map&					getclientMap();
-		map_iterator				getClient(std::string name);
+		// map_iterator				getClient(std::string name);
 
 		bool						setModes(char mode);
 		bool						unsetModes(char mode);
@@ -52,7 +52,7 @@ class Chanel {
 		std::string 				listAllClientsModesAndNames();
 
 		template <typename T2>
-		bool						operator==(T2& rhs) const { return (_name == rhs._name); }
+		bool						operator==(T2& rhs) const { return (*this == rhs); }
 
 		template <typename T1>
 		bool						operator<(T1& rhs) const { return (_id < rhs._id); }

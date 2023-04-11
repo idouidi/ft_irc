@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/10 13:30:00 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 14:11:53 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,16 +133,18 @@ bool						Client::unsetModes(char mode)
 	return (false);
 }
 
-bool						Client::insertChanel(Chanel& chanel_to_add, std::vector<client_mode> chan_mode) 
+bool						Client::insertChanel(Chanel* chanel_to_add, std::vector<client_mode> chan_mode) 
 {
-	return (my_chanels.insert(std::pair<Chanel, std::vector<client_mode> >(chanel_to_add, chan_mode)).second);
+	my_chanels[chanel_to_add] = chan_mode;
+	// return (my_chanels.insert(std::pair<Chanel, std::vector<client_mode> >(chanel_to_add, chan_mode)).second);
+	return (true);
 }
 
 bool						Client::deleteChanel(std::string name)
 {
 	for (map_iterator it = my_chanels.begin(), ite = my_chanels.end( ); it != ite; it++)
 	{
-		if (it->first.getChanelName() == name)
+		if (it->first->getChanelName() == name)
 		{
 			my_chanels.erase(it);
 			return (true);

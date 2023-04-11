@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/10 19:14:01 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 14:37:08 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,64 +104,44 @@ void    Irc::addClient(int client_fd)
         perror("epoll_ctl EPOLL_CTL_ADD client soscket");
         exit(EXIT_FAILURE);
     }
-    _client.push_back(Client(client_fd, ret));
+    _client.push_back((new Client(client_fd, ret)));
 
 	sendMessagetoClient(_client.back(), CMD_PING(ret));
 	token++;
 }
 
-void     Irc::eraseClient(Client& client)
+void     Irc::eraseClient(Client* client)
 {
     for (std::size_t i = 0; i < _client.size(); i++)
     {
-        if (client.getMySocket() == _client[i].getMySocket())
+        if (client->getMySocket() == _client[i]->getMySocket())
         {
-            if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client.getMySocket(), NULL ) == -1)
+            if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client->getMySocket(), NULL ) == -1)
             {
                 perror("epoll_ctl EPOLL_CTL_DEL");
                 exit(EXIT_FAILURE);			
             }
-            std::cout << RED << "Client[ " << CYAN << client.getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
-            close(client.getMySocket());
+            std::cout << RED << "Client[ " << CYAN << client->getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
+            close(client->getMySocket());
             _client.erase(_client.begin() + i);
         }
     }
 }
 
-void        Irc::sendMessagetoClient(Client& client, std::string msg)
+void        Irc::sendMessagetoClient(Client* client, std::string msg)
 {
     int			bytes_sent;
     int 		len = msg.size();
 
-    if ((bytes_sent = send(client.getMySocket(), msg.c_str(), len, 0 )) != len)
+    if ((bytes_sent = send(client->getMySocket(), msg.c_str(), len, 0 )) != len)
     {
         perror("send failed");
         throw std::runtime_error("Error when sending a message to the client");
-        client.setLastActiveTime();
+        client->setLastActiveTime();
     }
 }
 
-std::string     Irc::recvMessageFromClient(int client_fd)
-{
-    int			bytes_recv;
-    char		buf[BUFFER_SIZE] = {0};
-    std::string s_buf;
-    if ((bytes_recv = recv(client_fd, buf, BUFFER_SIZE, 0 )) < 0)
-    {
-        perror("recv failed");
-        throw std::runtime_error("Error when receving a message to the client");
-    }
-    if (buf[0])
-    {
-        s_buf = buf;
-        s_buf.erase(s_buf.size() - 1);
-    }
-    else
-        return ("");
-    return (s_buf);
-}
-
-bool        Irc::goodPassword(Client& client, std::string pswd)
+bool        Irc::goodPassword(Client* client, std::string pswd)
 {
     std::string msg;
 
@@ -175,12 +155,12 @@ bool        Irc::goodPassword(Client& client, std::string pswd)
 bool Irc::isNicknameAvaible(std::string nickname)
 {
     for(size_t i = 0; i < _client.size(); i++)
-        if (nickname == _client[i].getMyNickname())
+        if (nickname == _client[i]->getMyNickname())
             return (0);
     return (1);
 }
 
-bool Irc::parsInfo(Client& client, std::vector<std::string> info)
+bool Irc::parsInfo(Client* client, std::vector<std::string> info)
 {
     std::string msg;
 
@@ -202,55 +182,55 @@ bool Irc::parsInfo(Client& client, std::vector<std::string> info)
         sendMessagetoClient(client, ERR_NICKNAMEINUSE(nick));
         nick.push_back('_');
     }
-    client.setNickName(nick);
+    client->setNickName(nick);
 
     std::string user(info[7]);
-    client.setUserName(user);
+    client->setUserName(user);
 
-    client.setStatusClient(0);
+    client->setStatusClient(0);
 
-    sendMessagetoClient(client, RPL_WELCOME(client.getMyNickname()) + \
-     RPL_YOURHOST(client.getMyNickname(), "Les Oubliés 1.0.0")+ \
-     RPL_CREATED(client.getMyNickname(), getDateTime())+ \
-     RPL_MYINFO(client.getMyNickname(), "Les Oubliés 1.0.0"));
+    sendMessagetoClient(client, RPL_WELCOME(client->getMyNickname()) + \
+     RPL_YOURHOST(client->getMyNickname(), "Les Oubliés 1.0.0")+ \
+     RPL_CREATED(client->getMyNickname(), getDateTime())+ \
+     RPL_MYINFO(client->getMyNickname(), "Les Oubliés 1.0.0"));
     return (true);
 }
 
-bool Irc::setClientMode(Client& client, std::string cmd, char mode)
+bool Irc::setClientMode(Client* client, std::string cmd, char mode)
 {
-    if (client.setModes(mode))
+    if (client->setModes(mode))
     {
-        sendMessagetoClient(client, SET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, mode));
+        sendMessagetoClient(client, SET_CLIENT_MODE(client->getMyNickname(), client->getMyUserName(), cmd, mode));
         return (true);
     }
     return (false);
 }
 
-bool Irc::unsetClientMode(Client& client, std::string cmd, char mode)
+bool Irc::unsetClientMode(Client* client, std::string cmd, char mode)
 {
-    if (client.unsetModes(mode))
+    if (client->unsetModes(mode))
     {
-        sendMessagetoClient(client, UNSET_CLIENT_MODE(client.getMyNickname(), client.getMyUserName(), cmd, mode));
+        sendMessagetoClient(client, UNSET_CLIENT_MODE(client->getMyNickname(), client->getMyUserName(), cmd, mode));
         return (true);
     }
     return (false);
 }
 
-bool Irc::setChanelMode(Client& client, Chanel& chanel, std::string cmd, char mode)
+bool Irc::setChanelMode(Client* client, Chanel* chanel, std::string cmd, char mode)
 {
-    if (chanel.setModes(mode))
+    if (chanel->setModes(mode))
     {
-        sendMessagetoClient(client, SET_CHANEL_MODE(client.getMyNickname(), client.getMyUserName(), cmd, chanel.getChanelName(), mode));
+        sendMessagetoClient(client, SET_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode));
         return (true);
     }
     return (false);
 }
 
-bool Irc::unsetChanelMode(Client& client, Chanel& chanel, std::string cmd, char mode)
+bool Irc::unsetChanelMode(Client* client, Chanel* chanel, std::string cmd, char mode)
 {
-    if (chanel.unsetModes(mode))
+    if (chanel->unsetModes(mode))
     {
-        sendMessagetoClient(client, UNSET_CHANEL_MODE(client.getMyNickname(), client.getMyUserName(), cmd, chanel.getChanelName(), mode));
+        sendMessagetoClient(client, UNSET_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode));
         return (true);
     }
     return (false);
@@ -260,8 +240,8 @@ Client*     Irc::findClient(int fd_client)
 {
     for (size_t i = 0; i < _client.size(); i++)
     {
-        if (_client[i].getMySocket() == fd_client)
-            return (&_client[i]);
+        if (_client[i]->getMySocket() == fd_client)
+            return (_client[i]);
     }
     return NULL;
 }
@@ -270,8 +250,8 @@ Client*     Irc::findClient(std::string nick)
 {
     for (size_t i = 0; i < _client.size(); i++)
     {
-        if (_client[i].getMyNickname() == nick)
-            return (&_client[i]);
+        if (_client[i]->getMyNickname() == nick)
+            return (_client[i]);
     }
     return (NULL);
 }
@@ -280,23 +260,23 @@ Chanel*     Irc::findChanel(std::string chanel_name)
 {
     for (size_t i = 0; i < _chanel.size(); i++)
     {
-        if (_chanel[i].getChanelName() == chanel_name)
-            return (&_chanel[i]);
+        if (_chanel[i]->getChanelName() == chanel_name)
+            return (_chanel[i]);
     }
     return (NULL);
 }
 
-std::string Irc::clientLastActiveTime(Client& client)
+std::string Irc::clientLastActiveTime(Client* client)
 {
     char buffer[20];
-    int idle_time = time(0) - client.getLastActiveTime();
+    int idle_time = time(0) - client->getLastActiveTime();
     sprintf(buffer, "%d", idle_time); // conversion de la valeur en chaîne de caractères
     return (std::string(buffer));  
 }
 
-bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
+bool        Irc::execCmd(Client* client , std::vector<std::string> cmd)
 {
-    bool (Irc::*tab[])(Client&, std::vector<std::string> ) = {&Irc::ping,
+    bool (Irc::*tab[])(Client*, std::vector<std::string> ) = {&Irc::ping,
 																&Irc::pong,
                                                                 &Irc::mode,
                                                                 &Irc::who,
@@ -304,11 +284,10 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                                                                 &Irc::whowas,
                                                                 &Irc::join,
                                                                 &Irc::part,
-                                                                &Irc::msg,
+                                                                &Irc::privatemsg,
                                                                 &Irc::list,
                                                                 &Irc::nick,
                                                                 &Irc::quit,
-                                                                &Irc::privatemsg,
                                                                 &Irc::kick,
                                                                 &Irc::invite
                                                                 };
@@ -320,12 +299,11 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
                         "WHOWAS",
                         "JOIN",
                         "PART",
-                        "MSG",
+                        "PRIVMSG",
                         "LIST",
                         "NICK",
                         "QUIT",
                         "INVITE",
-                        "PRIVMSG",
                         "KICK",
                         "NULL"};
 
@@ -341,25 +319,25 @@ bool        Irc::execCmd(Client& client , std::vector<std::string> cmd)
             return (true);
         }
     }
-    sendMessagetoClient(client, ERR_UNKNOWNCOMMAND(client.getMyNickname(), cmd[0]));
+    sendMessagetoClient(client, ERR_UNKNOWNCOMMAND(client->getMyNickname(), cmd[0]));
     return (false);
 }
 
-bool Irc::ping(Client& client, std::vector<std::string> cmd)
+bool Irc::ping(Client* client, std::vector<std::string> cmd)
 {
     (void)cmd;
     sendMessagetoClient(client, RPL_PONG);
     return (true);
 }
 
-bool	Irc::pong(Client& client, std::vector<std::string> cmd)
+bool	Irc::pong(Client* client, std::vector<std::string> cmd)
 {
-	if (cmd[1] != ":" + client.getToken())
-		sendMessagetoClient(client, ERR_BADPING(client.getMyNickname()));
+	if (cmd[1] != ":" + client->getToken())
+		sendMessagetoClient(client, ERR_BADPING(client->getMyNickname()));
 	return true;
 }
 
-bool Irc::mode(Client& client, std::vector<std::string> cmd)
+bool Irc::mode(Client* client, std::vector<std::string> cmd)
 {
     //MODE FOR A CLIENT
     if (cmd[1][0] != '#')
@@ -375,10 +353,10 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
                 else if (cmd[2][i] == '-' && unsetClientMode(client, cmd[0], cmd[2][i + 1]))
                     i++;
                 else
-                    sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
+                    sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
             }
             else
-                sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client.getMyNickname()));
+                sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
         }
     }
     //MODE FOR A CHANEL
@@ -388,36 +366,36 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
         current_chanel = findChanel(cmd[1]);
         if (current_chanel == NULL)
         {
-            sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
+            sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
             return (false);
         }
         else if (cmd.size() == 3)
         {
             bool before_setting_modes = current_chanel->isModeActivated(INVITE_ONLY);
             if (cmd[2] == "b")
-                sendMessagetoClient(client, RPL_ENDOFBANLIST(client.getMyNickname(), cmd[1]));
+                sendMessagetoClient(client, RPL_ENDOFBANLIST(client->getMyNickname(), cmd[1]));
             else
             {
                 for (std::size_t i = 0; i < cmd[2].size(); i++)
                 {
-                    if (setChanelMode(client, *current_chanel, cmd[0], cmd[2][i]))
+                    if (setChanelMode(client, current_chanel, cmd[0], cmd[2][i]))
                         ;
                     else if (cmd[2][i + 1])
                     {
-                        if (cmd[2][i] == '+' && setChanelMode(client, *current_chanel, cmd[0], cmd[2][i + 1]))
+                        if (cmd[2][i] == '+' && setChanelMode(client, current_chanel, cmd[0], cmd[2][i + 1]))
                             i++;
-                        else if (cmd[2][i] == '-' && unsetChanelMode(client, *current_chanel, cmd[0], cmd[2][i + 1]))
+                        else if (cmd[2][i] == '-' && unsetChanelMode(client, current_chanel, cmd[0], cmd[2][i + 1]))
                             i++;
                         else
-                            sendMessagetoClient(client, ERR_UNKNOWNMODE(client.getMyNickname(), cmd[2][i + i]));
+                            sendMessagetoClient(client, ERR_UNKNOWNMODE(client->getMyNickname(), cmd[2][i + i]));
                     }
                     else
-                        sendMessagetoClient(client, ERR_UNKNOWNMODE(client.getMyNickname(), cmd[2][i + i]));
+                        sendMessagetoClient(client, ERR_UNKNOWNMODE(client->getMyNickname(), cmd[2][i + i]));
                 }
                 if (before_setting_modes == false && current_chanel->isModeActivated(INVITE_ONLY))
                 {
                     for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
-                        current_chanel->getWhiteList().push_back(it->first.getMyNickname());
+                        current_chanel->getWhiteList().push_back(it->first->getMyNickname());
                 }
             }
         }
@@ -432,14 +410,14 @@ bool Irc::mode(Client& client, std::vector<std::string> cmd)
 	        ss >> stime;
 
             listChanelMode = current_chanel->listChanelModes();
-            sendMessagetoClient(client, RPL_CHANNELMODEIS(client.getMyNickname(), cmd[1], + listChanelMode)
-            + RPL_CREATIONTIME(client.getMyNickname(), cmd[1], stime));
+            sendMessagetoClient(client, RPL_CHANNELMODEIS(client->getMyNickname(), cmd[1], + listChanelMode)
+            + RPL_CREATIONTIME(client->getMyNickname(), cmd[1], stime));
         }
     }
     return (true);
 }
 
-bool Irc::who(Client& client, std::vector<std::string> cmd)
+bool Irc::who(Client* client, std::vector<std::string> cmd)
 {
     std::string modes;
 
@@ -448,7 +426,7 @@ bool Irc::who(Client& client, std::vector<std::string> cmd)
         Chanel      *potential_chanel = findChanel(cmd[1]);
         if (potential_chanel == NULL)
         {
-            sendMessagetoClient(client, RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+            sendMessagetoClient(client, RPL_ENDOFWHO(client->getMyNickname(), cmd[1]));
             return (false);
         }
         for(Chanel::map_iterator it =  potential_chanel->getclientMap().begin(); it != potential_chanel->getclientMap().end(); it++)
@@ -460,43 +438,43 @@ bool Irc::who(Client& client, std::vector<std::string> cmd)
 		    	else if (it->second[i] == VOICE)
 		    		modes += '+';
 		    }
-            sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), cmd[1], client.getMyUserName(), it->first.getMyNickname(), "H", modes));
+            sendMessagetoClient(client, RPL_WHOREPLY(client->getMyNickname(), cmd[1], client->getMyUserName(), it->first->getMyNickname(), "H", modes));
             modes.clear();
         }
-        sendMessagetoClient(client, RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+        sendMessagetoClient(client, RPL_ENDOFWHO(client->getMyNickname(), cmd[1]));
     }
     else
     {
         Client  *potential_client = findClient(cmd[1]);
         if (potential_client == NULL)
         {
-            sendMessagetoClient(client, RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+            sendMessagetoClient(client, RPL_ENDOFWHO(client->getMyNickname(), cmd[1]));
             return (false);      
         }
         else if (potential_client->getChanelMap().size() == 0) // IF THE CLIENT JOIN NO CHANELS
         {
             //IF THE CLIENT HAS NO SPECIAL MODES (LIKES INVISIBLE AT START)
             if ((modes = potential_client->listClientServerModes()) == "i")
-                sendMessagetoClient(client, RPL_WHOREPLY_BIS(client.getMyNickname(), "*", client.getMyUserName(), potential_client->getMyNickname(), "H")
-                + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+                sendMessagetoClient(client, RPL_WHOREPLY_BIS(client->getMyNickname(), "*", client->getMyUserName(), potential_client->getMyNickname(), "H")
+                + RPL_ENDOFWHO(client->getMyNickname(), cmd[1]));
             else
-                sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), "*", client.getMyUserName(), potential_client->getMyNickname(), "H", modes)
-                + RPL_ENDOFWHO(client.getMyNickname(), cmd[1]));
+                sendMessagetoClient(client, RPL_WHOREPLY(client->getMyNickname(), "*", client->getMyUserName(), potential_client->getMyNickname(), "H", modes)
+                + RPL_ENDOFWHO(client->getMyNickname(), cmd[1]));
         }
         else
         {
             for (Client::map_iterator it = potential_client->getChanelMap().begin(); it != potential_client->getChanelMap().end(); it++)
-                sendMessagetoClient(client, RPL_WHOREPLY(client.getMyNickname(), it->first.getChanelName(), client.getMyUserName(), potential_client->getMyNickname() , "H", potential_client->listClientChanelModes(it->second)));
+                sendMessagetoClient(client, RPL_WHOREPLY(client->getMyNickname(), it->first->getChanelName(), client->getMyUserName(), potential_client->getMyNickname() , "H", potential_client->listClientChanelModes(it->second)));
         }
     }
     return (1);
 }
 
-bool Irc::whois(Client& client, std::vector<std::string> cmd)
+bool Irc::whois(Client* client, std::vector<std::string> cmd)
 {
     if (isNicknameAvaible(cmd[1]) != 0)
     {
-        sendMessagetoClient(client, ERR_NOSUCHNICK(client.getMyNickname(), cmd[1]) + RPL_ENDOFWHOIS(client.getMyNickname(), cmd[1]));
+        sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), cmd[1]) + RPL_ENDOFWHOIS(client->getMyNickname(), cmd[1]));
         return (false);
     }
     else
@@ -504,24 +482,24 @@ bool Irc::whois(Client& client, std::vector<std::string> cmd)
         Client *current_client = findClient(cmd[1]);
         if (current_client)
         {
-            sendMessagetoClient(*current_client,
-            RPL_WHOISUSER(client.getMyNickname(), current_client->getMyNickname(), current_client->getMyUserName())
-            + RPL_WHOISSERVER(client.getMyNickname(), current_client->getMyNickname())
-            + RPL_WHOISIDLE(client.getMyNickname(), current_client->getMyNickname(), clientLastActiveTime(client))
-            + RPL_ENDOFWHOIS(client.getMyNickname(), current_client->getMyNickname()));
+            sendMessagetoClient(current_client,
+            RPL_WHOISUSER(client->getMyNickname(), current_client->getMyNickname(), current_client->getMyUserName())
+            + RPL_WHOISSERVER(client->getMyNickname(), current_client->getMyNickname())
+            + RPL_WHOISIDLE(client->getMyNickname(), current_client->getMyNickname(), clientLastActiveTime(client))
+            + RPL_ENDOFWHOIS(client->getMyNickname(), current_client->getMyNickname()));
         }
     }
     return (true);    
 }
 
-bool Irc::whowas(Client& client, std::vector<std::string> cmd)
+bool Irc::whowas(Client* client, std::vector<std::string> cmd)
 {
-    sendMessagetoClient(client, ERR_WASNOSUCHNICK(client.getMyNickname(), cmd[1]) 
-    + RPL_ENDOFWHOWAS(client.getMyNickname(), cmd[1]));
+    sendMessagetoClient(client, ERR_WASNOSUCHNICK(client->getMyNickname(), cmd[1]) 
+    + RPL_ENDOFWHOWAS(client->getMyNickname(), cmd[1]));
     return (true);
 }
 
-bool Irc::join(Client& client, std::vector<std::string> cmd)
+bool Irc::join(Client* client, std::vector<std::string> cmd)
 {
     Chanel *current_chanel;
     bool founder = 0;
@@ -529,23 +507,23 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
     current_chanel = findChanel(cmd[1]);
     if (current_chanel == NULL)
     {
-        _chanel.push_back(Chanel(cmd[1])); // ( _id = _chanel.size() + 1 )
-        current_chanel = &_chanel[_chanel.size() - 1];
+        _chanel.push_back((new Chanel(cmd[1]))); // ( _id = _chanel.size() + 1 )
+        current_chanel = _chanel[_chanel.size() - 1];
         current_chanel->setModes('n');
         current_chanel->setModes('t');
         current_chanel->setChanelName(cmd[1]);
         founder = 1;
     }
     
-    if (current_chanel->isPresentInList(current_chanel->getBlackList(), client.getMyNickname()))
+    if (current_chanel->isPresentInList(current_chanel->getBlackList(), client->getMyNickname()))
         return (0);
     else if (current_chanel->getWhiteList().size() > 0 
-            && current_chanel->isPresentInList(current_chanel->getWhiteList(), client.getMyNickname()) == 0)
+            && current_chanel->isPresentInList(current_chanel->getWhiteList(), client->getMyNickname()) == 0)
     {
-        sendMessagetoClient(client, ERR_INVITEONLYCHAN(client.getMyNickname(), current_chanel->getChanelName()));
+        sendMessagetoClient(client, ERR_INVITEONLYCHAN(client->getMyNickname(), current_chanel->getChanelName()));
         return (0);
     }
-    else if (current_chanel->isPresentInChanel(client.getMyNickname()))
+    else if (current_chanel->isPresentInChanel(client->getMyNickname()))
         return (0);
     else
     {   
@@ -555,120 +533,101 @@ bool Irc::join(Client& client, std::vector<std::string> cmd)
         else
 			client_mode_in_chanel.push_back(NON_CLIENT_MODE);
 		current_chanel->addClient(client, client_mode_in_chanel);
-		client.insertChanel(*current_chanel, client_mode_in_chanel);
+        client->insertChanel(current_chanel, client_mode_in_chanel);        
+        //DEBUG PART
+        CheckChanelInfo(current_chanel);
     }
     
     std::string list = current_chanel->listAllClientsModesAndNames();
-    sendMessagetoClient(client, SET_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1])
-    + RPL_NAMREPLY(client.getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client.getMyNickname(), cmd[1]));
+    sendMessagetoClient(client, SET_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1])
+    + RPL_NAMREPLY(client->getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client->getMyNickname(), cmd[1]));
     for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
     {
-        if (it->first.getMyNickname() == client.getMyNickname())
+        if (it->first->getMyNickname() == client->getMyNickname())
             continue;
-        sendMessagetoClient(const_cast<Client&>(it->first), JOINING_MSG(client.getMyNickname(), it->first.getMyUserName(), cmd[1]));
+        sendMessagetoClient(const_cast<Client*>(it->first), JOINING_MSG(client->getMyNickname(), it->first->getMyUserName(), cmd[1]));
     }
     return (1);
 }
 
-bool Irc::part(Client& client, std::vector<std::string> cmd)
+bool Irc::part(Client* client, std::vector<std::string> cmd)
 {
     Chanel *current_chanel;
     if ((current_chanel = findChanel(cmd[1])) == NULL)
     {
-        sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
+        sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
         return (false);
     }
     // IF SUCCESS TO DELETE CLIENT IN CHANEL MAP, I CAN DELETE CHANEL IN CLIENT MAP
-    else if (current_chanel->deleteClient(client.getMyNickname()))
+    else if (current_chanel->deleteClient(client->getMyNickname()))
     {
-        client.deleteChanel(current_chanel->getChanelName());
+        client->deleteChanel(current_chanel->getChanelName());
         if (current_chanel->getclientMap().size() == 0)
         {
             for (std::size_t i = 0; i < _chanel.size(); i++)
             {
-                if (_chanel[i].getChanelName() == current_chanel->getChanelName())
+                if (_chanel[i]->getChanelName() == current_chanel->getChanelName())
                 {
                     _chanel.erase(_chanel.begin() + i);
                     break;
                 }
             }            
         }
-        sendMessagetoClient(client, PART_CHANEL(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1]));
+        sendMessagetoClient(client, PART_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1]));
     for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
     {
-        if (it->first.getMyNickname() == client.getMyNickname())
+        if (it->first->getMyNickname() == client->getMyNickname())
             continue;
-        sendMessagetoClient(const_cast<Client&>(it->first), LEAVE_MSG(client.getMyNickname(), it->first.getMyUserName(), cmd[1]));
+        sendMessagetoClient(const_cast<Client*>(it->first), LEAVE_MSG(client->getMyNickname(), it->first->getMyUserName(), cmd[1]));
     }
         return (true);
     }
     else
-        sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client.getMyNickname(), cmd[1]));
+        sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
     return (false);
 }
 
-bool Irc::msg(Client& client, std::vector<std::string> cmd)
+bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd) 
 {
-    std::string msg;
-    if (cmd.size() < 3)
+    Chanel *current_chanel = findChanel(cmd[1]);
+    if (current_chanel)
     {
-        msg = std::string(RED) + "Error: " + std::string(RESET) + "Invalid command format\n";
-        return (false);
-    }
-    for (size_t i = 0; i < _client.size(); i++)
-    {
-        if (cmd[1] == _client[i].getMyNickname())
+        for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
         {
-            if (client.getMyNickname() == _client[i].getMyNickname())
-			{
-				msg = std::string(RED) + "Error: " +  std::string(RESET) + "You can't send a message to yourself!";
-				sendMessagetoClient(_client[i], msg);
-				return (false);
-			}
-            msg = std::string(YELLOW) + "[" + std::string(CYAN) + client.getMyNickname() + std::string(YELLOW ) + "]"\
-			+ std::string(CYAN) + " >" + std::string(RESET);
-            sendMessagetoClient(_client[i], msg);
-
-            for (size_t j = 2 ; j < cmd.size(); j++ )
-                sendMessagetoClient(_client[i], " " + std::string(YELLOW) + cmd[j] + std::string(RESET));
-
-            sendMessagetoClient(_client[i], "\n");
-            return (true);
+            if (it->first->getMyNickname() == client->getMyNickname())
+                continue;
+            sendMessagetoClient(const_cast<Client*>(it->first), RPL_PRIVMSG(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), cmd[2]));
         }
     }
-	msg = std::string(RED) + "Error: " +  std::string(RESET) +  std::string(YELLOW) + "["\
-	+ std::string(CYAN) + cmd[1] + std::string(YELLOW ) + "]" + std::string(RESET) +\
-	" is not referenced on the server.";
-	sendMessagetoClient(client, msg);
-    return (false);
+    return (true);
 }
 
-bool Irc::list(Client& client, std::vector<std::string> cmd)
+bool Irc::list(Client* client, std::vector<std::string> cmd)
 {
     std::stringstream		ss;
 	std::string				num;
     (void)cmd;
-    sendMessagetoClient(client, RPL_LISTSTART(client.getMyNickname()));
+    sendMessagetoClient(client, RPL_LISTSTART(client->getMyNickname()));
     for (std::size_t i = 0; i < _chanel.size(); i++)
     {
-        if (_chanel[i].isModeActivated(SECRET))
+        if (_chanel[i]->isModeActivated(SECRET))
         {
             continue;
         }
-	    ss << _chanel[i].getNumClient();
+	    ss << _chanel[i]->getNumClient();
 	    ss >> num;
-        sendMessagetoClient(client, RPL_LIST(client.getMyNickname(), _chanel[i].getChanelName(), num));
+        sendMessagetoClient(client, RPL_LIST(client->getMyNickname(), _chanel[i]->getChanelName(), num));
     }
-    sendMessagetoClient(client, RPL_LISTEND(client.getMyNickname()));
+    sendMessagetoClient(client, RPL_LISTEND(client->getMyNickname()));
     return (1);
 }
 
-bool Irc::nick(Client& client, std::vector<std::string> cmd)
+bool Irc::nick(Client* client, std::vector<std::string> cmd)
 {
     std::string msg;
     if (cmd.size() == 1)
     {
-        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client.getMyNickname(), cmd[0]));
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));
         return (false);
     }
     else if (isNicknameAvaible(cmd[1]) == 0)
@@ -676,30 +635,29 @@ bool Irc::nick(Client& client, std::vector<std::string> cmd)
         sendMessagetoClient(client, ERR_NICKNAMEINUSE(cmd[1]));
         return (false);
     }
-    client.setNickName(cmd[1]);
+    client->setNickName(cmd[1]);
     return (true);
 
 }
 
-bool Irc::invite(Client& client, std::vector<std::string> cmd)
+bool Irc::invite(Client* client, std::vector<std::string> cmd)
 {
     Client *potential_client = findClient(cmd[1]);
 
     if (potential_client == NULL)
     {
-        sendMessagetoClient(client, ERR_NOSUCHNICK(client.getMyNickname(), cmd[1]));
+        sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), cmd[1]));
         return (false);
     }
     Chanel *current_chanel = findChanel(cmd[2]);
     current_chanel->getWhiteList().push_back(potential_client->getMyNickname());
-    sendMessagetoClient(client, INVITE_CLIENT(client.getMyNickname(), client.getMyUserName(), cmd[0], potential_client->getMyNickname(), cmd[2]));
-    sendMessagetoClient(*potential_client, NOCTICE_CLIENT_INVITE(client.getMyNickname(), current_chanel->getChanelName()));
+    sendMessagetoClient(client, INVITE_CLIENT(client->getMyNickname(), client->getMyUserName(), cmd[0], potential_client->getMyNickname(), cmd[2]));
+    sendMessagetoClient(potential_client, NOCTICE_CLIENT_INVITE(client->getMyNickname(), current_chanel->getChanelName()));
 
     return (true);
 }
 
-
-bool Irc::quit(Client& client, std::vector<std::string> cmd)
+bool Irc::quit(Client* client, std::vector<std::string> cmd)
 {
     if (cmd.size() > 1)
     {
@@ -710,22 +668,7 @@ bool Irc::quit(Client& client, std::vector<std::string> cmd)
     return (1);
 }
 
-bool    Irc::privatemsg(Client& client, std::vector<std::string> cmd) 
-{
-    Chanel *current_chanel = findChanel(cmd[1]);
-    if (current_chanel)
-    {
-        for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
-        {
-            if (it->first.getMyNickname() == client.getMyNickname())
-                continue;
-            sendMessagetoClient(const_cast<Client&>(it->first), RPL_PRIVMSG(client.getMyNickname(), client.getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), cmd[2]));
-        }
-    }
-    return (true);
-}
-
-bool    Irc::kick(Client& client, std::vector<std::string> cmd)
+bool    Irc::kick(Client* client, std::vector<std::string> cmd)
 {
     Chanel *current_chanel = findChanel(cmd[1]);
     Client *current_client;
@@ -733,19 +676,45 @@ bool    Irc::kick(Client& client, std::vector<std::string> cmd)
     {
         if (current_chanel->isPresentInChanel(cmd[2]) == 0)
         {
-            sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client.getMyNickname(), cmd[2], cmd[1]));
+            sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), cmd[2], cmd[1]));
             return (false);
         }
         else if ((current_client = findClient(cmd[2])) == NULL)
         {
-            sendMessagetoClient(client, ERR_NOSUCHNICK(client.getMyNickname(), cmd[2]));
+            sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), cmd[2]));
             return (false);          
         }
         for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
-            sendMessagetoClient(const_cast<Client&>(it->first), KIK_CLIENT(client.getMyNickname(), client.getMyUserName(), cmd[0], cmd[1], cmd[2]));
+            sendMessagetoClient(const_cast<Client*>(it->first), KIK_CLIENT(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1], cmd[2]));
         current_chanel->deleteClient(current_client->getMyNickname());
         current_client->deleteChanel(current_chanel->getChanelName());
         return (true);
     }
     return (false);
 }
+
+void Irc::CheckChanelInfo(Chanel* chanel)
+{
+    std::cout << std::string(RED) + "=  =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =" << std::string(RESET) << std::endl;
+
+    for (Chanel::map_iterator it = chanel->getclientMap().begin(); it != chanel->getclientMap().end(); it++)
+    {
+        for (std::size_t i = 0; i < _client.size(); i++)
+        {
+            if ((it->first) == (_client[i]))
+            {
+                std::cout << "same address for the object in std::vector<client> and in a chanel instance class in std::map<Client, client_mode>: " << _client[i]->getMyNickname() << std::endl;
+                break ;
+            }
+            else if ((it->first->getMyNickname()) == (_client[i]->getMyNickname()))
+            {
+                std::cout << "concerned client is = " <<_client[i]->getMyNickname() << " | " << it->first->getMyNickname() << std::endl; 
+                std::cout <<  "differrent address for the object\nobject in std::vector<client> = " << &(it->first)\
+                 << "\nobject in a chanel instance class in std::map<Client, client_mode> = " << &(_client[i]) << std::endl;
+                break;
+            }
+        }
+    }
+    std::cout << std::string(RED) + "=  =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =" << std::string(RESET) << std::endl;
+}
+

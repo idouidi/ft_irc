@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 16:04:02 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/11 14:39:30 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 class Client
 {
 	public:
-		typedef std::map<Chanel, std::vector<client_mode> >	chanel_map;
+		typedef std::map<Chanel*, std::vector<client_mode> >	chanel_map;
 		typedef chanel_map::iterator						map_iterator;
 		
 		Client(int socket, std::string token);
@@ -48,14 +48,14 @@ class Client
 		bool						setModes(char mode);
 		bool						unsetModes(char mode);
 
-		bool						insertChanel(Chanel& chanel_to_add, std::vector<client_mode> chan_mode);
+		bool						insertChanel(Chanel* chanel_to_add, std::vector<client_mode> chan_mode);
 		bool						deleteChanel(std::string name);
 
 		std::string 				listClientServerModes();
 		std::string 				listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel);
 
 		template <typename T2>
-		bool		operator==(T2& rhs) const { return (my_socket == rhs.my_socket); }
+		bool		operator==(T2& rhs) const { return (*this == rhs); }
 
 		template<typename T1>
 		bool		operator<(T1& rhs) const{ return (token_ping < rhs.token_ping); }
