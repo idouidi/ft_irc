@@ -39,6 +39,12 @@ Irc::Irc(char *port, char *password)
 Irc::~Irc() 
 {
     closeServer();
+    for (size_t i = 0; i < _chanel.size(); i++) {
+        delete _chanel[i];
+    }
+    for (size_t i = 0; i < _client.size(); i++) {
+        delete _client[i];
+    }
     return ;
 }
 
