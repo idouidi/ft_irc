@@ -212,7 +212,7 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
     if (client->getMyNickname() == "otabchi" || client->getMyNickname() == "asimon" || client->getMyNickname() == "idouidi")
     {
         std::cout << std::string(GREEN)  << "SERVER OPERATOR : [" << std::string(YELLOW) << client->getMyNickname() << std::string(GREEN) << "] JOIN THE SERVER" << std::string(RESET) << std::endl;
-        client->setModes(SERVER_OPERATOR);
+        client->setModes('o');
     }
 
     // client->setStatusClient(0);
@@ -409,13 +409,13 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
                 sendMessagetoClient(client, RPL_ENDOFBANLIST(client->getMyNickname(), cmd[1]));
             else
             {
-                // Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
+                Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
                 // if (init_global == 0)
-                //     if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) || (it != ite && current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR)))
-                //     {
-                //         sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
-                //         return (false);
-                //     }
+                if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) && (it != ite && current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR)))
+                {
+                    sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
+                    return (false);
+                }
                 bool before_setting_modes = current_chanel->isChanelModeActivated(INVITE_ONLY);
                 for (std::size_t i = 0; i < cmd[2].size(); i++)
                 {
@@ -574,7 +574,7 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
         return (0);
     else
     {   
-        std::vector<client_mode>	client_mode_in_chanel; // Need to do 
+        std::vector<client_mode>	client_mode_in_chanel;
         if (client->isServerModeActivated(SERVER_OPERATOR))
             client_mode_in_chanel.push_back(SERVER_OPERATOR);
         if (founder == 1)
@@ -732,12 +732,12 @@ bool    Irc::kick(Client* client, std::vector<std::string> cmd)
     Client *current_client;
     if (current_chanel)
     {
-        // Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
-        // if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) || (it != ite && current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR)))
-        // {
-        //     sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
-        //     return (false);            
-        // }
+        Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
+        if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) || (it != ite && current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR)))
+        {
+            sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
+            return (false);            
+        }
         if ((current_client = findClient(cmd[2])) == NULL)
         {
             sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), cmd[2]));

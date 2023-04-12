@@ -18,7 +18,9 @@ class Client
 {
 	public:
 		typedef std::map<Chanel*, std::vector<client_mode> >	chanel_map;
-		typedef chanel_map::iterator						map_iterator;
+		typedef chanel_map::iterator							map_iterator;
+		typedef std::vector<client_mode>						mode_vector;
+		typedef mode_vector::iterator							mode_vector_it;
 		
 		Client(int socket, std::string token);
 		Client(const Client& c);
@@ -34,7 +36,6 @@ class Client
 		time_t 						getLastActiveTime() const;
 		std::vector<client_mode>&	getActiveModes() ;
 		chanel_map&					getChanelMap();
-		bool						getStatusClient();
 		// Chanel&						getCurentChanel() const;
 		
 		void 						setStatusClient(bool status);
