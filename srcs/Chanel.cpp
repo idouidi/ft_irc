@@ -14,7 +14,7 @@
 
 size_t	Chanel::_id_global = 0;
 
-Chanel::Chanel(std::string& name):  _id(_id_global++), _name(name) 
+Chanel::Chanel(std::string& name):  _id(_id_global++), _name(name), _op_set(false)
 {}
 
 Chanel::~Chanel() 

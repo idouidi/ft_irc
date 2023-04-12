@@ -215,7 +215,7 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
         client->setModes(SERVER_OPERATOR);
     }
 
-    client->setStatusClient(0);
+    // client->setStatusClient(0);
 
     sendMessagetoClient(client, RPL_WELCOME(client->getMyNickname()) + \
      RPL_YOURHOST(client->getMyNickname(), "Les Oubliés 1.0.0")+ \
@@ -370,11 +370,11 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
     //MODE FOR A CLIENT
     if (cmd[1][0] != '#')
     {
-        // if (init_global == 0 && client->isServerModeActivated(SERVER_OPERATOR) == 0)
-        // {
-        //     sendMessagetoClient(client, ERR_NOPRIVILEGES(client->getMyNickname()));
-        //     return (false);
-        // }
+        if (client->isNewClient() == 0 && client->isServerModeActivated(SERVER_OPERATOR) == 0)
+        {
+            sendMessagetoClient(client, ERR_NOPRIVILEGES(client->getMyNickname()));
+            return (false);
+        }
         for (std::size_t i = 0; i < cmd[2].size(); i++)
         {
             if (setClientMode(client, cmd[0], cmd[2][i]))
@@ -391,6 +391,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
             else
                 sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
         }
+        client->setStatusClient(0);
     }
     //MODE FOR A CHANEL
     else

@@ -57,7 +57,7 @@ void start_server(char *port, char *pswd)
 				{
 					printInServer(std::string(buf), *current_client);
 					std::vector<std::string> cmd = split(std::string(buf), " \n\r");
-					if (cmd[0] != "PONG" && current_client->isNewClient())
+					if (cmd[0] != "PONG" && cmd[0] != "MODE" && current_client->isNewClient())
 					{
 						if ((irc.parsInfo(current_client, cmd)) == 0)
 						{

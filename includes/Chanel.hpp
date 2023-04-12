@@ -68,6 +68,7 @@ class Chanel {
 		std::vector<chanel_mode>				_active_modes; // mode in chanel
 		client_map								_clients_in;
 		std::string								_key;
+		bool									_op_set;
 };
 
 #endif
