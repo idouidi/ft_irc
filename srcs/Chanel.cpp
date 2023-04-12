@@ -166,7 +166,9 @@ bool				Chanel::isChanelModeActivated(chanel_mode mode)
 	for (std::size_t i = 0; i < _active_modes.size(); i++)
 	{
 		if (mode == _active_modes[i])
+		{
 			return (true);
+		}
 	}
 	return (false);
 	
@@ -174,11 +176,16 @@ bool				Chanel::isChanelModeActivated(chanel_mode mode)
 
 bool				Chanel::isClientModeActivated(std::vector<client_mode>& modes, client_mode mode)
 {
+	std::cout << "test | entre" << std::endl;
 	for (std::size_t i = 0; i < modes.size(); i++)
 	{
 		if (mode == modes[i])
+		{
+			std::cout << "test | value de mode: " << modes[i] << std::endl;
 			return (true);
+		}
 	}
+	std::cout << "test | sort" << std::endl;
 	return (false);
 }
 

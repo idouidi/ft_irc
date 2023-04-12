@@ -228,6 +228,8 @@ bool Irc::setClientMode(Client* client, std::string cmd, char mode)
 {
     if (client->setModes(mode))
     {
+        std::cout << "test | in set client > value of client nick: " << client->getMyNickname() << std::endl;
+        std::cout << "test | in set client > value of client mode: " << mode << std::endl;
         sendMessagetoClient(client, SET_CLIENT_MODE(client->getMyNickname(), client->getMyUserName(), cmd, mode));
         return (true);
     }
@@ -378,7 +380,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
         for (std::size_t i = 0; i < cmd[2].size(); i++)
         {
             if (setClientMode(client, cmd[0], cmd[2][i]))
-                ;
+                continue ;
             else if (cmd[2][i + 1])
             {
                 if (cmd[2][i] == '+' && setClientMode(client, cmd[0], cmd[2][i + 1]))
@@ -391,7 +393,8 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
             else
                 sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
         }
-        client->setStatusClient(0);
+        if (client->isNewClient())
+            client->setStatusClient(0);
     }
     //MODE FOR A CHANEL
     else
@@ -641,8 +644,8 @@ bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd)
     Chanel *current_chanel = findChanel(cmd[1]);
     if (current_chanel)
     {
-         Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
-        if (current_chanel->isChanelModeActivated(MODERATED) && it != ite && current_chanel->isClientModeActivated(it->second, VOICE))
+        Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
+        if ( (!(current_chanel->isChanelModeActivated(MODERATED)) || (current_chanel->isChanelModeActivated(MODERATED) && current_chanel->isClientModeActivated(it->second, VOICE))) && it != ite)
         {
             for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
             {
