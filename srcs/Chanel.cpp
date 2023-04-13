@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/11 23:07:12 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/13 16:41:30 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 size_t	Chanel::_id_global = 0;
 
-Chanel::Chanel(std::string& name):  _id(_id_global++), _name(name), _op_set(false)
+Chanel::Chanel(std::string& name):  _id(_id_global++), _name(name)
 {}
 
 Chanel::~Chanel() 
@@ -179,9 +179,7 @@ bool				Chanel::isClientModeActivated(std::vector<client_mode>& modes, client_mo
 	for (std::size_t i = 0; i < modes.size(); i++)
 	{
 		if (mode == modes[i])
-		{
 			return (true);
-		}
 	}
 	return (false);
 }

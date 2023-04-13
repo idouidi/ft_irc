@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/11 23:49:38 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/13 19:12:58 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,12 @@
 
 # define SET_CHANEL_MODE(nickname, username, cmd, chanel, mode) (user_id(nickname, username, cmd) + chanel + " :+" + mode + "\r\n")
 # define UNSET_CHANEL_MODE(nickname, username, cmd, chanel, mode) (user_id(nickname, username, cmd) + chanel + " :-" + mode + "\r\n")
+
+# define SET_OTHER_CLIENT_CHANEL_MODE(nickname, username, cmd, chanel, mode, concerned_client_nickname) ((user_id(nickname, username, cmd) + chanel + " :+" + mode  + " " + concerned_client_nickname + "\r\n"))
+# define UNSET_OTHER_CLIENT_CHANEL_MODE(nickname, username, cmd, chanel, mode, concerned_client_nickname) ((user_id(nickname, username, cmd) + chanel + " :-" + mode  + " " + concerned_client_nickname + "\r\n"))
+// # define SET_OTHER_CLIENT_CHANEL_MODE(nickname, chanel, mode, concerned_client_nickname) (": localhost 221 " + nickname + " " + chanel + ":- " + mode + " " + concerned_client_nickname + "\r\n")
+// # define UNSET_OTER_CLIENT_CHANEL_MODE(nickname, chanel, mode, concerned_client_nickname) (": localhost 221 " + nickname + " " + chanel + ":+ " + mode + " " + concerned_client_nickname + "\r\n")
+
 // 324
 # define RPL_CHANNELMODEIS(nickname, chanel, chanel_mods) (":localhost 324 " + nickname + " " + chanel + " +" chanel_mods + "\r\n")
 // 329
@@ -38,7 +44,7 @@
 // 368
 # define RPL_ENDOFBANLIST(nickname, chanel) (":localhost 368 " + nickname + " " + chanel + ":End of channel ban list\r\n")
 // 472
-# define ERR_UNKNOWNMODE(nickname, mode) (":localhost 472 " + nickname + " " + mode + " :is unknown char to me\r\n")
+# define ERR_UNKNOWNMODE(nickname, mode) (":localhost 472 " + nickname + " " + mode + " :is unknown mode char to me\r\n")
 # 481
 # define ERR_NOPRIVILEGES(nickname) (":localhost 481 " + nickname + " :Permission Denied- You're not an IRC operator\r\n")
 // 482
@@ -125,6 +131,6 @@
 # define ERR_INVITEONLYCHAN(nickname, chanel) (":localhost 473 " +  nickname + " " + chanel + " :Cannot join channel (+i)\r\n")
 
             /* = = =    KICK     = = = */
-#define KIK_CLIENT(nickname, username, cmd, chanel, concerned_client_nickname) ((user_id(nickname, username, cmd)) + chanel + " " + concerned_client_nickname + " :\r\n")
+#define KICK_CLIENT(nickname, username, cmd, chanel, concerned_client_nickname) ((user_id(nickname, username, cmd)) + chanel + " " + concerned_client_nickname + " :\r\n")
 
 #endif

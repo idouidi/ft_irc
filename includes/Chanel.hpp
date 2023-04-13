@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/11 23:07:17 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/13 15:11:43 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ class Chanel {
 		std::vector<chanel_mode>				_active_modes; // mode in chanel
 		client_map								_clients_in;
 		std::string								_key;
-		bool									_op_set;
+		// bool									_op_set;
 };
 
 #endif
