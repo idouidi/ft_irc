@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/13 19:12:58 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/13 23:56:20 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,9 +103,7 @@
 # define CMD_PING(token) ("PING :" + token + "\r\n")
 
             /* = = =    JOIN     = = = */
-
-# define JOINING_MSG(nickname, username, chanel) (nickname + " [~" + username + "@localhost] has joined " + chanel + "\r\n")
-# define LEAVE_MSG(nickname, username, chanel) (nickname + " [~" + username + "@localhost] has left " + chanel + " []\r\n")
+# define JOINING_MSG(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + chanel + "\r\n")
 # define PART_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + chanel + "\r\n")
 # define SET_CHANEL(nickname, username, cmd, chanel) (user_id(nickname, username, cmd) + ":" + chanel + "\r\n")
 // 353
@@ -118,7 +116,8 @@
 # define ERR_CANNOTSENDTOCHAN(nickname, chanel) (":localhost 404 " + nickname + " " + chanel + " :Cannot send to channel\r\n")
 //441
 # define ERR_USERNOTINCHANNEL(nickname, concerned_client_nickname, chanel) ((":localhost 441 " + nickname + " " + concerned_client_nickname + " " + chanel + " :They aren't on that channel\r\n"))
-
+// 442
+# define ERR_NOTONCHANNEL(nickname, chanel) (":localhost 442 " + nickname + " " + chanel + " :You're not on that chanel\r\n")
             /* = = =    PRV MESSAGES     = = = */
 
 # define RPL_PRIVMSG(nickname, username, cmd, chanel, msg) (user_id(nickname, username, cmd) + chanel + " " + msg + "\r\n")

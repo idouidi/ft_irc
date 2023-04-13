@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/13 19:23:42 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 00:11:44 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -507,7 +507,8 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
             }
             // SET MODES FOR THE CONCERNED CLIENT IN THE CHANEL
             for (std::size_t i = 0; i < cmd[2].size(); i++)
-            { 
+            {
+                std::cout << "the mode is = " cmd[2][i] << std::endl;
                 if (setOtherClientChanelMode(client, concerned_client, current_chanel, cmd[0], cmd[2][i]))
                     continue ;
                 else if (cmd[2][i + 1])
@@ -667,7 +668,7 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
     {
         if (it->first->getMyNickname() == client->getMyNickname())
             continue;
-        sendMessagetoClient(const_cast<Client*>(it->first), JOINING_MSG(client->getMyNickname(), it->first->getMyUserName(), cmd[1]));
+        sendMessagetoClient(const_cast<Client*>(it->first), JOINING_MSG(client->getMyNickname(), client->getMyUserName(), cmd[0], current_chanel->getChanelName()));
     }
     return (1);
 }
@@ -680,9 +681,14 @@ bool Irc::part(Client* client, std::vector<std::string> cmd)
         sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
         return (false);
     }
-    // IF SUCCESS TO DELETE CLIENT IN CHANEL MAP, I CAN DELETE CHANEL IN CLIENT MAP
-    else if (current_chanel->deleteClient(client->getMyNickname()))
+    Chanel::map_iterator on_chanel = current_chanel->getClient(client->getMyNickname()), not_on_chanel = current_chanel->getclientMap().end();
+    if (on_chanel != not_on_chanel)
     {
+        for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
+        {
+            sendMessagetoClient(const_cast<Client*>(it->first), PART_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], current_chanel->getChanelName()));
+        }
+        current_chanel->deleteClient(client->getMyNickname());
         client->deleteChanel(current_chanel->getChanelName());
         if (current_chanel->getclientMap().size() == 0)
         {
@@ -695,17 +701,10 @@ bool Irc::part(Client* client, std::vector<std::string> cmd)
                 }
             }            
         }
-        sendMessagetoClient(client, PART_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1]));
-        for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
-        {
-            if (it->first->getMyNickname() == client->getMyNickname())
-                continue;
-            sendMessagetoClient(const_cast<Client*>(it->first), LEAVE_MSG(client->getMyNickname(), it->first->getMyUserName(), cmd[1]));
-        }
         return (true);
     }
     else
-        sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
+        sendMessagetoClient(client, ERR_NOTONCHANNEL(client->getMyNickname(), cmd[1]));
     return (false);
 }
 
@@ -856,3 +855,5 @@ void Irc::CheckChanelInfo(Chanel* chanel)
     std::cout << std::string(RED) + "=  =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =" << std::string(RESET) << std::endl;
 }
 
+// /connect localhost 1234 Baghdadi7 dedi
+// /
