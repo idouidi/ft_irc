@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/13 15:11:43 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 01:03:04 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,17 @@ class Chanel {
 		client_map&					getclientMap();
 		map_iterator				getClient(std::string name);
 
-		bool						setModes(char mode);
-		bool						unsetModes(char mode);
-		
 		void						setChanelName(std::string name);
 
+		bool						setChanelModes(char mode);
+		bool						unsetChanelModes(char mode);
+
+		bool						setClientMode(map_iterator client, char mode);
+		bool						unsetClientMode(map_iterator client, char mode);
+		
+
 		std::string 				listChanelModes();
-		std::string					listClientmodes(std::vector<client_mode>& client_mode_in_chanel);
+		std::string					listClientModes(std::vector<client_mode>& client_mode_in_chanel);
 		std::string 				listAllClientsModesAndNames();
 
 		template <typename T2>

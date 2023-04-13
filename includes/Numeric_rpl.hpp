@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/13 23:56:20 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 00:16:25 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@
 # define SET_CHANEL_MODE(nickname, username, cmd, chanel, mode) (user_id(nickname, username, cmd) + chanel + " :+" + mode + "\r\n")
 # define UNSET_CHANEL_MODE(nickname, username, cmd, chanel, mode) (user_id(nickname, username, cmd) + chanel + " :-" + mode + "\r\n")
 
-# define SET_OTHER_CLIENT_CHANEL_MODE(nickname, username, cmd, chanel, mode, concerned_client_nickname) ((user_id(nickname, username, cmd) + chanel + " :+" + mode  + " " + concerned_client_nickname + "\r\n"))
-# define UNSET_OTHER_CLIENT_CHANEL_MODE(nickname, username, cmd, chanel, mode, concerned_client_nickname) ((user_id(nickname, username, cmd) + chanel + " :-" + mode  + " " + concerned_client_nickname + "\r\n"))
+# define SET_OTHER_CLIENT_CHANEL_MODE(nickname, username, cmd, chanel, mode, concerned_client_nickname) ((user_id(nickname, username, cmd) + chanel + " +" + mode  + " " + concerned_client_nickname + "\r\n"))
+# define UNSET_OTHER_CLIENT_CHANEL_MODE(nickname, username, cmd, chanel, mode, concerned_client_nickname) ((user_id(nickname, username, cmd) + chanel + " -" + mode  + " " + concerned_client_nickname + "\r\n"))
 // # define SET_OTHER_CLIENT_CHANEL_MODE(nickname, chanel, mode, concerned_client_nickname) (": localhost 221 " + nickname + " " + chanel + ":- " + mode + " " + concerned_client_nickname + "\r\n")
 // # define UNSET_OTER_CLIENT_CHANEL_MODE(nickname, chanel, mode, concerned_client_nickname) (": localhost 221 " + nickname + " " + chanel + ":+ " + mode + " " + concerned_client_nickname + "\r\n")
 

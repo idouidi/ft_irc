@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/14 00:11:44 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 01:19:48 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
     if (client->getMyNickname() == "otabchi" || client->getMyNickname() == "asimon" || client->getMyNickname() == "idouidi")
     {
         std::cout << std::string(GREEN)  << "SERVER OPERATOR : [" << std::string(YELLOW) << client->getMyNickname() << std::string(GREEN) << "] JOIN THE SERVER" << std::string(RESET) << std::endl;
-        client->setModes('o');
+        client->setServerModes('o');
     }
 
     // client->setStatusClient(0);
@@ -225,7 +225,7 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
 
 bool Irc::setClientMode(Client* client, std::string cmd, char mode)
 {
-    if (client->setModes(mode))
+    if (client->setServerModes(mode))
     {
         sendMessagetoClient(client, SET_CLIENT_MODE(client->getMyNickname(), client->getMyUserName(), cmd, mode));
         return (true);
@@ -235,7 +235,7 @@ bool Irc::setClientMode(Client* client, std::string cmd, char mode)
 
 bool Irc::unsetClientMode(Client* client, std::string cmd, char mode)
 {
-    if (client->unsetModes(mode))
+    if (client->unsetServerModes(mode))
     {
         sendMessagetoClient(client, UNSET_CLIENT_MODE(client->getMyNickname(), client->getMyUserName(), cmd, mode));
         return (true);
@@ -243,10 +243,9 @@ bool Irc::unsetClientMode(Client* client, std::string cmd, char mode)
     return (false);
 }
 
-
 bool Irc::setChanelMode(Client* client, Chanel* chanel, std::string cmd, char mode)
 {
-    if (chanel->setModes(mode))
+    if (chanel->setChanelModes(mode))
     {
         sendMessagetoClient(client, SET_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode));
         return (true);
@@ -256,7 +255,7 @@ bool Irc::setChanelMode(Client* client, Chanel* chanel, std::string cmd, char mo
 
 bool Irc::unsetChanelMode(Client* client, Chanel* chanel, std::string cmd, char mode)
 {
-    if (chanel->unsetModes(mode))
+    if (chanel->unsetChanelModes(mode))
     {
         sendMessagetoClient(client, UNSET_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode));
         return (true);
@@ -266,7 +265,8 @@ bool Irc::unsetChanelMode(Client* client, Chanel* chanel, std::string cmd, char 
 
 bool Irc::setOtherClientChanelMode(Client* client, Client* other, Chanel* chanel, std::string cmd, char mode)
 {
-    if (other->setModes(mode))
+    Chanel::map_iterator it = chanel->getClient(other->getMyNickname());
+    if (chanel->setClientMode(it, mode))
     {
         sendMessagetoClient(client, SET_OTHER_CLIENT_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode,  other->getMyNickname()));
         return (true);
@@ -276,7 +276,8 @@ bool Irc::setOtherClientChanelMode(Client* client, Client* other, Chanel* chanel
 
 bool Irc::unsetOtherClientChanelMode(Client* client, Client* other, Chanel* chanel, std::string cmd, char mode)
 {
-    if (other->unsetModes(mode))
+    Chanel::map_iterator it = chanel->getClient(other->getMyNickname());
+    if (chanel->setClientMode(it, mode))
     {
         sendMessagetoClient(client, UNSET_OTHER_CLIENT_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode,  other->getMyNickname()));
         return (true);
@@ -508,7 +509,6 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
             // SET MODES FOR THE CONCERNED CLIENT IN THE CHANEL
             for (std::size_t i = 0; i < cmd[2].size(); i++)
             {
-                std::cout << "the mode is = " cmd[2][i] << std::endl;
                 if (setOtherClientChanelMode(client, concerned_client, current_chanel, cmd[0], cmd[2][i]))
                     continue ;
                 else if (cmd[2][i + 1])
@@ -625,8 +625,8 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
     {
         _chanel.push_back((new Chanel(cmd[1]))); // ( _id = _chanel.size() + 1 )
         current_chanel = _chanel[_chanel.size() - 1];
-        current_chanel->setModes('n');
-        current_chanel->setModes('t');
+        current_chanel->setChanelModes('n');
+        current_chanel->setChanelModes('t');
         current_chanel->setChanelName(cmd[1]);
         founder = 1;
     }

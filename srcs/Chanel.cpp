@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/13 16:41:30 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 01:13:36 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,17 @@ Chanel::~Chanel()
 
 std::string					Chanel::getChanelName() const { return (_name); }
 
+size_t						Chanel::getNumClient() const { return (_clients_in.size()); }
+
 std::vector<std::string>&	Chanel::getBlackList() { return (_black_list); }
 
 std::vector<std::string>&	Chanel::getWhiteList() { return (_white_list); }
 
+std::vector<chanel_mode>&	Chanel::getActiveModes() { return (_active_modes); }
+
 Chanel::client_map&			Chanel::getclientMap() { return (_clients_in); }
 
-Chanel::map_iterator Chanel::getClient(std::string name)
+Chanel::map_iterator 		Chanel::getClient(std::string name)
 {
     map_iterator it = _clients_in.begin();
     map_iterator ite = _clients_in.end();
@@ -40,8 +44,7 @@ Chanel::map_iterator Chanel::getClient(std::string name)
     return ite;
 }
 
-
-std::vector<chanel_mode>&	Chanel::getActiveModes() { return (_active_modes); }
+void 						Chanel::setChanelName(std::string name) {_name = name; }
 
 bool						Chanel::addClient(Client* client_to_add, std::vector<client_mode> mode_to_give) 
 {
@@ -81,54 +84,7 @@ bool						Chanel::isPresentInChanel(std::string client_name)
 	return (0);
 }
 
-size_t						Chanel::getNumClient() const 
-{
-	return (_clients_in.size());
-}
-
-std::string				Chanel::listChanelModes()
-{
-	std::string list;
-	for (std::size_t i = 0; i < _active_modes.size(); i++)
-		list += convertChanelModeToChar(_active_modes[i]);
-	return (list);
-}
-
-std::string					Chanel::listClientmodes(std::vector<client_mode>& client_mode_in_chanel)
-{
-	std::string list;
-	for (std::size_t i = 0; i < client_mode_in_chanel.size(); i++)
-	{
-		if (client_mode_in_chanel[i] == SERVER_OPERATOR)
-			list += "*";
-		else if (client_mode_in_chanel[i] == CHANEL_OPERATOR)
-			list += '@';
-		else if (client_mode_in_chanel[i] == VOICE)
-			list += '+';
-	}
-	return (list);
-}
-
-std::string					Chanel::listAllClientsModesAndNames()
-{
-	map_iterator it = _clients_in.begin();
-	map_iterator ite = _clients_in.end();
-	std::string list;
-	std::string modes;
-
-	for (; it != ite; it++)
-	{
-		modes = listClientmodes(it->second);
-		std::string nick = it->first->getMyNickname();
-		list += modes + nick;
-		map_iterator cpy = it;
-		if (++cpy != ite)
-			list += " ";
-	}
-	return (list);
-}
-
-bool				Chanel::isValidMode(char mode, chanel_mode& idx)
+bool						Chanel::isValidMode(char mode, chanel_mode& idx)
 {
     switch (mode)
     {
@@ -161,20 +117,18 @@ bool				Chanel::isValidMode(char mode, chanel_mode& idx)
     }
 }
 
-bool				Chanel::isChanelModeActivated(chanel_mode mode)
+bool						Chanel::isChanelModeActivated(chanel_mode mode)
 {
 	for (std::size_t i = 0; i < _active_modes.size(); i++)
 	{
 		if (mode == _active_modes[i])
-		{
 			return (true);
-		}
 	}
 	return (false);
 	
 }
 
-bool				Chanel::isClientModeActivated(std::vector<client_mode>& modes, client_mode mode)
+bool						Chanel::isClientModeActivated(std::vector<client_mode>& modes, client_mode mode)
 {
 	for (std::size_t i = 0; i < modes.size(); i++)
 	{
@@ -184,7 +138,7 @@ bool				Chanel::isClientModeActivated(std::vector<client_mode>& modes, client_mo
 	return (false);
 }
 
-bool				Chanel::setModes(char mode)
+bool						Chanel::setChanelModes(char mode)
 {
 	chanel_mode idx;
 
@@ -198,7 +152,7 @@ bool				Chanel::setModes(char mode)
 	return (true);
 }
 
-bool						Chanel::unsetModes(char mode)
+bool						Chanel::unsetChanelModes(char mode)
 {
 	chanel_mode idx;
 
@@ -216,4 +170,75 @@ bool						Chanel::unsetModes(char mode)
 	return (false);
 }
 
-void 			Chanel::setChanelName(std::string name) {_name = name; }
+bool						Chanel::setClientMode(map_iterator client, char mode)
+{
+	client_mode idx;
+	if (client->first->isValidMode(mode, idx) == 0)
+		return (false);
+	for (std::size_t i = 0; i < client->second.size(); i++)
+	{
+		if (idx == client->second[i])
+			return (false);
+	}
+	client->second.push_back(idx);
+	return (true);
+}
+bool						Chanel::unsetClientMode(map_iterator client, char mode)
+{
+	client_mode idx;
+	if (client->first->isValidMode(mode, idx) == 0)
+		return (false);
+	for (std::size_t i = 0; i < client->second.size(); i++)
+	{
+		if (idx == client->second[i])
+		{
+			client->second.erase(client->second.begin() + i);
+			return (true);
+		}
+	}
+	return (false);
+
+}
+
+std::string					Chanel::listChanelModes()
+{
+	std::string list;
+	for (std::size_t i = 0; i < _active_modes.size(); i++)
+		list += convertChanelModeToChar(_active_modes[i]);
+	return (list);
+}
+
+std::string					Chanel::listClientModes(std::vector<client_mode>& client_mode_in_chanel)
+{
+	std::string list;
+	for (std::size_t i = 0; i < client_mode_in_chanel.size(); i++)
+	{
+		if (client_mode_in_chanel[i] == SERVER_OPERATOR)
+			list += "*";
+		else if (client_mode_in_chanel[i] == CHANEL_OPERATOR)
+			list += '@';
+		else if (client_mode_in_chanel[i] == VOICE)
+			list += '+';
+	}
+	return (list);
+}
+
+std::string					Chanel::listAllClientsModesAndNames()
+{
+	map_iterator it = _clients_in.begin();
+	map_iterator ite = _clients_in.end();
+	std::string list;
+	std::string modes;
+
+	for (; it != ite; it++)
+	{
+		modes = listClientModes(it->second);
+		std::string nick = it->first->getMyNickname();
+		list += modes + nick;
+		map_iterator cpy = it;
+		if (++cpy != ite)
+			list += " ";
+	}
+	return (list);
+}
+

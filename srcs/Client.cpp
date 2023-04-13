@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/11 23:02:58 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 01:19:03 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,7 @@ bool						Client::isValidMode(char mode, client_mode& idx)
 {
     switch (mode)
     {
-		case 'o':
-			idx = SERVER_OPERATOR;
-			return (true);
-        case 'O':
+        case 'o':
 			idx = CHANEL_OPERATOR;
             return (true);
         case 'v':
@@ -102,7 +99,7 @@ bool						Client::isValidMode(char mode, client_mode& idx)
     }
 }
 
-bool				Client::isServerModeActivated(client_mode mode)
+bool						Client::isServerModeActivated(client_mode mode)
 {
 	for (std::size_t i = 0; i < active_modes.size(); i++)
 	{
@@ -113,7 +110,7 @@ bool				Client::isServerModeActivated(client_mode mode)
 	
 }
 
-bool						Client::setModes(char mode)
+bool						Client::setServerModes(char mode)
 {
 	client_mode idx;
 
@@ -126,7 +123,7 @@ bool						Client::setModes(char mode)
 	return (true);
 }
 
-bool						Client::unsetModes(char mode)
+bool						Client::unsetServerModes(char mode)
 {
 	client_mode idx;
 
@@ -163,8 +160,6 @@ bool						Client::deleteChanel(std::string name)
 	}
 	return (false);
 }			
-
-
 
 std::string					Client::listClientServerModes()
 {

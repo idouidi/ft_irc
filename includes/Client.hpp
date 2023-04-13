@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/11 23:02:30 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 00:46:29 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,9 @@ class Client
 
 		bool						isValidMode(char mode, client_mode& idx);
 		bool						isServerModeActivated(client_mode mode);
-		bool						setModes(char mode);
-		bool						unsetModes(char mode);
+
+		bool						setServerModes(char mode);
+		bool						unsetServerModes(char mode);
 
 		bool						insertChanel(Chanel* chanel_to_add, std::vector<client_mode> chan_mode);
 		bool						deleteChanel(std::string name);
