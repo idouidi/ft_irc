@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/13 19:07:54 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 13:39:10 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,6 @@ class Irc
 	bool setClientMode(Client* client, std::string cmd, char mode);
 	bool unsetClientMode(Client* client, std::string cmd, char mode);
 
-	// bool setOtherClientMode(Client* client, Client* other, std::string cmd, char mode);
-	// bool unsetOtherClientMode(Client* client, Client* other, std::string cmd, char mode);
-
 	bool setChanelMode(Client* client, Chanel* chanel, std::string cmd, char mode);
 	bool unsetChanelMode(Client* client, Chanel* chanel, std::string cmd, char mode);
 
@@ -81,6 +78,7 @@ class Irc
 	bool unsetOtherClientChanelMode(Client* client, Client* other, Chanel* chanel, std::string cmd, char mode);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
+	static std::string listClientModes(std::vector<client_mode>& client_modes);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 
@@ -112,7 +110,6 @@ class Irc
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 	void CheckChanelInfo(Chanel* chanel);
-	void CheckClientInfo(std::map<Chanel, client_mode>& chanel);
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	

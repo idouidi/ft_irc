@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/11 23:44:58 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 13:23:28 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_O
 
 class Client;
 class Chanel;
+class Irc;
 
 void                        printInServer(std::string msg, Client& client);
 bool                        check_port(std::string port);

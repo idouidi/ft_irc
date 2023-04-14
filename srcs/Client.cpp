@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/14 01:19:03 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 13:42:44 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ std::string 				Client::getMyNickname() const { return (nickname); }
 
 std::string 				Client::getMyUserName() const { return (username); }
 
-void						Client::getMyUserMode() const {}
-
 std::string					Client::getToken() const { return (token_ping); }
 
 std::vector<client_mode>& 	Client::getActiveModes()  { return (active_modes); }
@@ -75,6 +73,9 @@ bool						Client::isValidMode(char mode, client_mode& idx)
 {
     switch (mode)
     {
+		case 'O':
+			idx = SERVER_OPERATOR;
+			return (true);
         case 'o':
 			idx = CHANEL_OPERATOR;
             return (true);
@@ -161,25 +162,4 @@ bool						Client::deleteChanel(std::string name)
 	return (false);
 }			
 
-std::string					Client::listClientServerModes()
-{
-	std::string list;
-	for (std::size_t i = 0; i < active_modes.size(); i++)
-		list += convertClientModeToChar(active_modes[i]);
-	return (list);
-}
 
-std::string					Client::listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel)
-{
-	std::string list;
-	for (std::size_t i = 0; i < client_mode_in_chanel.size(); i++)
-	{
-		if (client_mode_in_chanel[i] == SERVER_OPERATOR)
-			list += "*";
-		else if (client_mode_in_chanel[i] == CHANEL_OPERATOR)
-			list += '@';
-		else if (client_mode_in_chanel[i] == VOICE)
-			list += '+';
-	}
-	return (list);
-}

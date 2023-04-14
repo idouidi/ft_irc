@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/14 01:19:48 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 13:44:08 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
     if (client->getMyNickname() == "otabchi" || client->getMyNickname() == "asimon" || client->getMyNickname() == "idouidi")
     {
         std::cout << std::string(GREEN)  << "SERVER OPERATOR : [" << std::string(YELLOW) << client->getMyNickname() << std::string(GREEN) << "] JOIN THE SERVER" << std::string(RESET) << std::endl;
-        client->setServerModes('o');
+        client->setServerModes('O'); // O = SERVER OPERATOR | o = CHANEL OPERATOR
     }
 
     // client->setStatusClient(0);
@@ -283,6 +283,21 @@ bool Irc::unsetOtherClientChanelMode(Client* client, Client* other, Chanel* chan
         return (true);
     }
     return (false);
+}
+
+std::string Irc::listClientModes(std::vector<client_mode>& client_mode)
+{
+	std::string list;
+	for (std::size_t i = 0; i < client_mode.size(); i++)
+	{
+		if (client_mode[i] == SERVER_OPERATOR)
+			list += "*";
+		else if (client_mode[i] == CHANEL_OPERATOR)
+			list += '@';
+		else if (client_mode[i] == VOICE)
+			list += '+';
+	}
+	return (list);
 }
 
 Client*     Irc::findClient(int fd_client)
@@ -388,7 +403,7 @@ bool	Irc::pong(Client* client, std::vector<std::string> cmd)
 
 bool Irc::mode(Client* client, std::vector<std::string> cmd)
 {
-    //MODE FOR A CLIENT
+    //SET MODE FOR A CLIENT
     if (cmd[1][0] != '#')
     {
         //CLIENT DOESN'T HAVE RIGHT PRIV TO DO THAT
@@ -397,27 +412,30 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
             sendMessagetoClient(client, ERR_NOPRIVILEGES(client->getMyNickname()));
             return (false);
         }
-        //SET MODE FOR CLIENT
-        for (std::size_t i = 0; i < cmd[2].size(); i++)
+        //SET MODE FOR CLIENT IN THE SERVER
+        if (cmd.size() == 3)
         {
-            if (setClientMode(client, cmd[0], cmd[2][i]))
-                continue ;
-            else if (cmd[2][i + 1])
+            for (std::size_t i = 0; i < cmd[2].size(); i++)
             {
-                if (cmd[2][i] == '+' && setClientMode(client, cmd[0], cmd[2][i + 1]))
-                    i++;
-                else if (cmd[2][i] == '-' && unsetClientMode(client, cmd[0], cmd[2][i + 1]))
-                    i++;
+                if (setClientMode(client, cmd[0], cmd[2][i]))
+                    continue ;
+                else if (cmd[2][i + 1])
+                {
+                    if (cmd[2][i] == '+' && setClientMode(client, cmd[0], cmd[2][i + 1]))
+                        i++;
+                    else if (cmd[2][i] == '-' && unsetClientMode(client, cmd[0], cmd[2][i + 1]))
+                        i++;
+                    else
+                        sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
+                }
                 else
                     sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
             }
-            else
-                sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
         }
         if (client->isNewClient())
             client->setStatusClient(0);
     }
-    //MODE FOR A CHANEL
+    //SET MODE FOR A CHANEL / SET MODE FOR A CLIENT IN THE CHANEL
     else
     {
         Chanel* current_chanel;
@@ -427,7 +445,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
             sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
             return (false);
         }
-        // info of the chanel
+        // CHANEL INFO
         if (cmd.size() == 2)
         {
             time_t t = time(0);
@@ -442,7 +460,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
             sendMessagetoClient(client, RPL_CHANNELMODEIS(client->getMyNickname(), cmd[1], + listChanelMode)
             + RPL_CREATIONTIME(client->getMyNickname(), cmd[1], stime));
         }
-        // set chanel mode
+        // SET MODE FOR CHANEL
         else if (cmd.size() == 3)
         {
             //ASK FOR BLACK LIST
@@ -483,7 +501,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
                 }
             }
         }
-        // set mode for client in chanel
+        // SET MODE FOR A CLIENT IN THE CHANEL
         else if (cmd.size() == 4)
         {
             //CLIENT DOESN'T HAVE RIGHT PRIV TO DO THAT
@@ -542,15 +560,7 @@ bool Irc::who(Client* client, std::vector<std::string> cmd)
         }
         for(Chanel::map_iterator it =  potential_chanel->getclientMap().begin(); it != potential_chanel->getclientMap().end(); it++)
         {
-		    for (std::size_t i = 0; i < it->second.size(); i++)
-		    {
-                if (it->second[i] == SERVER_OPERATOR)
-                    modes += '*';
-		    	else if (it->second[i] == CHANEL_OPERATOR)
-		    		modes += '@';
-		    	else if (it->second[i] == VOICE)
-		    		modes += '+';
-		    }
+            modes = listClientModes(it->second);
             sendMessagetoClient(client, RPL_WHOREPLY(client->getMyNickname(), cmd[1], client->getMyUserName(), it->first->getMyNickname(), "H", modes));
             modes.clear();
         }
@@ -567,7 +577,7 @@ bool Irc::who(Client* client, std::vector<std::string> cmd)
         else if (potential_client->getChanelMap().size() == 0) // IF THE CLIENT JOIN NO CHANELS
         {
             //IF THE CLIENT HAS NO SPECIAL MODES (LIKES INVISIBLE AT START)
-            if ((modes = potential_client->listClientServerModes()) == "i")
+            if ((modes = listClientModes(potential_client->getActiveModes())) == "")
                 sendMessagetoClient(client, RPL_WHOREPLY_BIS(client->getMyNickname(), "*", client->getMyUserName(), potential_client->getMyNickname(), "H")
                 + RPL_ENDOFWHO(client->getMyNickname(), cmd[1]));
             else
@@ -577,7 +587,8 @@ bool Irc::who(Client* client, std::vector<std::string> cmd)
         else
         {
             for (Client::map_iterator it = potential_client->getChanelMap().begin(); it != potential_client->getChanelMap().end(); it++)
-                sendMessagetoClient(client, RPL_WHOREPLY(client->getMyNickname(), it->first->getChanelName(), client->getMyUserName(), potential_client->getMyNickname() , "H", potential_client->listClientChanelModes(it->second)));
+                sendMessagetoClient(client, RPL_WHOREPLY(client->getMyNickname(), it->first->getChanelName(), client->getMyUserName(), potential_client->getMyNickname() , "H",  listClientModes(it->second)));
+            sendMessagetoClient(client, RPL_ENDOFWHO(client->getMyNickname(), cmd[1]));
         }
     }
     return (1);
@@ -645,10 +656,7 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
     {   
         std::vector<client_mode>	client_mode_in_chanel;
         if (client->isServerModeActivated(SERVER_OPERATOR))
-        {
             client_mode_in_chanel.push_back(SERVER_OPERATOR);
-            client_mode_in_chanel.push_back(VOICE);
-        }
         if (founder == 1)
         {
 			client_mode_in_chanel.push_back(CHANEL_OPERATOR);
@@ -660,8 +668,9 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
         //DEBUG PART
         // CheckChanelInfo(current_chanel);
     }
-    
-    std::string list = current_chanel->listAllClientsModesAndNames();
+
+    std::string list = current_chanel->listAllClientsModesAndNames(&Irc::listClientModes);
+
     sendMessagetoClient(client, SET_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1])
     + RPL_NAMREPLY(client->getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client->getMyNickname(), cmd[1]));
     for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)

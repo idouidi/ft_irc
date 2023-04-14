@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/14 00:46:29 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 13:42:26 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,17 @@ class Client
 
 		
 		int							getMySocket() const;
-		void 						getMyUserMode() const;
 		std::string 				getMyNickname() const;
 		std::string 				getMyUserName() const;
 		std::string					getToken() const;
 		time_t 						getLastActiveTime() const;
 		std::vector<client_mode>&	getActiveModes() ;
 		chanel_map&					getChanelMap();
-		// Chanel&						getCurentChanel() const;
 		
 		void 						setStatusClient(bool status);
 		void 						setNickName(std::string nick);
 		void 						setUserName(std::string user);
 		void						setLastActiveTime();
-		// void						setCurrentChanel(Chanel& Chanel);
 
 		bool 						isNewClient() const;
 
@@ -55,8 +52,6 @@ class Client
 		bool						insertChanel(Chanel* chanel_to_add, std::vector<client_mode> chan_mode);
 		bool						deleteChanel(std::string name);
 
-		std::string 				listClientServerModes();
-		std::string 				listClientChanelModes(std::vector<client_mode>& client_mode_in_chanel);
 
 		template <typename T2>
 		bool		operator==(T2& rhs) const { return (*this == rhs); }

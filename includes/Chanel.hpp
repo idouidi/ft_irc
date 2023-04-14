@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/14 01:03:04 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 13:45:45 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ class Chanel {
 	public:
 		typedef std::map<Client*, std::vector<client_mode> > 	client_map;
 		typedef client_map::iterator 							map_iterator;
+		typedef std::string 									(*ListFunc)(std::vector<client_mode>&);
+
 		
 		Chanel(std::string&);
 		~Chanel();
@@ -53,8 +55,7 @@ class Chanel {
 		
 
 		std::string 				listChanelModes();
-		std::string					listClientModes(std::vector<client_mode>& client_mode_in_chanel);
-		std::string 				listAllClientsModesAndNames();
+		std::string 				listAllClientsModesAndNames(ListFunc listFunc);
 
 		template <typename T2>
 		bool						operator==(T2& rhs) const { return (*this == rhs); }
@@ -69,10 +70,9 @@ class Chanel {
 		std::string								_topic;
 		std::vector<std::string>				_black_list;
 		std::vector<std::string>				_white_list;
-		std::vector<chanel_mode>				_active_modes; // mode in chanel
+		std::vector<chanel_mode>				_active_modes;
 		client_map								_clients_in;
 		std::string								_key;
-		// bool									_op_set;
 };
 
 #endif

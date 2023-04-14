@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/14 01:13:36 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/14 13:38:19 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,31 +208,16 @@ std::string					Chanel::listChanelModes()
 	return (list);
 }
 
-std::string					Chanel::listClientModes(std::vector<client_mode>& client_mode_in_chanel)
-{
-	std::string list;
-	for (std::size_t i = 0; i < client_mode_in_chanel.size(); i++)
-	{
-		if (client_mode_in_chanel[i] == SERVER_OPERATOR)
-			list += "*";
-		else if (client_mode_in_chanel[i] == CHANEL_OPERATOR)
-			list += '@';
-		else if (client_mode_in_chanel[i] == VOICE)
-			list += '+';
-	}
-	return (list);
-}
 
-std::string					Chanel::listAllClientsModesAndNames()
+ std::string Chanel::listAllClientsModesAndNames(ListFunc listFunc)
 {
 	map_iterator it = _clients_in.begin();
 	map_iterator ite = _clients_in.end();
 	std::string list;
-	std::string modes;
 
 	for (; it != ite; it++)
 	{
-		modes = listClientModes(it->second);
+		std::string modes = (*listFunc)(it->second);
 		std::string nick = it->first->getMyNickname();
 		list += modes + nick;
 		map_iterator cpy = it;
