@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/14 13:44:08 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/17 15:08:50 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -824,13 +824,13 @@ bool    Irc::kick(Client* client, std::vector<std::string> cmd)
             sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), cmd[2], cmd[1]));
             return (false);
         }
-        else if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) || (it != ite && current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR)))
+        else if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) && (current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR) == 0))
         {
             sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
             return (false);            
         }
-        for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
-            sendMessagetoClient(const_cast<Client*>(it->first), KICK_CLIENT(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1], cmd[2]));
+        for (Chanel::map_iterator start = current_chanel->getclientMap().begin(); start != ite; start++)
+            sendMessagetoClient(const_cast<Client*>(start->first), KICK_CLIENT(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1], current_client->getMyNickname()));
 
         current_chanel->deleteClient(current_client->getMyNickname());
         current_client->deleteChanel(current_chanel->getChanelName());
