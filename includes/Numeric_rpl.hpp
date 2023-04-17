@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/17 14:27:37 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/17 17:52:27 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@
 # define RPL_ENDOFBANLIST(nickname, chanel) (":localhost 368 " + nickname + " " + chanel + " :End of channel ban list\r\n")
 // 472
 # define ERR_UNKNOWNMODE(nickname, mode) (":localhost 472 " + nickname + " " + mode + " :is unknown mode char to me\r\n")
+// 474
+# define ERR_BANNEDFROMCHAN(client, channel) (":localhost 474 " + client + " " + channel + " :Cannot join channel (+b)\r\n")
 // 481
 # define ERR_NOPRIVILEGES(nickname) (":localhost 481 " + nickname + " :Permission Denied- You're not an IRC operator\r\n")
 // 482

@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/14 13:23:28 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/17 18:08:47 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # include <map>
 # include <exception>
 # include <cstddef>         // for nullptr
+# include <algorithm>       //for std::find
 # include <fcntl.h>
 # include <ctime>
 // #include <sys/socket.h>
@@ -87,7 +88,7 @@ enum client_mode {SERVER_OPERATOR, CHANEL_OPERATOR, VOICE, HALF_OP, ADMIN, INVIS
 *   - +l : limite d'utilisateurs sur le canal, empêche les utilisateurs supplémentaires de rejoindre une fois que la limite est atteinte
 *
 */
-enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, NON_CHANEL_MODE} ;
+enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, BAN, NON_CHANEL_MODE} ;
 
 class Client;
 class Chanel;

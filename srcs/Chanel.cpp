@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/14 13:38:19 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/17 18:43:42 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,9 @@ bool						Chanel::isValidMode(char mode, chanel_mode& idx)
         case 'l':
 			idx = LIMIT;
             return (true);
+        case 'b':
+			idx = BAN;
+            return (true);
         default:
             return (false);
     }
@@ -147,7 +150,7 @@ bool						Chanel::setChanelModes(char mode)
 
 	for (std::size_t i = 0; i < _active_modes.size(); i++)
 		if (idx == _active_modes[i])
-			return (false);
+			return (true);
 	_active_modes.push_back(idx);
 	return (true);
 }
@@ -164,6 +167,16 @@ bool						Chanel::unsetChanelModes(char mode)
 		if (idx == _active_modes[i])
 		{
 			_active_modes.erase(_active_modes.begin() + i);
+			if (idx == INVITE_ONLY)
+			{
+				while(!_white_list.empty())
+					_white_list.erase(_white_list.begin());
+			}
+			else if (idx == BAN)
+			{
+				while (!_black_list.empty())
+					_black_list.erase(_black_list.begin());
+			}
 			return (true);
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/17 15:08:50 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/17 18:45:41 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,6 +265,15 @@ bool Irc::unsetChanelMode(Client* client, Chanel* chanel, std::string cmd, char 
 
 bool Irc::setOtherClientChanelMode(Client* client, Client* other, Chanel* chanel, std::string cmd, char mode)
 {
+    if (mode == 'b')
+    {
+        std::vector<std::string>::iterator it = std::find(chanel->getBlackList().begin(), chanel->getBlackList().end(), other->getMyNickname());
+        if (it == chanel->getBlackList().end())
+            chanel->getBlackList().push_back(other->getMyNickname());
+        sendMessagetoClient(client, SET_OTHER_CLIENT_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode,  other->getMyNickname()));
+        return (true);
+        
+    }
     Chanel::map_iterator it = chanel->getClient(other->getMyNickname());
     if (chanel->setClientMode(it, mode))
     {
@@ -276,8 +285,17 @@ bool Irc::setOtherClientChanelMode(Client* client, Client* other, Chanel* chanel
 
 bool Irc::unsetOtherClientChanelMode(Client* client, Client* other, Chanel* chanel, std::string cmd, char mode)
 {
+    if (mode == 'b')
+    {
+        std::vector<std::string>::iterator it = std::find(chanel->getBlackList().begin(), chanel->getBlackList().end(), other->getMyNickname());
+        if (it != chanel->getBlackList().end())
+            chanel->getBlackList().erase(it);
+        sendMessagetoClient(client, UNSET_OTHER_CLIENT_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode,  other->getMyNickname()));
+        return (true);
+        
+    }
     Chanel::map_iterator it = chanel->getClient(other->getMyNickname());
-    if (chanel->setClientMode(it, mode))
+    if (chanel->unsetClientMode(it, mode))
     {
         sendMessagetoClient(client, UNSET_OTHER_CLIENT_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode,  other->getMyNickname()));
         return (true);
@@ -480,7 +498,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
                 for (std::size_t i = 0; i < cmd[2].size(); i++)
                 {
                     if (setChanelMode(client, current_chanel, cmd[0], cmd[2][i]))
-                        ;
+                        continue;
                     else if (cmd[2][i + 1])
                     {
                         if (cmd[2][i] == '+' && setChanelMode(client, current_chanel, cmd[0], cmd[2][i + 1]))
@@ -519,7 +537,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
                 return (false);
             }
             // CONCERNED CLIENT IS NOT IN THIS CHANEL
-            else if (current_chanel->getClient(cmd[3]) == ite)
+            else if (cmd[2] != "+b" && cmd[2] != "-b" && current_chanel->getClient(cmd[3]) == ite)
             {
                 sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), concerned_client->getMyNickname(), cmd[1]));
                 return (false);
@@ -638,14 +656,16 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
         current_chanel = _chanel[_chanel.size() - 1];
         current_chanel->setChanelModes('n');
         current_chanel->setChanelModes('t');
+        current_chanel->setChanelModes('b');
         current_chanel->setChanelName(cmd[1]);
         founder = 1;
     }
-    
     if (current_chanel->isPresentInList(current_chanel->getBlackList(), client->getMyNickname()))
+    {
+        sendMessagetoClient(client, ERR_BANNEDFROMCHAN(client->getMyNickname(), current_chanel->getChanelName()));
         return (0);
-    else if (current_chanel->getWhiteList().size() > 0 
-            && current_chanel->isPresentInList(current_chanel->getWhiteList(), client->getMyNickname()) == 0)
+    }
+    else if (current_chanel->isPresentInList(current_chanel->getWhiteList(), client->getMyNickname()))
     {
         sendMessagetoClient(client, ERR_INVITEONLYCHAN(client->getMyNickname(), current_chanel->getChanelName()));
         return (0);
