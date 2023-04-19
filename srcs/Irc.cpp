@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/17 18:45:41 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/19 11:08:51 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -516,6 +516,9 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
                 {
                     for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
                         current_chanel->getWhiteList().push_back(it->first->getMyNickname());
+                    current_chanel->getWhiteList().push_back("asimon");
+                    current_chanel->getWhiteList().push_back("otabchi");
+                    current_chanel->getWhiteList().push_back("idouidi");
                 }
             }
         }
@@ -665,7 +668,7 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
         sendMessagetoClient(client, ERR_BANNEDFROMCHAN(client->getMyNickname(), current_chanel->getChanelName()));
         return (0);
     }
-    else if (current_chanel->isPresentInList(current_chanel->getWhiteList(), client->getMyNickname()))
+    else if (current_chanel->getWhiteList().size() > 0 &&  current_chanel->isPresentInList(current_chanel->getWhiteList(), client->getMyNickname()) == 0) 
     {
         sendMessagetoClient(client, ERR_INVITEONLYCHAN(client->getMyNickname(), current_chanel->getChanelName()));
         return (0);
@@ -676,7 +679,10 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
     {   
         std::vector<client_mode>	client_mode_in_chanel;
         if (client->isServerModeActivated(SERVER_OPERATOR))
+        {
             client_mode_in_chanel.push_back(SERVER_OPERATOR);
+            client_mode_in_chanel.push_back(VOICE);
+        }
         if (founder == 1)
         {
 			client_mode_in_chanel.push_back(CHANEL_OPERATOR);
@@ -750,12 +756,20 @@ bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd)
                 sendMessagetoClient(client, ERR_CANNOTSENDTOCHAN(client->getMyNickname(), current_chanel->getChanelName()));
                 return (false);
             }
-        }   
+        }
+        std::string msg;
+        for (std::vector<std::string>::iterator it = cmd.begin() + 2; it != cmd.end(); ++it) 
+        {
+            if (it != cmd.begin() + 2)
+                msg += " ";
+            msg += *it;
+        }
+        
         for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
         {
             if (it->first->getMyNickname() == client->getMyNickname())
                 continue;
-            sendMessagetoClient(const_cast<Client*>(it->first), RPL_PRIVMSG(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), cmd[2]));
+            sendMessagetoClient(const_cast<Client*>(it->first), RPL_PRIVMSG(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), msg));
         }
     }
     return (true);
@@ -818,11 +832,7 @@ bool Irc::invite(Client* client, std::vector<std::string> cmd)
 
 bool Irc::quit(Client* client, std::vector<std::string> cmd)
 {
-    if (cmd.size() > 1)
-    {
-        std::cout << RED << "error: " << RESET << "Usage: /quit" << std::endl;
-        return (0);
-    }
+    (void)cmd;
     eraseClient(client);
     return (1);
 }
@@ -883,6 +893,3 @@ void Irc::CheckChanelInfo(Chanel* chanel)
     }
     std::cout << std::string(RED) + "=  =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =" << std::string(RESET) << std::endl;
 }
-
-// /connect localhost 1234 Baghdadi7 dedi
-// /
