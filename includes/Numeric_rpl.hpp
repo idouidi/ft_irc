@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 16:36:53 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/17 17:52:27 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/22 17:58:57 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,8 @@
 # define ERR_NOTONCHANNEL(nickname, chanel) (":localhost 442 " + nickname + " " + chanel + " :You're not on that chanel\r\n")
             /* = = =    PRV MESSAGES     = = = */
 
-# define RPL_PRIVMSG(nickname, username, cmd, chanel, msg) (user_id(nickname, username, cmd) + chanel + " " + msg + "\r\n")
+# define RPL_PRIVMSG_CHANEL(nickname, username, cmd, chanel, msg) (user_id(nickname, username, cmd) + chanel + " " + msg + "\r\n")
+# define RPL_PRIVMSG_CLIENT(nickname, username, cmd, concerned_client_nickname, msg) (user_id(nickname, username, cmd) + concerned_client_nickname + " " + msg + "\r\n")
 
             /* = = =    INVITE     = = = */
 
