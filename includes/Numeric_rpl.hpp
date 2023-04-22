@@ -133,4 +133,5 @@
             /* = = =    KICK     = = = */
 #define KICK_CLIENT(nickname, username, cmd, chanel, concerned_client_nickname) ((user_id(nickname, username, cmd)) + chanel + " " + concerned_client_nickname + " :\r\n")
 
+#define NOTICE(nickname, username, cmd, dest, msg) (user_id(nickname, username, cmd) + dest + " " + msg + "\r\n")  
 #endif

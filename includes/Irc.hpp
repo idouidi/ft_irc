@@ -18,6 +18,8 @@
 class Irc
 {
 	public:
+
+	typedef std::vector<Client*>::iterator		client_it;
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 		/*	
@@ -102,6 +104,7 @@ class Irc
 	bool invite(Client*, std::vector<std::string>);
 	bool kick(Client*, std::vector<std::string>);
 	bool quit(Client*, std::vector<std::string>);
+	bool notice(Client*, std::vector<std::string>);
 
 	bool execCmd(Client* client , std::vector<std::string> cmd);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/

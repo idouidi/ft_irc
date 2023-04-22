@@ -374,7 +374,8 @@ bool        Irc::execCmd(Client* client , std::vector<std::string> cmd)
                                                                 &Irc::nick,
                                                                 &Irc::quit,
                                                                 &Irc::invite,
-                                                                &Irc::kick
+                                                                &Irc::kick,
+                                                                &Irc::notice
                                                                 };
     std::string ref[] = {"PING", 
 						"PONG",
@@ -390,6 +391,7 @@ bool        Irc::execCmd(Client* client , std::vector<std::string> cmd)
                         "QUIT",
                         "INVITE",
                         "KICK",
+                        "NOTICE",
                         "NULL"};
 
     std::size_t size = 0;
@@ -868,6 +870,19 @@ bool    Irc::kick(Client* client, std::vector<std::string> cmd)
         current_chanel->deleteClient(current_client->getMyNickname());
         current_client->deleteChanel(current_chanel->getChanelName());
         return (true);
+    }
+    return (false);
+}
+
+bool    Irc::notice(Client *client, std::vector<std::string> msg) 
+{
+    for (client_it it = _client.begin(), ite = _client.end(); it != ite; it++)
+    {
+        if ((*it)->getMyNickname() == msg[1])
+        {
+            sendMessagetoClient(*it, NOTICE(client->getMyNickname(), client->getMyUserName(), msg[0], (*it)->getMyNickname(), msg[2]));
+            return (true);
+        }
     }
     return (false);
 }
