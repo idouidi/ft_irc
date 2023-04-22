@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/19 11:08:51 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/22 18:25:51 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -748,31 +748,56 @@ bool Irc::part(Client* client, std::vector<std::string> cmd)
 
 bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd) 
 {
-    Chanel *current_chanel = findChanel(cmd[1]);
-    if (current_chanel)
+    std::vector<std::string>::iterator it = cmd.begin() + 2;
+    std::vector<std::string>::iterator ite = cmd.end();
+    std::string msg;
+
+    if (it == ite)
+        return (false);
+    for (; it != ite; ++it) 
     {
-        Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
-        if (current_chanel->isChanelModeActivated(MODERATED))
+        msg += *it;
+	    std::vector<std::string>::iterator cpy = it;
+	    if (++cpy != cmd.end())
+            msg += " ";
+    }
+    //SEND MSG IN A CHANEL 
+    if (cmd[1][0] == '#')
+    {
+        Chanel *current_chanel = findChanel(cmd[1]);
+        if (current_chanel)
         {
-            if (it != ite && current_chanel->isClientModeActivated(it->second, VOICE) == 0)
+            Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
+            if (current_chanel->isChanelModeActivated(MODERATED))
+                if (it != ite && current_chanel->isClientModeActivated(it->second, VOICE) == 0)
+                {
+                    sendMessagetoClient(client, ERR_CANNOTSENDTOCHAN(client->getMyNickname(), current_chanel->getChanelName()));
+                    return (false);
+                }
+
+            for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
             {
-                sendMessagetoClient(client, ERR_CANNOTSENDTOCHAN(client->getMyNickname(), current_chanel->getChanelName()));
-                return (false);
+                if (it->first->getMyNickname() == client->getMyNickname())
+                    continue;
+                sendMessagetoClient(const_cast<Client*>(it->first), RPL_PRIVMSG_CHANEL(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), msg));
             }
         }
-        std::string msg;
-        for (std::vector<std::string>::iterator it = cmd.begin() + 2; it != cmd.end(); ++it) 
+        else
         {
-            if (it != cmd.begin() + 2)
-                msg += " ";
-            msg += *it;
+            sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
+            return (false);
         }
-        
-        for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
+    }
+    // SEND MSG TO A CLIENT 
+    else
+    {
+        Client *current_client = findClient(cmd[1]);
+        if (current_client)
+            sendMessagetoClient(current_client, RPL_PRIVMSG_CLIENT(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", cmd[1], msg));
+        else
         {
-            if (it->first->getMyNickname() == client->getMyNickname())
-                continue;
-            sendMessagetoClient(const_cast<Client*>(it->first), RPL_PRIVMSG(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), msg));
+            sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), msg));
+            return (false);
         }
     }
     return (true);
