@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/17 18:08:47 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/23 09:41:15 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ class Client;
 class Chanel;
 class Irc;
 
-void                        printInServer(std::string msg, Client& client);
+void                        printInServer(std::vector<std::string>, Client& client);
 bool                        check_port(std::string port);
 bool                        check_pswd(std::string pswd);
 std::string                 getDateTime();

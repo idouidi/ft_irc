@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/22 18:25:51 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/23 11:24:19 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,11 @@ bool Irc::isNicknameAvaible(std::string nickname)
 bool Irc::parsInfo(Client* client, std::vector<std::string> info)
 {
     std::string msg;
-
+    if (info.size() < 8)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), "CONNECT"));  
+        return (false);
+    }
     if (info[2] == "PASS")
     {
         std::string pswd(info[3]);
@@ -214,11 +218,10 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
     if (client->getMyNickname() == "otabchi" || client->getMyNickname() == "asimon" || client->getMyNickname() == "idouidi")
     {
         std::cout << std::string(GREEN)  << "SERVER OPERATOR : [" << std::string(YELLOW) << client->getMyNickname() << std::string(GREEN) << "] JOIN THE SERVER" << std::string(RESET) << std::endl;
-        client->setServerModes('O'); // O = SERVER OPERATOR | o = CHANEL OPERATOR
+        
+        // O = SERVER OPERATOR | o = CHANEL OPERATOR
+        client->setServerModes('O');
     }
-
-    // client->setStatusClient(0);
-
     sendMessagetoClient(client, RPL_WELCOME(client->getMyNickname()) + \
      RPL_YOURHOST(client->getMyNickname(), "Les Oubliés 1.0.0")+ \
      RPL_CREATED(client->getMyNickname(), getDateTime())+ \
@@ -417,6 +420,11 @@ bool Irc::ping(Client* client, std::vector<std::string> cmd)
 
 bool	Irc::pong(Client* client, std::vector<std::string> cmd)
 {
+    if (cmd.size() < 2)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
 	if (cmd[1] != ":" + client->getToken())
 		sendMessagetoClient(client, ERR_BADPING(client->getMyNickname()));
 	return true;
@@ -424,9 +432,19 @@ bool	Irc::pong(Client* client, std::vector<std::string> cmd)
 
 bool Irc::mode(Client* client, std::vector<std::string> cmd)
 {
+    if (cmd.size() < 2)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
     //SET MODE FOR A CLIENT
     if (cmd[1][0] != '#')
     {
+        if (cmd.size() < 3)
+        {
+            sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+            return (false);        
+        }
         //CLIENT DOESN'T HAVE RIGHT PRIV TO DO THAT
         if (client->isNewClient() == 0 && client->isServerModeActivated(SERVER_OPERATOR) == 0)
         {
@@ -434,24 +452,21 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
             return (false);
         }
         //SET MODE FOR CLIENT IN THE SERVER
-        if (cmd.size() == 3)
+        for (std::size_t i = 0; i < cmd[2].size(); i++)
         {
-            for (std::size_t i = 0; i < cmd[2].size(); i++)
+            if (setClientMode(client, cmd[0], cmd[2][i]))
+                continue ;
+            else if (cmd[2][i + 1])
             {
-                if (setClientMode(client, cmd[0], cmd[2][i]))
-                    continue ;
-                else if (cmd[2][i + 1])
-                {
-                    if (cmd[2][i] == '+' && setClientMode(client, cmd[0], cmd[2][i + 1]))
-                        i++;
-                    else if (cmd[2][i] == '-' && unsetClientMode(client, cmd[0], cmd[2][i + 1]))
-                        i++;
-                    else
-                        sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
-                }
+                if (cmd[2][i] == '+' && setClientMode(client, cmd[0], cmd[2][i + 1]))
+                    i++;
+                else if (cmd[2][i] == '-' && unsetClientMode(client, cmd[0], cmd[2][i + 1]))
+                    i++;
                 else
                     sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
             }
+            else
+                sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
         }
         if (client->isNewClient())
             client->setStatusClient(0);
@@ -573,7 +588,11 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 bool Irc::who(Client* client, std::vector<std::string> cmd)
 {
     std::string modes;
-
+    if (cmd.size() < 2)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
     if (cmd[1][0] == '#')
     {
         Chanel      *potential_chanel = findChanel(cmd[1]);
@@ -642,6 +661,11 @@ bool Irc::whois(Client* client, std::vector<std::string> cmd)
 
 bool Irc::whowas(Client* client, std::vector<std::string> cmd)
 {
+    if (cmd.size() < 2)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
     Client *current_client = findClient(client->getMyNickname());
 
     if (current_client == NULL)
@@ -652,6 +676,11 @@ bool Irc::whowas(Client* client, std::vector<std::string> cmd)
 
 bool Irc::join(Client* client, std::vector<std::string> cmd)
 {
+    if (cmd.size() < 2)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
     Chanel *current_chanel;
     bool founder = 0;
 
@@ -686,7 +715,7 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
             client_mode_in_chanel.push_back(SERVER_OPERATOR);
             client_mode_in_chanel.push_back(VOICE);
         }
-        if (founder == 1)
+        else if (founder == 1)
         {
 			client_mode_in_chanel.push_back(CHANEL_OPERATOR);
             client_mode_in_chanel.push_back(VOICE);
@@ -713,6 +742,11 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
 
 bool Irc::part(Client* client, std::vector<std::string> cmd)
 {
+    if (cmd.size() < 2)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
     Chanel *current_chanel;
     if ((current_chanel = findChanel(cmd[1])) == NULL)
     {
@@ -748,6 +782,11 @@ bool Irc::part(Client* client, std::vector<std::string> cmd)
 
 bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd) 
 {
+    if (cmd.size() < 3)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
     std::vector<std::string>::iterator it = cmd.begin() + 2;
     std::vector<std::string>::iterator ite = cmd.end();
     std::string msg;
@@ -843,18 +882,29 @@ bool Irc::nick(Client* client, std::vector<std::string> cmd)
 
 bool Irc::invite(Client* client, std::vector<std::string> cmd)
 {
-    Client *potential_client = findClient(cmd[1]);
+    if (cmd.size() < 3)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
 
+    Client *potential_client = findClient(cmd[1]);
     if (potential_client == NULL)
     {
         sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), cmd[1]));
         return (false);
     }
+
     Chanel *current_chanel = findChanel(cmd[2]);
+    if (current_chanel == NULL)
+    {
+        sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[2]));
+        return (false);
+    }
+
     current_chanel->getWhiteList().push_back(potential_client->getMyNickname());
     sendMessagetoClient(client, INVITE_CLIENT(client->getMyNickname(), client->getMyUserName(), cmd[0], potential_client->getMyNickname(), cmd[2]));
     sendMessagetoClient(potential_client, NOCTICE_CLIENT_INVITE(client->getMyNickname(), current_chanel->getChanelName()));
-
     return (true);
 }
 
@@ -867,6 +917,11 @@ bool Irc::quit(Client* client, std::vector<std::string> cmd)
 
 bool    Irc::kick(Client* client, std::vector<std::string> cmd)
 {
+    if (cmd.size() < 3)
+    {
+        sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
+        return (false);
+    }
     Chanel *current_chanel = findChanel(cmd[1]);
     Client *current_client;
     if (current_chanel)

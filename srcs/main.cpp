@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/11 14:11:26 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/23 10:59:13 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ void start_server(char *port, char *pswd)
 						irc.eraseClient(current_client);
 				else
 				{
-					printInServer(std::string(buf), *current_client);
-					std::vector<std::string> cmd = split(std::string(buf), " \n\r");
+					std::vector<std::string> cmd = split(std::string(buf), " \t\n\r");
+					printInServer(cmd, *current_client);
 					if (cmd[0] != "PONG" && cmd[0] != "MODE" && current_client->isNewClient())
 					{
 						if ((irc.parsInfo(current_client, cmd)) == 0)
