@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/23 11:24:19 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/24 11:42:49 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -668,7 +668,7 @@ bool Irc::whowas(Client* client, std::vector<std::string> cmd)
     }
     Client *current_client = findClient(client->getMyNickname());
 
-    if (current_client == NULL)
+    if (current_client == NULL || current_client == client)
         sendMessagetoClient(client, ERR_WASNOSUCHNICK(client->getMyNickname(), cmd[1]) 
         + RPL_ENDOFWHOWAS(client->getMyNickname(), cmd[1]));
     return (true);
