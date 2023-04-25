@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 11:34:40 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/09 13:48:40 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/23 09:50:39 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,15 @@ std::string getDateTime()
     return (std::string(dateTime) + " GMT");
 }
 
-void printInServer(std::string msg, Client& client)
+void printInServer(std::vector<std::string> cmd, Client& client)
 {
+    std::string msg;
+    for (std::size_t i = 0; i < cmd.size(); i ++)
+    {
+        msg += (i +1 != cmd.size()) ? (cmd[i] + " ") : cmd[i];
+    }
 	std::cout << MAGENTA << "Message from the client[ " << CYAN << client.getMySocket() << MAGENTA << " ]: "\
-	<< YELLOW "[" << CYAN << msg.substr(0, msg.size()- 2) << YELLOW << "]" << RESET << std::endl;
+	<< YELLOW "[" << CYAN << msg << YELLOW << "]" << RESET << std::endl;
 }
 
 std::vector<std::string> split(std::string str, const std::string charset)
@@ -95,13 +100,12 @@ std::vector<std::string> split(std::string str, const std::string charset)
             tokens.push_back(token);
             str = str.substr(pos + 1);
         }
-        else
-            tokens.push_back(str);
     }
-	for (size_t i = 0; i < tokens.size(); i++)
-		if (tokens[i] == "")
-			tokens.erase(tokens.begin() + i);
-    tokens.erase(tokens.begin() + tokens.size() - 1);
+    for (std::size_t i = 0; i < tokens.size(); i++)
+    {
+        if (tokens[i] == "")
+            tokens.erase(tokens.begin() + i);
+    }
     return (tokens);
 }
 
