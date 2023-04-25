@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/14 13:45:45 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/25 12:25:34 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class Chanel {
 
 	
 		std::string					getChanelName() const;
+		std::string					getChanelTopic() const;
 		size_t						getNumClient() const;
 		std::vector<std::string>&	getBlackList();
 		std::vector<std::string>&	getWhiteList();
@@ -46,6 +47,7 @@ class Chanel {
 		map_iterator				getClient(std::string name);
 
 		void						setChanelName(std::string name);
+		void						setChanelTopic(std::string name);
 
 		bool						setChanelModes(char mode);
 		bool						unsetChanelModes(char mode);

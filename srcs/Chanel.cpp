@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/17 18:43:42 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/25 12:27:13 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ Chanel::~Chanel()
 {}
 
 std::string					Chanel::getChanelName() const { return (_name); }
+
+std::string					Chanel::getChanelTopic() const { return (_topic); }
 
 size_t						Chanel::getNumClient() const { return (_clients_in.size()); }
 
@@ -45,6 +47,8 @@ Chanel::map_iterator 		Chanel::getClient(std::string name)
 }
 
 void 						Chanel::setChanelName(std::string name) {_name = name; }
+
+void						Chanel::setChanelTopic(std::string topic) { _topic = topic; }
 
 bool						Chanel::addClient(Client* client_to_add, std::vector<client_mode> mode_to_give) 
 {

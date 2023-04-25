@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/24 14:31:31 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/25 16:50:16 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -505,15 +505,25 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 				sendMessagetoClient(client, RPL_ENDOFBANLIST(client->getMyNickname(), cmd[1]));
 			else
 			{
-				//CLIENT DOESN'T HAVE RIGHT PRIV TO DO THAT
-				Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
-				if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) && (it != ite && current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR) == 0))
+				Chanel::map_iterator	client_in_chanel = current_chanel->getClient(client->getMyNickname());
+				Chanel::map_iterator	chanel_end = current_chanel->getclientMap().end();
+				Chanel::map_iterator	chanel_begin = current_chanel->getclientMap().begin();
+
+				// CHECK IF I HAVE THE PRIVILEGE
+				if (client->isServerModeActivated(SERVER_OPERATOR) == 0)
 				{
-					sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
-					return (false);
+					// IF YOUR ARE NOT SERVER OPERATOR YOU MUST BE IN THE CHANEL AND BE CHANEL OPERATOR
+					if ((client_in_chanel == chanel_end) || current_chanel->isClientModeActivated(client_in_chanel->second, CHANEL_OPERATOR) == 0)
+					{
+						sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
+						return (false);
+					}
 				}
+
+				// CHECK IF WE ACTIVE A WHITE LIST
 				bool before_setting_modes = current_chanel->isChanelModeActivated(INVITE_ONLY);
-				//SET MODE IN CHANELS
+				
+				// SET MODES IN CHANEL
 				for (std::size_t i = 0; i < cmd[2].size(); i++)
 				{
 					if (setChanelMode(client, current_chanel, cmd[0], cmd[2][i]))
@@ -530,11 +540,14 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 					else
 						sendMessagetoClient(client, ERR_UNKNOWNMODE(client->getMyNickname(), cmd[2][i + i]));
 				}
-				// CHECK IF WE ACTIVE A WHITE LIST AND ADD ALL CLIENT ALREADY PRESENT IN THIS LIST 
+				
+				// RECHECK IF WE ACTIVE A WHITE LIST . IF ITS TRUE WE ADD ALL CLIENT ALREADY PRESENT IN THE CHANEL IN
 				if (before_setting_modes == false && current_chanel->isChanelModeActivated(INVITE_ONLY))
 				{
-					for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
-						current_chanel->getWhiteList().push_back(it->first->getMyNickname());
+					for (; chanel_begin != chanel_end; chanel_begin++)
+						current_chanel->getWhiteList().push_back(chanel_begin->first->getMyNickname());
+
+					// ADD THE SERVER OPERATOR IN THE WHITE LIST
 					current_chanel->getWhiteList().push_back("asimon");
 					current_chanel->getWhiteList().push_back("otabchi");
 					current_chanel->getWhiteList().push_back("idouidi");
@@ -544,13 +557,20 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 		// SET MODE FOR A CLIENT IN THE CHANEL
 		else if (cmd.size() == 4)
 		{
-			//CLIENT DOESN'T HAVE RIGHT PRIV TO DO THAT
-			Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
-			if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) && (it != ite && current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR) == 0))
+			Chanel::map_iterator	client_in_chanel = current_chanel->getClient(client->getMyNickname());
+			Chanel::map_iterator	chanel_end = current_chanel->getclientMap().end();
+
+			// CHECK IF I HAVE THE PRIVILEGE
+			if (client->isServerModeActivated(SERVER_OPERATOR) == 0)
 			{
-				sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
-				return (false);
+				// IF YOUR ARE NOT SERVER OPERATOR YOU MUST BE IN THE CHANEL AND BE CHANEL OPERATOR
+				if ((client_in_chanel == chanel_end) || current_chanel->isClientModeActivated(client_in_chanel->second, CHANEL_OPERATOR) == 0)
+				{
+					sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
+					return (false);
+				}
 			}
+			
 			Client *concerned_client = findClient(cmd[3]);
 			// CONCERNED CLIENT DOES NOT EXIST
 			if (concerned_client == NULL)
@@ -558,12 +578,14 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 				sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), cmd[3]));
 				return (false);
 			}
+			
 			// CONCERNED CLIENT IS NOT IN THIS CHANEL
 			else if (cmd[2] != "+b" && cmd[2] != "-b" && current_chanel->getClient(cmd[3]) == ite)
 			{
 				sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), concerned_client->getMyNickname(), cmd[1]));
 				return (false);
 			}
+
 			// SET MODES FOR THE CONCERNED CLIENT IN THE CHANEL
 			for (std::size_t i = 0; i < cmd[2].size(); i++)
 			{
@@ -686,6 +708,8 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
 	bool founder = 0;
 
 	current_chanel = findChanel(cmd[1]);
+
+	// IF THE CHANEL DOES NOT EXIST, CREATE THE CHANEL AND SET HIS MODE	
 	if (current_chanel == NULL)
 	{
 		_chanel.push_back((new Chanel(cmd[1]))); // ( _id = _chanel.size() + 1 )
@@ -696,21 +720,26 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
 		current_chanel->setChanelName(cmd[1]);
 		founder = 1;
 	}
+	// CHECK IF THE CLIENT IS IN THE CHQNEL BLACK LIST
 	if (current_chanel->isPresentInList(current_chanel->getBlackList(), client->getMyNickname()))
 	{
 		sendMessagetoClient(client, ERR_BANNEDFROMCHAN(client->getMyNickname(), current_chanel->getChanelName()));
 		return (0);
 	}
+	// CHECK IF THE CLIENT IN IN THE WHITE LIST
 	else if (current_chanel->getWhiteList().size() > 0 &&  current_chanel->isPresentInList(current_chanel->getWhiteList(), client->getMyNickname()) == 0) 
 	{
 		sendMessagetoClient(client, ERR_INVITEONLYCHAN(client->getMyNickname(), current_chanel->getChanelName()));
 		return (0);
 	}
+	// CHECK IF THE CLIENT IS ALREQDY IN THE CHANEL
 	else if (current_chanel->isPresentInChanel(client->getMyNickname()))
 		return (0);
 	else
 	{   
 		std::vector<client_mode>	client_mode_in_chanel;
+
+		//SET THE CLIENT MODE IN THE CHANEL
 		if (client->isServerModeActivated(SERVER_OPERATOR))
 		{
 			client_mode_in_chanel.push_back(SERVER_OPERATOR);
@@ -722,16 +751,18 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
 			client_mode_in_chanel.push_back(VOICE);
 		}
 
+		// ADD THE CLIENT IN THE CHANEL MAP
 		current_chanel->addClient(client, client_mode_in_chanel);
+		// ADD THE CHANEL IN THE CLIENT MAP 
 		client->insertChanel(current_chanel, client_mode_in_chanel);        
-		//DEBUG PART
-		// CheckChanelInfo(current_chanel);
 	}
 
 	std::string list = current_chanel->listAllClientsModesAndNames(&Irc::listClientModes);
 
 	sendMessagetoClient(client, SET_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1])
 	+ RPL_NAMREPLY(client->getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client->getMyNickname(), cmd[1]));
+
+	// SEND TO OTHER CLIENT THERE IS Q NEW CLIENT IN THE CHANEL
 	for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
 	{
 		if (it->first->getMyNickname() == client->getMyNickname())
@@ -748,23 +779,35 @@ bool Irc::part(Client* client, std::vector<std::string> cmd)
 		sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
 		return (false);
 	}
+
 	Chanel *current_chanel;
+	// CHECK IF THE CHANEL EXIST
 	if ((current_chanel = findChanel(cmd[1])) == NULL)
 	{
 		sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
 		return (false);
 	}
-	Chanel::map_iterator on_chanel = current_chanel->getClient(client->getMyNickname()), not_on_chanel = current_chanel->getclientMap().end();
-	if (on_chanel != not_on_chanel)
+
+	Chanel::map_iterator	client_in_chanel = current_chanel->getClient(client->getMyNickname());
+	Chanel::map_iterator	chanel_end = current_chanel->getclientMap().end();
+	Chanel::map_iterator	chanel_begin = current_chanel->getclientMap().begin();
+
+	// CHECK IF THE CLIENT IS IN THE CHANEL
+	if (client_in_chanel != chanel_end)
 	{
-		for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
-		{
-			sendMessagetoClient(const_cast<Client*>(it->first), PART_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], current_chanel->getChanelName()));
-		}
+		for (; chanel_begin != chanel_end; chanel_begin++)
+			sendMessagetoClient(const_cast<Client*>(chanel_begin->first), PART_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], current_chanel->getChanelName()));
+		
+		// DELETE THE CLIENT IN CHANEL MAP 
 		current_chanel->deleteClient(client->getMyNickname());
+
+		// DELETE THE CHANEL INT THE CLIENT MAP
 		client->deleteChanel(current_chanel->getChanelName());
+
+		// AFTER DELETED CLIENT WE CHECK IF THERE ARE STILL CLIENT IN 
 		if (current_chanel->getclientMap().size() == 0)
 		{
+			// FIND THE CHANEL TO ERASE IT IN THE CHANEL REFERENCIAL
 			for (std::size_t i = 0; i < _chanel.size(); i++)
 			{
 				if (_chanel[i]->getChanelName() == current_chanel->getChanelName())
@@ -788,48 +831,19 @@ bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd)
 		sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
 		return (false);
 	}
-	std::vector<std::string>::iterator it = cmd.begin() + 2;
-	std::vector<std::string>::iterator ite = cmd.end();
+	
+	// SET THE MSG CORRECLTY
 	std::string msg;
-
-	if (it == ite)
-		return (false);
-	for (; it != ite; ++it) 
+	for (std::vector<std::string>::iterator it = cmd.begin() + 2; it != cmd.end(); ++it) 
 	{
 		msg += *it;
 		std::vector<std::string>::iterator cpy = it;
 		if (++cpy != cmd.end())
 			msg += " ";
 	}
-	//SEND MSG IN A CHANEL 
-	if (cmd[1][0] == '#')
-	{
-		Chanel *current_chanel = findChanel(cmd[1]);
-		if (current_chanel)
-		{
-			Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
-			if (current_chanel->isChanelModeActivated(MODERATED))
-				if (it != ite && current_chanel->isClientModeActivated(it->second, VOICE) == 0)
-				{
-					sendMessagetoClient(client, ERR_CANNOTSENDTOCHAN(client->getMyNickname(), current_chanel->getChanelName()));
-					return (false);
-				}
 
-			for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
-			{
-				if (it->first->getMyNickname() == client->getMyNickname())
-					continue;
-				sendMessagetoClient(const_cast<Client*>(it->first), RPL_PRIVMSG_CHANEL(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), msg));
-			}
-		}
-		else
-		{
-			sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
-			return (false);
-		}
-	}
-	// SEND MSG TO A CLIENT 
-	else
+	// SEND MSG TO A CLIENT
+	if (cmd[1][0] != '#')
 	{
 		Client *current_client = findClient(cmd[1]);
 		if (current_client)
@@ -837,6 +851,42 @@ bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd)
 		else
 		{
 			sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), msg));
+			return (false);
+		}
+	}
+	//SEND MSG IN A CHANEL 
+	else
+	{
+		Chanel *current_chanel = findChanel(cmd[1]);
+		if (current_chanel)
+		{
+			Chanel::map_iterator	client_in_chanel = current_chanel->getClient(client->getMyNickname());
+			Chanel::map_iterator	chanel_begin = current_chanel->getclientMap().begin();
+			Chanel::map_iterator	chanel_end = current_chanel->getclientMap().end();
+
+			// CHECK IF CLIENT IS IN THE CHANEL
+			if (client_in_chanel == chanel_end)
+			{
+				sendMessagetoClient(client, ERR_CANNOTSENDTOCHAN(client->getMyNickname(), current_chanel->getChanelName()));
+				return (false);				
+			}
+			// CHECK IF I HAVE PRIVILEGE 
+			else if (current_chanel->isChanelModeActivated(MODERATED) && current_chanel->isClientModeActivated(client_in_chanel->second, VOICE) == 0)
+			{
+				sendMessagetoClient(client, ERR_CANNOTSENDTOCHAN(client->getMyNickname(), current_chanel->getChanelName()));
+				return (false);
+			}
+
+			for (; chanel_begin != chanel_end; chanel_begin++)
+			{
+				if (chanel_begin->first->getMyNickname() == client->getMyNickname())
+					continue;
+				sendMessagetoClient(const_cast<Client*>(chanel_begin->first), RPL_PRIVMSG_CHANEL(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), msg));
+			}
+		}
+		else
+		{
+			sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
 			return (false);
 		}
 	}
@@ -924,29 +974,45 @@ bool    Irc::kick(Client* client, std::vector<std::string> cmd)
 		return (false);
 	}
 	Chanel *current_chanel = findChanel(cmd[1]);
-	Client *current_client;
 	if (current_chanel)
 	{
-		Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname()), ite = current_chanel->getclientMap().end();
+		Client 					*current_client;
+		Chanel::map_iterator	client_in_chanel = current_chanel->getClient(client->getMyNickname());
+		Chanel::map_iterator	chanel_end = current_chanel->getclientMap().end();
+		Chanel::map_iterator	chanel_begin = current_chanel->getclientMap().begin();
+
+		// CHECK IF THE CONCERNED CLIENT IS ON THE SERVER
 		if ((current_client = findClient(cmd[2])) == NULL)
 		{
 			sendMessagetoClient(client, ERR_NOSUCHNICK(client->getMyNickname(), cmd[2]));
 			return (false);          
 		}
+
+		// CHECK IF THE CONCERNED CLIENT IS ON THE CHANEL
 		else if (current_chanel->isPresentInChanel(cmd[2]) == 0)
 		{
 			sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), cmd[2], cmd[1]));
 			return (false);
 		}
-		else if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) && (current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR) == 0))
-		{
-			sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
-			return (false);            
-		}
-		for (Chanel::map_iterator start = current_chanel->getclientMap().begin(); start != ite; start++)
-			sendMessagetoClient(const_cast<Client*>(start->first), KICK_CLIENT(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1], current_client->getMyNickname()));
 
+		// CHECK IF I HAVE PRIVILEGE
+		else if (client->isServerModeActivated(SERVER_OPERATOR) == 0)
+		{
+			// IF YOUR ARE NOT SERVER OPERATOR YOU MUST BE IN THE CHANEL AND BE CHANEL OPERATOR
+			if ((client_in_chanel == chanel_end) || current_chanel->isClientModeActivated(client_in_chanel->second, CHANEL_OPERATOR) == 0)
+			{
+				sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
+				return (false);
+			}
+		}
+
+		for (; chanel_begin != chanel_end; chanel_begin++)
+			sendMessagetoClient(const_cast<Client*>(chanel_begin->first), KICK_CLIENT(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1], current_client->getMyNickname()));
+
+		// DELETE CLIENT IN THE CHANEL MAP
 		current_chanel->deleteClient(current_client->getMyNickname());
+
+		// DELETE CHANEL IN THE CLIENT MAP 
 		current_client->deleteChanel(current_chanel->getChanelName());
 		return (true);
 	}
@@ -955,38 +1021,66 @@ bool    Irc::kick(Client* client, std::vector<std::string> cmd)
 
 bool    Irc::topic(Client* client, std::vector<std::string> cmd)
 {
-	if (cmd.size() < 3)
+	if (cmd.size() < 2)
 	{
 		sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
 		return (false);
 	}
-	Chanel *current_chanel = findChanel(cmd[1]);
+
+	Chanel	*current_chanel = findChanel(cmd[1]);
+	// CHECK IF THE CHANEL EXIST
 	if (current_chanel == NULL)
 	{
 		sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[1]));
 		return (false);
 	}
-	else if (current_chanel->isChanelModeActivated(TOPIC_PROTECTION))
+
+	Chanel::map_iterator	client_in_chanel = current_chanel->getClient(client->getMyNickname());
+	Chanel::map_iterator	chanel_end = current_chanel->getclientMap().end();
+	Chanel::map_iterator	chanel_begin = current_chanel->getclientMap().begin();
+	
+	// GET INFO OF THE TOPIC
+	if (cmd.size() == 2)
 	{
-		Chanel::map_iterator it = current_chanel->getClient(client->getMyNickname());
-		if ((client->isServerModeActivated(SERVER_OPERATOR) == 0 ) && current_chanel->isClientModeActivated(it->second, CHANEL_OPERATOR) == 0)
+		if (current_chanel->getChanelTopic() == "")
+			sendMessagetoClient(client, RPL_NOTOPIC(client->getMyNickname(), cmd[1]));
+		else
+			sendMessagetoClient(client, RPL_TOPIC(client->getMyNickname(), cmd[1], current_chanel->getChanelTopic()));
+	}
+
+	// EDIT THE CHANEL TOPIC
+	else
+	{
+		// CHECK PRIVILEGE
+		if (current_chanel->isChanelModeActivated(TOPIC_PROTECTION))
 		{
-			sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
-			return (false);            
+			if (client->isServerModeActivated(SERVER_OPERATOR) == 0)
+			{
+				// IF YOUR ARE NOT SERVER OPERATOR YOU MUST BE IN THE CHANEL AND BE CHANEL OPERATOR
+				if ((client_in_chanel == chanel_end) || current_chanel->isClientModeActivated(client_in_chanel->second, CHANEL_OPERATOR) == 0)
+				{
+					sendMessagetoClient(client, ERR_CHANOPRIVSNEED(client->getMyNickname(), current_chanel->getChanelName()));
+					return (false);
+				}
+			}
 		}
-	}
-	std::string topic;
-	for (std::vector<std::string>::iterator it = cmd.begin() + 2; it != cmd.end(); it++) 
-	{
-		topic += *it;
-		std::vector<std::string>::iterator cpy = it;
-		if (++cpy != cmd.end())
-			topic += " ";
-	}
-	Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end();
-	for (; it != ite; it++)
-	{
-		sendMessagetoClient(const_cast<Client*>(it->first), RPL_TOPIC(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1], topic));
+	
+		// SET THE TOPIC CORRECTLY
+		std::string topic;
+		for (std::vector<std::string>::iterator it = cmd.begin() + 2; it != cmd.end(); it++) 
+		{
+			topic += *it;
+			std::vector<std::string>::iterator cpy = it;
+			if (++cpy != cmd.end())
+				topic += " ";
+		}
+		current_chanel->setChanelTopic(topic);
+
+		for (; chanel_begin != chanel_end; chanel_begin++)
+		{
+			sendMessagetoClient(const_cast<Client*>(chanel_begin->first), SET_TOPIC(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1], topic));
+		}
+
 	}
 	return (true);
 }
