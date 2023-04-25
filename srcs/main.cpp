@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/23 10:59:13 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/25 18:14:17 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,18 +55,21 @@ void start_server(char *port, char *pswd)
 						irc.eraseClient(current_client);
 				else
 				{
-					printInServer(std::string(buf), *current_client);
-					std::vector<std::string> cmd = split(std::string(buf), " \n\r");
-					if (cmd[0] != "PONG" && cmd[0] != "MODE" && (cmd[0] != "NICK" && cmd[2] != "MODE") && current_client->isNewClient())
+					std::vector<std::string> cmd = split(std::string(buf), " \t\n\r");
+					if (cmd.size() > 0)
 					{
-						if ((irc.parsInfo(current_client, cmd)) == 0)
+						printInServer(cmd, *current_client);
+						if (cmd[0] != "PONG" && cmd[0] != "MODE" && current_client->isNewClient())
 						{
-							irc.eraseClient(current_client);
-							continue ;
+							if ((irc.parsInfo(current_client, cmd)) == 0)
+							{
+								irc.eraseClient(current_client);
+								continue ;
+							}
 						}
+						else
+							irc.execCmd(current_client, cmd);
 					}
-					else
-						irc.execCmd(current_client, cmd);
 				}
 				memset(buf, '\0', sizeof(buf));
 			}
