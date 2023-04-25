@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/25 16:50:16 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/25 16:57:08 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -580,7 +580,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 			}
 			
 			// CONCERNED CLIENT IS NOT IN THIS CHANEL
-			else if (cmd[2] != "+b" && cmd[2] != "-b" && current_chanel->getClient(cmd[3]) == ite)
+			else if (cmd[2] != "+b" && cmd[2] != "-b" && current_chanel->getClient(cmd[3]) == chanel_end)
 			{
 				sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), concerned_client->getMyNickname(), cmd[1]));
 				return (false);
