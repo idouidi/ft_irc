@@ -45,17 +45,18 @@ void start_server(char *port, char *pswd)
 			{
 				ret = read(irc.getEvent(i).data.fd, buf, BUFFER_SIZE);
 				Client *current_client = irc.findClient(irc.getEvent(i).data.fd);
-
 				if (ret == -1)
 				{
 					perror("read");
 					exit(EXIT_FAILURE);
 				}
 				else if (ret == 0)
-						irc.eraseClient(current_client);
+					irc.eraseClient(current_client);
+				else if (std::string(buf).find('\n') == std::string::npos)
+					current_client->setCmdLine(current_client->getCmdLine() + buf);
 				else
 				{
-					std::vector<std::string> cmd = split(std::string(buf), " \t\n\r");
+					std::vector<std::string> cmd = split(current_client->getCmdLine() + std::string(buf), " \t\n\r");
 					if (cmd.size() > 0)
 					{
 						printInServer(cmd, *current_client);
@@ -70,6 +71,7 @@ void start_server(char *port, char *pswd)
 						else
 							irc.execCmd(current_client, cmd);
 					}
+					current_client->setCmdLine("");
 				}
 				memset(buf, '\0', sizeof(buf));
 			}

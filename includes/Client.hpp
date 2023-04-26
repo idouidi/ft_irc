@@ -35,11 +35,13 @@ class Client
 		time_t 						getLastActiveTime() const;
 		std::vector<client_mode>&	getActiveModes() ;
 		chanel_map&					getChanelMap();
+		std::string&				getCmdLine();
 		
 		void 						setStatusClient(bool status);
 		void 						setNickName(std::string nick);
 		void 						setUserName(std::string user);
 		void						setLastActiveTime();
+		void						setCmdLine(std::string);
 
 		bool 						isNewClient() const;
 
@@ -69,6 +71,7 @@ class Client
 		bool												new_client;
 		time_t												last_active_time;
 		chanel_map											my_chanels;
+		std::string											cmd_line;
 
 };
 

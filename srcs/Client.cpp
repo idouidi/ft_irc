@@ -162,4 +162,13 @@ bool						Client::deleteChanel(std::string name)
 	return (false);
 }			
 
+std::string&				Client::getCmdLine()
+{
+	return (cmd_line);
+}
 
+void						Client::setCmdLine(std::string new_one)
+{
+	cmd_line = new_one;
+	return ;
+}

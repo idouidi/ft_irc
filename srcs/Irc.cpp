@@ -118,7 +118,6 @@ void    Irc::addClient(int client_fd)
 
 void     Irc::eraseClient(Client* client)
 {
-	Client*     buff;
 	for (std::size_t i = 0; i < _client.size(); i++)
 	{
 		if (client->getMySocket() == _client[i]->getMySocket())
@@ -144,9 +143,8 @@ void     Irc::eraseClient(Client* client)
 				}
 			}
 			close(client->getMySocket());
-			buff = _client[i];
 			_client.erase(_client.begin() + i);
-			delete buff;
+			delete client;
 		}
 	}
 }
