@@ -184,11 +184,8 @@ bool Irc::isNicknameAvaible(std::string nickname)
 bool Irc::parsInfo(Client* client, std::vector<std::string> info)
 {
 	std::string msg;
-	if (info.size() < 8)
-	{
-		sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), "CONNECT"));  
+	if (!checkInfo(client,info))
 		return (false);
-	}
 	if (info[2] == "PASS")
 	{
 		std::string pswd(info[3]);
@@ -223,6 +220,7 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
 	 RPL_YOURHOST(client->getMyNickname(), "Les Oubliés 1.0.0")+ \
 	 RPL_CREATED(client->getMyNickname(), getDateTime())+ \
 	 RPL_MYINFO(client->getMyNickname(), "Les Oubliés 1.0.0"));
+	client->setStatusClient(0);
 	return (true);
 }
 
@@ -446,12 +444,6 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 			sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
 			return (false);        
 		}
-		//CLIENT DOESN'T HAVE RIGHT PRIV TO DO THAT
-		if (client->isNewClient() == 0 && client->isServerModeActivated(SERVER_OPERATOR) == 0)
-		{
-			sendMessagetoClient(client, ERR_NOPRIVILEGES(client->getMyNickname()));
-			return (false);
-		}
 		//SET MODE FOR CLIENT IN THE SERVER
 		for (std::size_t i = 0; i < cmd[2].size(); i++)
 		{
@@ -469,8 +461,6 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 			else
 				sendMessagetoClient(client, ERR_UMODEUNKNOWNFLAG(client->getMyNickname()));
 		}
-		if (client->isNewClient())
-			client->setStatusClient(0);
 	}
 	//SET MODE FOR A CHANEL / SET MODE FOR A CLIENT IN THE CHANEL
 	else
@@ -1098,27 +1088,23 @@ bool    Irc::notice(Client *client, std::vector<std::string> msg)
     return (false);
 }
 
-void Irc::CheckChanelInfo(Chanel* chanel)
+bool	Irc::checkInfo(Client* client, std::vector<std::string> info) 
 {
-	std::cout << std::string(RED) + "=  =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =" << std::string(RESET) << std::endl;
-
-	for (Chanel::map_iterator it = chanel->getclientMap().begin(); it != chanel->getclientMap().end(); it++)
-	{
-		for (std::size_t i = 0; i < _client.size(); i++)
-		{
-			if ((it->first) == (_client[i]))
-			{
-				std::cout << "same address for the object in std::vector<client> and in a chanel instance class in std::map<Client, client_mode>: " << _client[i]->getMyNickname() << std::endl;
-				break ;
-			}
-			else if ((it->first->getMyNickname()) == (_client[i]->getMyNickname()))
-			{
-				std::cout << "concerned client is = " <<_client[i]->getMyNickname() << " | " << it->first->getMyNickname() << std::endl; 
-				std::cout <<  "differrent address for the object\nobject in std::vector<client> = " << &(it->first)\
-				 << "\nobject in a chanel instance class in std::map<Client, client_mode> = " << &(_client[i]) << std::endl;
-				break;
-			}
-		}
+	if (info.size() < 8)
+		sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), "CONNECT"));  
+	else if (info[0] != "CAP") {
+		std::cout << "value : [ " << info[0] << "]" << std::endl;
+		sendMessagetoClient(client, ERR_UNKNOWNCOMMAND(client->getMyNickname(), info[0]));
 	}
-	std::cout << std::string(RED) + "=  =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =   =" << std::string(RESET) << std::endl;
+	else if (info[1] != "LS" ) 
+		sendMessagetoClient(client, ERR_UNKNOWNCOMMAND(client->getMyNickname(), info[1]));
+	else if (info[2] != "PASS") 
+		sendMessagetoClient(client, ERR_UNKNOWNCOMMAND(client->getMyNickname(), info[2]));
+	else if (info[4] != "NICK") 
+		sendMessagetoClient(client, ERR_UNKNOWNCOMMAND(client->getMyNickname(), info[4]));
+	else if (info[6] != "USER") 
+		sendMessagetoClient(client, ERR_UNKNOWNCOMMAND(client->getMyNickname(), info[6]));
+	else
+		return (true);
+	return (false);
 }

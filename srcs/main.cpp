@@ -60,7 +60,7 @@ void start_server(char *port, char *pswd)
 					if (cmd.size() > 0)
 					{
 						printInServer(cmd, *current_client);
-						if (cmd[0] != "PONG" && cmd[0] != "MODE" && current_client->isNewClient())
+						if (current_client->isNewClient())
 						{
 							if ((irc.parsInfo(current_client, cmd)) == 0)
 							{

@@ -113,7 +113,8 @@ class Irc
 	void closeServer();
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
-	void CheckChanelInfo(Chanel* chanel);
+	// void CheckChanelInfo(Chanel* chanel);
+	bool	checkInfo(Client*, std::vector<std::string>);
 
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	

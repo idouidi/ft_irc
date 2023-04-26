@@ -72,6 +72,7 @@ class Client
 		time_t												last_active_time;
 		chanel_map											my_chanels;
 		std::string											cmd_line;
+		bool												init;
 
 };
 
