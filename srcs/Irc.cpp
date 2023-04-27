@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/27 14:43:23 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 15:48:32 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -968,7 +968,11 @@ bool Irc::invite(Client* client, std::vector<std::string> cmd)
 		sendMessagetoClient(client, ERR_NOSUCHCHANNEL(client->getMyNickname(), cmd[2]));
 		return (false);
 	}
-
+	else if (current_chanel->getClient(client->getMyNickname()) == current_chanel->getclientMap().end())
+	{
+		sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), client->getMyNickname(), cmd[2]));
+		return (false);
+	}
 	current_chanel->getWhiteList().push_back(potential_client->getMyNickname());
 	sendMessagetoClient(client, INVITE_CLIENT(client->getMyNickname(), client->getMyUserName(), cmd[0], potential_client->getMyNickname(), cmd[2]));
 	sendMessagetoClient(potential_client, NOCTICE_CLIENT_INVITE(client->getMyNickname(), current_chanel->getChanelName()));
