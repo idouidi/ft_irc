@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/27 16:46:59 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 17:51:39 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,6 @@ Irc::Irc(char *port, char *password)
 Irc::~Irc() 
 {
 	closeServer();
-	for (size_t i = 0; i < _chanel.size(); i++) {
-		delete _chanel[i];
-	}
-	for (size_t i = 0; i < _client.size(); i++) {
-		delete _client[i];
-	}
 	return ;
 }
 

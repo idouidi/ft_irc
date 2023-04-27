@@ -6,19 +6,19 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/27 14:33:16 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 17:19:37 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Control.hpp"
 
-Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0)), init(1)//, current_chanel(0x0)
+Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0)), init(1), cmd_line(std::string())
 {}
 
 Client::~Client() {}
 
 Client::Client(const Client& c):my_socket(c.my_socket), token_ping(c.token_ping), nickname(c.nickname), new_client(c.new_client), 
-last_active_time(c.last_active_time), init(1)
+last_active_time(c.last_active_time), init(1), cmd_line(std::string())
 {
 	if (!c.my_chanels.empty())
 	{
@@ -30,13 +30,14 @@ last_active_time(c.last_active_time), init(1)
 Client& Client::operator=(const Client& c)
 {
 	if (this != &c)
-	{;
+	{
 		my_socket = c.my_socket;
 		token_ping = c.token_ping;
 		nickname = c.nickname;
 		new_client = c.new_client;
 		last_active_time =  c.last_active_time;
 		init = c.init;
+		cmd_line = c.cmd_line;
 		if (!c.my_chanels.empty())
 		{
 			my_chanels.clear();

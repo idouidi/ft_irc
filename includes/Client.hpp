@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/27 14:32:15 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 17:12:48 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,8 @@ class Client
 		bool												new_client;
 		time_t												last_active_time;
 		chanel_map											my_chanels;
-		std::string											cmd_line;
 		bool 												init;
+		std::string											cmd_line;
 
 };
 

@@ -6,11 +6,22 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/25 18:14:17 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 17:48:34 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Control.hpp"
+
+bool run = 1;
+
+void signalhandler(int sign)
+{
+	if (sign == SIGINT || sign == SIGQUIT)
+	{
+		std::cout << "SIGN  activated" << std::endl;
+		run = 0;
+	}
+}
 
 void start_server(char *port, char *pswd)
 {
@@ -21,9 +32,11 @@ void start_server(char *port, char *pswd)
 	struct                                  sockaddr_in client_addr;
 	Irc                                     irc(port, pswd);
 
+	signal(SIGINT, signalhandler);
+	signal(SIGQUIT, signalhandler);
 	std::cout << CYAN <<"\n- _ - _ - _ - _ - WAITING FOR NEW CONNECTION\
  - _ - _ - _ - _ -" << RESET << std::endl;
-	while (1)
+	while (run)
 	{
 		fd_make_event = epoll_wait(irc.getEpollFd(), irc.getEventTab(),  MAX_EVENTS, -1);
 		for (int i = 0; i < fd_make_event; i++)
@@ -71,7 +84,7 @@ void start_server(char *port, char *pswd)
 						else
 							irc.execCmd(current_client, cmd);
 					}
-					current_client->setCmdLine("");
+					current_client->getCmdLine().clear();
 				}
 				memset(buf, '\0', sizeof(buf));
 			}

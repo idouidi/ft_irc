@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 12:55:15 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/23 09:41:15 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 17:46:38 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,8 @@ enum client_mode {SERVER_OPERATOR, CHANEL_OPERATOR, VOICE, HALF_OP, ADMIN, INVIS
 *
 */
 enum chanel_mode {TOPIC_PROTECTION, NO_EXTERNAL_MSG, SECRET, MODERATED, INVITE_ONLY, PRIVATE, KEY, LIMIT, BAN, NON_CHANEL_MODE} ;
+
+extern bool run;
 
 class Client;
 class Chanel;
