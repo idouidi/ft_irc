@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/27 16:04:00 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 16:46:59 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,6 +274,7 @@ bool Irc::setOtherClientChanelMode(Client* client, Client* other, Chanel* chanel
 		if (it == chanel->getBlackList().end())
 			chanel->getBlackList().push_back(other->getMyNickname());
 		sendMessagetoClient(client, SET_OTHER_CLIENT_CHANEL_MODE(client->getMyNickname(), client->getMyUserName(), cmd, chanel->getChanelName(), mode,  other->getMyNickname()));
+
 		return (true);
 		
 	}
@@ -603,7 +604,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 				sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), concerned_client->getMyNickname(), cmd[1]));
 				return (false);
 			}
-
+			
 			// SET MODES FOR THE CONCERNED CLIENT IN THE CHANEL
 			for (std::size_t i = 0; i < cmd[2].size(); i++)
 			{
@@ -894,10 +895,14 @@ bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd)
 				sendMessagetoClient(client, ERR_CANNOTSENDTOCHAN(client->getMyNickname(), current_chanel->getChanelName()));
 				return (false);
 			}
+			// CHECK IF THE CLIENT IS IN CHANEL AND IF HE IS BAN (CAN'T SEND MSG)
+			if (current_chanel->isPresentInList(current_chanel->getBlackList(), client_in_chanel->first->getMyNickname()))
+				return (false);
 
 			for (; chanel_begin != chanel_end; chanel_begin++)
 			{
-				if (chanel_begin->first->getMyNickname() == client->getMyNickname())
+				if (chanel_begin->first->getMyNickname() == client->getMyNickname()
+					|| current_chanel->isPresentInList(current_chanel->getBlackList(), chanel_begin->first->getMyNickname())) //(CANT RECEIVE MSG)
 					continue;
 				sendMessagetoClient(const_cast<Client*>(chanel_begin->first), RPL_PRIVMSG_CHANEL(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), msg));
 			}

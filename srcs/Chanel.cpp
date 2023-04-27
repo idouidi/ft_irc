@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/25 12:27:13 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 16:24:06 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,16 +171,12 @@ bool						Chanel::unsetChanelModes(char mode)
 		if (idx == _active_modes[i])
 		{
 			_active_modes.erase(_active_modes.begin() + i);
+			//DELETE WHITE LIST
 			if (idx == INVITE_ONLY)
-			{
-				while(!_white_list.empty())
-					_white_list.erase(_white_list.begin());
-			}
+				_white_list.clear();
+			// DELETE BLACKLIST
 			else if (idx == BAN)
-			{
-				while (!_black_list.empty())
-					_black_list.erase(_black_list.begin());
-			}
+				_black_list.clear();
 			return (true);
 		}
 	}
