@@ -70,6 +70,7 @@ void start_server(char *port, char *pswd)
 				else
 				{
 					std::vector<std::string> cmd = split(current_client->getCmdLine() + std::string(buf), " \t\n\r");
+					current_client->getCmdLine().clear();
 					if (cmd.size() > 0)
 					{
 						printInServer(cmd, *current_client);
@@ -84,7 +85,6 @@ void start_server(char *port, char *pswd)
 						else
 							irc.execCmd(current_client, cmd);
 					}
-					current_client->getCmdLine().clear();
 				}
 				memset(buf, '\0', sizeof(buf));
 			}

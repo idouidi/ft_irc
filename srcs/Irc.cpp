@@ -44,10 +44,17 @@ Irc::~Irc()
 void    Irc::closeServer()
 {
 	while(!_client.empty())
+	{
+		close((*_client.begin())->getMySocket());
+		delete (*_client.begin());
 		_client.erase(_client.begin());
+	}
 
 	while(!_chanel.empty())
+	{
+		delete (*_chanel.begin());
 		_chanel.erase(_chanel.begin());
+	}
 	close(epoll_fd);
 	close(server_fd);
 }
