@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/25 16:57:08 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 14:43:23 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,36 +361,36 @@ bool        Irc::execCmd(Client* client , std::vector<std::string> cmd)
 {
 	bool (Irc::*tab[])(Client*, std::vector<std::string> ) = {&Irc::ping,
 																&Irc::pong,
-                                                                &Irc::mode,
-                                                                &Irc::who,
-                                                                &Irc::whois,
-                                                                &Irc::whowas,
-                                                                &Irc::join,
-                                                                &Irc::part,
-                                                                &Irc::privatemsg,
-                                                                &Irc::list,
-                                                                &Irc::nick,
-                                                                &Irc::quit,
-                                                                &Irc::invite,
-                                                                &Irc::kick,
-                                                                &Irc::notice,
+																&Irc::mode,
+																&Irc::who,
+																&Irc::whois,
+																&Irc::whowas,
+																&Irc::join,
+																&Irc::part,
+																&Irc::privatemsg,
+																&Irc::list,
+																&Irc::nick,
+																&Irc::quit,
+																&Irc::invite,
+																&Irc::kick,
+																&Irc::notice,
 																&Irc::topic
-                                                                };
-    std::string ref[] = {"PING", 
+																};
+	std::string ref[] = {"PING", 
 						"PONG",
-                        "MODE",
-                        "WHO",
-                        "WHOIS",
-                        "WHOWAS",
-                        "JOIN",
-                        "PART",
-                        "PRIVMSG",
-                        "LIST",
-                        "NICK",
-                        "QUIT",
-                        "INVITE",
-                        "KICK",
-                        "NOTICE",
+						"MODE",
+						"WHO",
+						"WHOIS",
+						"WHOWAS",
+						"JOIN",
+						"PART",
+						"PRIVMSG",
+						"LIST",
+						"NICK",
+						"QUIT",
+						"INVITE",
+						"KICK",
+						"NOTICE",
 						"TOPIC",
 						"NULL"};
 
@@ -444,6 +444,32 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 			sendMessagetoClient(client, ERR_NEEDMOREPARAMS(client->getMyNickname(), cmd[0]));  
 			return (false);        
 		}
+		Client* concerned_client = findClient(cmd[1]);
+		//TO INIT THE MODE AT THE CONENCTION
+		if (client->getInitStatus() == true)
+		{
+			//CHECK IF THE CLIENT INIT HIS OWN MODE AT THE CONNECTION
+			if (client != concerned_client)
+			{
+				std::string msg  = std::string(RED) + "Error: " + std::string(RESET) + "You must first init your mode at the connection!\n";
+				sendMessagetoClient(client, msg);
+				return (false);
+			}
+			//NEXT TIME THE CLIENT MUST BE SERVER OPERATOR TO SET MODE OF OTHER CLIENT IN THE SERVER
+			client->setInitStatus(0);
+		}
+		// CHECK IF CONCERNED CLIENT EXIST
+		else if (concerned_client == NULL)
+		{
+			sendMessagetoClient(client,  ERR_NOSUCHNICK(client->getMyNickname(), cmd[1]));
+			return (false);
+		}
+		// CHECK IF I HAVE THE PRIVILEGE
+		else if (client->isServerModeActivated(SERVER_OPERATOR) == 0)
+		{
+			sendMessagetoClient(client, ERR_NOPRIVILEGES(client->getMyNickname()));
+			return (false);
+		}
 		//SET MODE FOR CLIENT IN THE SERVER
 		for (std::size_t i = 0; i < cmd[2].size(); i++)
 		{
@@ -478,7 +504,7 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 			time_t t = time(0);
 			std::stringstream		ss;
 			std::string				stime;
-			std::string             listChanelMode;
+			std::string				listChanelMode;
 
 			ss << t;
 			ss >> stime;
@@ -1077,15 +1103,15 @@ bool    Irc::topic(Client* client, std::vector<std::string> cmd)
 
 bool    Irc::notice(Client *client, std::vector<std::string> msg) 
 {
-    for (client_it it = _client.begin(), ite = _client.end(); it != ite; it++)
-    {
-        if ((*it)->getMyNickname() == msg[1])
-        {
-            sendMessagetoClient(*it, NOTICE(client->getMyNickname(), client->getMyUserName(), msg[0], (*it)->getMyNickname(), msg[2]));
-            return (true);
-        }
-    }
-    return (false);
+	for (client_it it = _client.begin(), ite = _client.end(); it != ite; it++)
+	{
+		if ((*it)->getMyNickname() == msg[1])
+		{
+			sendMessagetoClient(*it, NOTICE(client->getMyNickname(), client->getMyUserName(), msg[0], (*it)->getMyNickname(), msg[2]));
+			return (true);
+		}
+	}
+	return (false);
 }
 
 bool	Irc::checkInfo(Client* client, std::vector<std::string> info) 

@@ -6,19 +6,19 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 15:15:37 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/14 13:42:44 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 14:33:16 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/Control.hpp"
 
-Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0))//, current_chanel(0x0)
+Client::Client(int socket, std::string token): my_socket(socket), token_ping(token), new_client(1), last_active_time(time(0)), init(1)//, current_chanel(0x0)
 {}
 
 Client::~Client() {}
 
 Client::Client(const Client& c):my_socket(c.my_socket), token_ping(c.token_ping), nickname(c.nickname), new_client(c.new_client), 
-last_active_time(c.last_active_time)
+last_active_time(c.last_active_time), init(1)
 {
 	if (!c.my_chanels.empty())
 	{
@@ -36,6 +36,7 @@ Client& Client::operator=(const Client& c)
 		nickname = c.nickname;
 		new_client = c.new_client;
 		last_active_time =  c.last_active_time;
+		init = c.init;
 		if (!c.my_chanels.empty())
 		{
 			my_chanels.clear();
@@ -55,6 +56,10 @@ std::string 				Client::getMyUserName() const { return (username); }
 
 std::string					Client::getToken() const { return (token_ping); }
 
+std::string&				Client::getCmdLine() { return (cmd_line); }
+
+bool						Client::getInitStatus() { return (init); }
+
 std::vector<client_mode>& 	Client::getActiveModes()  { return (active_modes); }
 
 Client::chanel_map& 		Client::getChanelMap() {return (my_chanels); }
@@ -67,7 +72,11 @@ void 						Client::setUserName(std::string user) { username.assign(user); }
 
 void						Client::setLastActiveTime() { last_active_time = time(0); }
 
+void						Client::setInitStatus(bool status) { init = status; }
+
 bool 						Client::isNewClient() const  { return (new_client); }
+
+void						Client::setCmdLine(std::string new_one) { cmd_line = new_one; }
 
 bool						Client::isValidMode(char mode, client_mode& idx)
 {
@@ -145,7 +154,6 @@ bool						Client::unsetServerModes(char mode)
 bool						Client::insertChanel(Chanel* chanel_to_add, std::vector<client_mode> chan_mode) 
 {
 	my_chanels[chanel_to_add] = chan_mode;
-	// return (my_chanels.insert(std::pair<Chanel, std::vector<client_mode> >(chanel_to_add, chan_mode)).second);
 	return (true);
 }
 
@@ -160,15 +168,4 @@ bool						Client::deleteChanel(std::string name)
 		}
 	}
 	return (false);
-}			
-
-std::string&				Client::getCmdLine()
-{
-	return (cmd_line);
-}
-
-void						Client::setCmdLine(std::string new_one)
-{
-	cmd_line = new_one;
-	return ;
 }

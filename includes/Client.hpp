@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/08 11:31:22 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/14 13:42:26 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/27 14:32:15 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,14 @@ class Client
 		std::vector<client_mode>&	getActiveModes() ;
 		chanel_map&					getChanelMap();
 		std::string&				getCmdLine();
+		bool						getInitStatus();
 		
 		void 						setStatusClient(bool status);
 		void 						setNickName(std::string nick);
 		void 						setUserName(std::string user);
 		void						setLastActiveTime();
 		void						setCmdLine(std::string);
+		void						setInitStatus(bool status);
 
 		bool 						isNewClient() const;
 
@@ -72,7 +74,7 @@ class Client
 		time_t												last_active_time;
 		chanel_map											my_chanels;
 		std::string											cmd_line;
-		bool												init;
+		bool 												init;
 
 };
 
