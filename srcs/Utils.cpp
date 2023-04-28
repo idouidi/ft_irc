@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/09 11:34:40 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/23 09:50:39 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/28 19:24:22 by alukongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ bool check_port(std::string port)
 {
 
 	int port_number = std::atoi(port.c_str());
-	if (port.empty() || !port.find_first_not_of("0123456789") || port_number < 1 || port_number > 65535)
+	if (port.empty() || !port.find_first_not_of("0123456789") || port_number < 1025 || port_number > 65535)
 	{
 		std::cerr << RED << "error: " << RESET << "wrong format of the port:\n" \
 		<< "the port must be a number which follows this rule ]1-65535[" << std::endl;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/28 16:42:45 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/28 19:19:43 by alukongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,23 +131,15 @@ void     Irc::eraseClient(Client* client)
 				exit(EXIT_FAILURE);			
 			}
 			std::cout << RED << "Client[ " << CYAN << client->getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
-			for (Client::map_iterator it = client->getChanelMap().begin(); it != client->getChanelMap().end(); it++)
+			// DELETE ALL THE CHANEL OF THE CLIENT
+			client->getChanelMap().clear();
+			// DELETE EVERY WHERE THE CLIENT IS IN A CHANEL
+			for (std::size_t i = 0; i < _chanel.size(); i++)
 			{
-				if (it->first->getNumClient() == 1)
-				{
-					Chanel *chanel_ptr = findChanel(it->first->getChanelName());
-					for (std::size_t i = 0; i <_chanel.size(); i++)
-						if (_chanel[i]->getChanelName() == it->first->getChanelName())
-						{
-							_chanel.erase(_chanel.begin() + i);
-							delete chanel_ptr;
-							break ;
-						}
-				}
+				if (_chanel[i]->isPresentInChanel(client->getMyNickname()))
+					_chanel[i]->getclientMap().erase(_chanel[i]->getClient(client->getMyNickname()));
 			}
 			close(client->getMySocket());
-			_client.erase(_client.begin() + i);
-			delete client;
 		}
 	}
 }
@@ -201,12 +193,16 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
 		sendMessagetoClient(client, msg);
 		return (false);
 	}
-	std::string nick(info[5]);
+	std::string nick = info[5];
 	if (isNicknameAvaible(nick) == 0)
 	{
 		sendMessagetoClient(client, ERR_NICKNAMEINUSE(nick));
-		nick.push_back('_');
-	}
+		while (isNicknameAvaible(nick) == 0)
+		{
+			nick += '_';
+			std::cout << "nick = " << nick << std::endl;
+		}	
+	} 
 	client->setNickName(nick);
 
 	std::string user(info[7]);
@@ -833,15 +829,15 @@ bool Irc::part(Client* client, std::vector<std::string> cmd)
 		if (current_chanel->getclientMap().size() == 0)
 		{
 			// FIND THE CHANEL TO ERASE IT IN THE CHANEL REFERENCIAL
-			for (std::size_t i = 0; i < _chanel.size(); i++)
-			{
-				if (_chanel[i]->getChanelName() == current_chanel->getChanelName())
-				{
-					delete (*_chanel.begin() + i);
-					_chanel.erase(_chanel.begin() + i);
-					break;
-				}
-			}            
+			// for (std::size_t i = 0; i < _chanel.size(); i++)
+			// {
+			// 	if (_chanel[i]->getChanelName() == current_chanel->getChanelName())
+			// 	{
+			// 		delete (*_chanel.begin() + i);
+			// 		_chanel.erase(_chanel.begin() + i);
+			// 		break;
+			// 	}
+			// }            
 		}
 		return (true);
 	}
