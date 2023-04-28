@@ -6,7 +6,7 @@
 /*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/27 17:51:39 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/04/28 16:42:45 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -567,10 +567,15 @@ bool Irc::mode(Client* client, std::vector<std::string> cmd)
 					for (; chanel_begin != chanel_end; chanel_begin++)
 						current_chanel->getWhiteList().push_back(chanel_begin->first->getMyNickname());
 
-					// ADD THE SERVER OPERATOR IN THE WHITE LIST
-					current_chanel->getWhiteList().push_back("asimon");
-					current_chanel->getWhiteList().push_back("otabchi");
-					current_chanel->getWhiteList().push_back("idouidi");
+					// ADD THE SERVER OPERATOR IN THE WHITE LIST IF HE IS NOT ALREADY IN
+					if (current_chanel->isPresentInChanel("asimon") == 0)
+						current_chanel->getWhiteList().push_back("asimon");
+
+					if (current_chanel->isPresentInChanel("otabchi") == 0)
+						current_chanel->getWhiteList().push_back("otabchi");
+
+					if (current_chanel->isPresentInChanel("idouidi") == 0)
+						current_chanel->getWhiteList().push_back("idouidi");
 				}
 			}
 		}
@@ -832,6 +837,7 @@ bool Irc::part(Client* client, std::vector<std::string> cmd)
 			{
 				if (_chanel[i]->getChanelName() == current_chanel->getChanelName())
 				{
+					delete (*_chanel.begin() + i);
 					_chanel.erase(_chanel.begin() + i);
 					break;
 				}
@@ -887,7 +893,7 @@ bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd)
 			// CHECK IF CLIENT IS IN THE CHANEL
 			if (client_in_chanel == chanel_end)
 			{
-				sendMessagetoClient(client, ERR_CANNOTSENDTOCHAN(client->getMyNickname(), current_chanel->getChanelName()));
+				sendMessagetoClient(client, ERR_USERNOTINCHANNEL(client->getMyNickname(), client->getMyNickname(), cmd[1]));
 				return (false);				
 			}
 			// CHECK IF I HAVE PRIVILEGE 
