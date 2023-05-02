@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Chanel.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:21:44 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/27 16:24:06 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/05/02 16:32:12 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,10 @@ size_t	Chanel::_id_global = 0;
 
 Chanel::Chanel(std::string& name):  _id(_id_global++), _name(name)
 {}
+
+Chanel::Chanel():  _name("#BOT") {
+	return ;
+}
 
 Chanel::~Chanel() 
 {}

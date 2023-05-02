@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:04:28 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/27 17:45:08 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/05/02 15:54:15 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,13 @@ class Irc
 	public:
 
 	typedef std::vector<Client*>::iterator		client_it;
+	
+	enum bot_answer {
+		HI,
+		WHO,
+		WHAT,
+		IDK
+	};
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 
 		/*	
@@ -116,6 +123,10 @@ class Irc
 	// void CheckChanelInfo(Chanel* chanel);
 	bool	checkInfo(Client*, std::vector<std::string>);
 
+/*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
+
+	bool	actionBot(Client*, std::string);
+	Irc::bot_answer		check_response(std::string msg);
 /*	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	:	*/
 	
 	private:

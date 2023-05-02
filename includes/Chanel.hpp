@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Chanel.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/05 14:17:22 by asimon            #+#    #+#             */
-/*   Updated: 2023/04/25 12:25:34 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/05/02 15:33:33 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ class Chanel {
 
 		
 		Chanel(std::string&);
+		Chanel();
 		~Chanel();
 
 

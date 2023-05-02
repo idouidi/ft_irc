@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: alukongo <alukongo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/04/28 19:19:43 by alukongo         ###   ########.fr       */
+/*   Updated: 2023/05/02 16:54:59 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ Irc::Irc(char *port, char *password)
 		std::cerr << e.what() << std::endl;
 		exit(1);
 	}
+	_chanel.push_back(new Chanel());
 }
 
 Irc::~Irc() 
@@ -741,7 +742,7 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
 		current_chanel->setChanelName(cmd[1]);
 		founder = 1;
 	}
-	// CHECK IF THE CLIENT IS IN THE CHQNEL BLACK LIST
+	// CHECK IF THE CLIENT IS IN THE CHANEL BLACK LIST
 	if (current_chanel->isPresentInList(current_chanel->getBlackList(), client->getMyNickname()))
 	{
 		sendMessagetoClient(client, ERR_BANNEDFROMCHAN(client->getMyNickname(), current_chanel->getChanelName()));
@@ -783,7 +784,7 @@ bool Irc::join(Client* client, std::vector<std::string> cmd)
 	sendMessagetoClient(client, SET_CHANEL(client->getMyNickname(), client->getMyUserName(), cmd[0], cmd[1])
 	+ RPL_NAMREPLY(client->getMyNickname(), cmd[1], list) + RPL_ENDOFNAMES(client->getMyNickname(), cmd[1]));
 
-	// SEND TO OTHER CLIENT THERE IS Q NEW CLIENT IN THE CHANEL
+	// SEND TO OTHER CLIENT THERE IS A NEW CLIENT IN THE CHANEL
 	for (Chanel::map_iterator it = current_chanel->getclientMap().begin(), ite = current_chanel->getclientMap().end(); it != ite; it++)
 	{
 		if (it->first->getMyNickname() == client->getMyNickname())
@@ -824,21 +825,6 @@ bool Irc::part(Client* client, std::vector<std::string> cmd)
 
 		// DELETE THE CHANEL INT THE CLIENT MAP
 		client->deleteChanel(current_chanel->getChanelName());
-
-		// AFTER DELETED CLIENT WE CHECK IF THERE ARE STILL CLIENT IN 
-		if (current_chanel->getclientMap().size() == 0)
-		{
-			// FIND THE CHANEL TO ERASE IT IN THE CHANEL REFERENCIAL
-			// for (std::size_t i = 0; i < _chanel.size(); i++)
-			// {
-			// 	if (_chanel[i]->getChanelName() == current_chanel->getChanelName())
-			// 	{
-			// 		delete (*_chanel.begin() + i);
-			// 		_chanel.erase(_chanel.begin() + i);
-			// 		break;
-			// 	}
-			// }            
-		}
 		return (true);
 	}
 	else
@@ -902,12 +888,20 @@ bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd)
 			if (current_chanel->isPresentInList(current_chanel->getBlackList(), client_in_chanel->first->getMyNickname()))
 				return (false);
 
-			for (; chanel_begin != chanel_end; chanel_begin++)
+			// condition pour envoi msg bot
+			if (current_chanel->getChanelName() == "#BOT")
 			{
-				if (chanel_begin->first->getMyNickname() == client->getMyNickname()
-					|| current_chanel->isPresentInList(current_chanel->getBlackList(), chanel_begin->first->getMyNickname())) //(CANT RECEIVE MSG)
-					continue;
-				sendMessagetoClient(const_cast<Client*>(chanel_begin->first), RPL_PRIVMSG_CHANEL(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), msg));
+				actionBot(client, msg);	
+			}
+			else
+			{
+				for (; chanel_begin != chanel_end; chanel_begin++)
+				{
+					if (chanel_begin->first->getMyNickname() == client->getMyNickname()
+						|| current_chanel->isPresentInList(current_chanel->getBlackList(), chanel_begin->first->getMyNickname())) //(CANT RECEIVE MSG)
+						continue;
+					sendMessagetoClient(const_cast<Client*>(chanel_begin->first), RPL_PRIVMSG_CHANEL(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", current_chanel->getChanelName(), msg));
+				}
 			}
 		}
 		else
@@ -917,6 +911,42 @@ bool    Irc::privatemsg(Client* client, std::vector<std::string> cmd)
 		}
 	}
 	return (true);
+}
+
+
+Irc::bot_answer		Irc::check_response(std::string msg) {
+	if (!msg.compare(":Hi") || !msg.compare(":hi") || !msg.compare(":HI") || !msg.compare(":hi!") || !msg.compare(":Hi!"))
+		return (Irc::HI);
+	else if (!msg.compare(":who are you?") || !msg.compare(":Who are you?") || !msg.compare(":who are you ?") || !msg.compare(":Who are you ?"))
+		return (Irc::WHO);
+	else if (!msg.compare(":What do you do ?") || !msg.compare(":what is your purpose ?"))
+		return (Irc::WHAT);
+	else
+		return (Irc::IDK);
+}
+
+
+bool Irc::actionBot(Client* client, std::string msg) {
+	std::string		ret_msg;
+	switch (check_response(msg))
+	{
+		case Irc::HI:
+			ret_msg = "Hi! " + client->getMyNickname();
+			break;
+		case Irc::WHO:
+			ret_msg = "I'm a bot create for our project Irc!";
+			break;
+		case Irc::WHAT:
+			ret_msg = "I don't know yet what is my purpose, come back later for more explanation";
+			break;
+		case Irc::IDK:
+			ret_msg = "Sorry I can't understand your request yet, please reformule";
+			break;
+		default:
+			break;
+	}
+	sendMessagetoClient(client, RPL_PRIVMSG_CHANEL(client->getMyNickname(), client->getMyUserName(), "PRIVMSG", "#BOT", ret_msg));
+	return true;
 }
 
 bool Irc::list(Client* client, std::vector<std::string> cmd)
