@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:06:13 by idouidi           #+#    #+#             */
-/*   Updated: 2023/05/02 16:32:06 by asimon           ###   ########.fr       */
+/*   Updated: 2023/05/03 18:49:25 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ void start_server(char *port, char *pswd)
 				if (ret == -1)
 				{
 					perror("read");
-					exit(EXIT_FAILURE);
+					run = 0;
+					continue ;
 				}
 				else if (ret == 0)
 					irc.eraseClient(current_client);

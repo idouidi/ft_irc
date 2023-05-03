@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/05/02 16:54:59 by asimon           ###   ########.fr       */
+/*   Updated: 2023/05/03 20:33:14 by idouidi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,21 @@
 Irc::Irc(char *port, char *password)
 {
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-	{
-		perror("socket");
-		throw std::runtime_error("Error when creating the socket");
-	}
+			throw std::invalid_argument("socket");
+	
+	int optval = 1;
+	if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
+			throw std::invalid_argument("setsockopt");
+
 	server_pswd = password;
 	epoll_fd = -1;
+
 	memset(&event, 0, sizeof(event));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 	server_addr.sin_port = htons(std::atoi(port));
 	memset(server_addr.sin_zero, '\0', sizeof(server_addr.sin_zero));
-	try {
-		init_server();
-	}
-	catch (const std::exception& e) {
-		std::cerr << e.what() << std::endl;
-		exit(1);
-	}
+	init_server();
 	_chanel.push_back(new Chanel());
 }
 
@@ -63,28 +60,18 @@ void    Irc::closeServer()
 void     Irc::init_server()
 {
 	if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0 )
-	{
-		perror("bind");
-		exit(EXIT_FAILURE);
-	}
+		throw std::invalid_argument("bind");
+
 	if (listen(server_fd, MAX_CLIENT) < 0)
-	{
-		perror("listen");
-		throw std::runtime_error("Error when listening to the socket");
-	}
+		throw std::invalid_argument("listen");
+
 	if ((epoll_fd = epoll_create(MAX_CLIENT)) == -1 )
-	{
-		perror("epoll_create");
-		exit(EXIT_FAILURE);
-	}
+		throw std::invalid_argument("epoll_create");
 
 	event.data.fd = server_fd;
 	event.events = EPOLLIN; //data can be read from a fd (server_fd) monitored by epoll 
 	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_fd, &event) == -1 )
-	{
-		perror("epoll_ctl EPOLL_CTL_ADD server soscket");
-		exit(EXIT_FAILURE);
-	}
+		throw std::invalid_argument("epoll_add");
 }
 
 int Irc::getServerFd() const { return (server_fd); }
@@ -105,13 +92,12 @@ void    Irc::addClient(int client_fd)
 	op >> ret;
 	
 	fcntl(client_fd, F_SETFL, O_NONBLOCK);
+
 	event.data.fd = client_fd;
 	event.events = EPOLLIN;
 	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_fd, &event) == -1 )
-	{
-		perror("epoll_ctl EPOLL_CTL_ADD client soscket");
-		exit(EXIT_FAILURE);
-	}
+		throw std::invalid_argument("epoll_add");
+
 	_client.push_back((new Client(client_fd, ret)));
 
 	sendMessagetoClient(_client.back(), CMD_PING(ret));
@@ -128,10 +114,9 @@ void     Irc::eraseClient(Client* client)
 		{
 			if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client->getMySocket(), NULL ) == -1)
 			{
-				perror("epoll_ctl EPOLL_CTL_DEL");
-				exit(EXIT_FAILURE);			
+				std::cout << RED << "Client[ " << CYAN << client->getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
+				throw std::invalid_argument("epoll_del");
 			}
-			std::cout << RED << "Client[ " << CYAN << client->getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
 			// DELETE ALL THE CHANEL OF THE CLIENT
 			client->getChanelMap().clear();
 			// DELETE EVERY WHERE THE CLIENT IS IN A CHANEL
@@ -151,11 +136,8 @@ void        Irc::sendMessagetoClient(Client* client, std::string msg)
 	int 		len = msg.size();
 
 	if ((bytes_sent = send(client->getMySocket(), msg.c_str(), len, 0 )) != len)
-	{
-		perror("send failed");
-		throw std::runtime_error("Error when sending a message to the client");
-		client->setLastActiveTime();
-	}
+		throw std::invalid_argument("send");
+	client->setLastActiveTime();
 }
 
 bool        Irc::goodPassword(Client* client, std::string pswd)
@@ -199,10 +181,7 @@ bool Irc::parsInfo(Client* client, std::vector<std::string> info)
 	{
 		sendMessagetoClient(client, ERR_NICKNAMEINUSE(nick));
 		while (isNicknameAvaible(nick) == 0)
-		{
 			nick += '_';
-			std::cout << "nick = " << nick << std::endl;
-		}	
 	} 
 	client->setNickName(nick);
 
@@ -694,10 +673,10 @@ bool Irc::whois(Client* client, std::vector<std::string> cmd)
 		Client *current_client = findClient(cmd[1]);
 		if (current_client)
 		{
-			sendMessagetoClient(current_client,
+			sendMessagetoClient(client,
 			RPL_WHOISUSER(client->getMyNickname(), current_client->getMyNickname(), current_client->getMyUserName())
 			+ RPL_WHOISSERVER(client->getMyNickname(), current_client->getMyNickname())
-			+ RPL_WHOISIDLE(client->getMyNickname(), current_client->getMyNickname(), clientLastActiveTime(client))
+			+ RPL_WHOISIDLE(client->getMyNickname(), current_client->getMyNickname(), clientLastActiveTime(current_client))
 			+ RPL_ENDOFWHOIS(client->getMyNickname(), current_client->getMyNickname()));
 		}
 	}

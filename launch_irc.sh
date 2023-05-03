@@ -10,7 +10,7 @@ port=$1
 password=$2
 
 # Launch the IRC server
-gnome-terminal -- bash -c "valgrind ./ircserv $port $password; exec bash"
+gnome-terminal -- bash -c "valgrind ./ircserv $port $password; exec bash" 
 
 # Wait for the server to start
 sleep 1
@@ -18,5 +18,17 @@ sleep 1
 # Launch "i" instances of irssi, each in a separate terminal window, connecting to the server
 for i in 1 2 3
 do
-  gnome-terminal -- bash -c "irssi -c localhost -p $port -w $password; exec bash"
+  sleep 1
+  gnome-terminal -- bash -c "irssi -c localhost -p $port -w $password; exec bash" 
 done
+
+# while the program ircserv is running 
+while [ $(ps aux | grep ircserv | wc -l) -gt 1 ]
+do
+  sleep 1
+done
+
+ # Kill all instances of irssi
+pkill -f irssi
+
+
