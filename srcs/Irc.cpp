@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Irc.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: idouidi <idouidi@student.42.fr>            +#+  +:+       +#+        */
+/*   By: asimon <asimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/13 18:06:38 by idouidi           #+#    #+#             */
-/*   Updated: 2023/05/03 20:33:14 by idouidi          ###   ########.fr       */
+/*   Updated: 2023/05/05 16:55:48 by asimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,9 +114,10 @@ void     Irc::eraseClient(Client* client)
 		{
 			if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client->getMySocket(), NULL ) == -1)
 			{
-				std::cout << RED << "Client[ " << CYAN << client->getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
 				throw std::invalid_argument("epoll_del");
+				return;
 			}
+			std::cout << RED << "Client[ " << CYAN << client->getMySocket() << RED << " ] deconnected !" << RESET << std::endl;
 			// DELETE ALL THE CHANEL OF THE CLIENT
 			client->getChanelMap().clear();
 			// DELETE EVERY WHERE THE CLIENT IS IN A CHANEL
@@ -125,7 +126,10 @@ void     Irc::eraseClient(Client* client)
 				if (_chanel[i]->isPresentInChanel(client->getMyNickname()))
 					_chanel[i]->getclientMap().erase(_chanel[i]->getClient(client->getMyNickname()));
 			}
+			_client.erase(std::find(_client.begin(), _client.end(), client));
 			close(client->getMySocket());
+			delete (client);
+			
 		}
 	}
 }
